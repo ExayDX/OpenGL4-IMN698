@@ -1,0 +1,24 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Visual Studio files
+*.sln
+*.suo
+*.sdf
+*.opensdf
+*.vcxproj
+*.vcxproj.filters
+
+*.pdb
+*.ilk
+
+/OpenGL4Viewer/Debug/
+/OpenGL4Viewer/OpenGL4Viewer/Debug/
