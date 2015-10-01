@@ -20,5 +20,5 @@
 *.pdb
 *.ilk
 
+/Debug/
 /OpenGL4-IMN698/Debug/
-/OpenGL4-IMN698/OpenGL4-IMN698/Debug/
