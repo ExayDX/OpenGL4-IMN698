@@ -54,8 +54,14 @@
     <ClCompile Include="Actor.cpp">
       <Filter>Source Files\Actors</Filter>
     </ClCompile>
-    <ClCompile Include="Types.glsl">
-      <Filter>Resource Files</Filter>
+    <ClCompile Include="FragmentShader.cpp">
+      <Filter>Source Files\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexShader.cpp">
+      <Filter>Source Files\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files\Shaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -86,18 +92,30 @@
     <ClInclude Include="Material.h">
       <Filter>Header Files\Actors</Filter>
     </ClInclude>
+    <ClInclude Include="VertexShader.h">
+      <Filter>Header Files\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="FragmentShader.h">
+      <Filter>Header Files\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="defaultFS.glsl">
+    <None Include="shaders\default.vs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="defaultVS.glsl">
+    <None Include="shaders\Phong.fg">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Phong.fg">
+    <None Include="shaders\Phong.vs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Phong.vs">
+    <None Include="shaders\Types.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\default.fg">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

@@ -1,11 +1,13 @@
 #ifndef  OBJECT_H
 #define	 OBJECT_H 
+
 #include "GL/glew.h"
 #include "Actor.h"
 #include <GLM/glm/glm.hpp>
+#include "ShaderProgram.h"
 
 // Forward declaration
-class ShaderProgram;
+//class ShaderProgram;
 
 //Base class for a drawable object
 class Object : public Actor
@@ -17,14 +19,16 @@ public:
 	virtual void draw() const;
 
 	// Getters 
-	virtual GLuint getShaderProgramId() { return m_shaderProgram; }
+	GLuint getShaderProgramId() { return m_shaderProgram->getProgramId(); }
 
 	// Setters
 	void assignMaterial(Material* material) { m_material = material; } 
 
+	void changeShader(ShaderProgram* sp);
+
 protected : 
 	// Constructor for implementing classes
-	Object(glm::vec3 position, Material* material, GLuint shaderProgram); 
+	Object(glm::vec3 position, Material* material, ShaderProgram* shaderProgram); 
 	
 	// Functions for Object's shape definition
 	virtual void setupObject();
@@ -33,7 +37,7 @@ protected :
 	virtual void defineEBO() = 0;
 
 	// Object's look characteristics
-	GLuint m_shaderProgram; 
+	ShaderProgram* m_shaderProgram;
 
 	// Object's shape definition variables
 	GLuint m_VBO;

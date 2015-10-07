@@ -7,23 +7,31 @@
 #include <vector>
 #include <map>
 
-// Forward Declaration
-class FragmentShader; 
-class VertexShader; 
-
+#include "Shader.h"
+#include "FragmentShader.h"
+#include "VertexShader.h"
 
 //Shader program contains many shaders
 class ShaderProgram
 {
 public:
-	ShaderProgram(std::string vertexShaderName, std::string fragmentShaderName);
-	GLuint getId(){ return m_programId; }
+	//ShaderProgram(VertexShader* vs, FragmentShader* fs);
+	ShaderProgram();
 
-private:
+	GLuint getProgramId();
+	void insertNewShaderParameterLocation(std::string parameterName, GLuint paremeterLocation);
+	GLuint getShaderParamenterLocation(std::string parameterName);
 
-	GLuint m_programId;
+	void addShader(Shader* shader);
+	bool compile();
 	bool link();
-	bool compileShader(GLenum shaderType, const std::string& filename, GLuint& outShaderId); 
+private:
+	GLuint m_programId;
+	std::map<std::string, GLuint> m_shaderParametersLocation;
+
+public:
+	VertexShader* m_vertexShader;
+	FragmentShader* m_fragmentShader;
 };
 
 #endif // __SHADERPROGRAM_H__

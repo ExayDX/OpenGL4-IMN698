@@ -4,7 +4,7 @@
 
 #include "Sphere.h"
 
-Sphere::Sphere(glm::vec3 position, Material* material, double radius, GLuint nLats, GLuint nLongs, GLuint shaderProgram)
+Sphere::Sphere(glm::vec3 position, Material* material, double radius, GLuint nLats, GLuint nLongs, ShaderProgram* shaderProgram)
 	: Object(position, material, shaderProgram)
 	, m_radius(radius)
 	, m_nLats(nLats)

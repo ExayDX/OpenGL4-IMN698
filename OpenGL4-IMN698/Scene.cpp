@@ -9,6 +9,9 @@
 #include "GLM/glm/gtc/matrix_transform.hpp"
 #include "GLM/glm/gtc/type_ptr.hpp"
 
+
+#include <iostream>
+
 Scene::Scene()
 {
 	createShaderPrograms();
@@ -24,13 +27,54 @@ Scene::~Scene()
 
 void Scene::createShaderPrograms()
 {
-	// Create Shader programs
-	ShaderProgram* defaultShaderProgram = new ShaderProgram("defaultVS.glsl", "defaultFS.glsl");
-	ShaderProgram* phongShaderProgram = new ShaderProgram("Phong.vs", "Phong.fg");
 
-	// Insert ShaderProgram in the list
-	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("default", defaultShaderProgram));
-	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("phong", phongShaderProgram)); 
+	// Create shader program from the shaders directory
+
+
+	//for each file in directory
+	//compile shader
+	//check if a shader program already exist for this shader
+	//add shader to program or create a new ShaderProgram
+	boost::filesystem::path currentPath = boost::filesystem::current_path();
+
+	std::cout << currentPath.c_str() << std::endl;
+	currentPath += "/shaders";
+
+	assert(exists(currentPath));
+
+	for (boost::filesystem::directory_entry& x : boost::filesystem::directory_iterator(currentPath))
+	{
+		//get filename + extension
+		std::cout << x.path().filename() << std::endl;
+		std::cout << x.path().stem() << std::endl;
+
+		Shader* shader = createShader(x.path());
+
+		std::string shaderProgramName(x.path().stem().string());
+		if (m_shaderPrograms[shaderProgramName])
+		{
+			m_shaderPrograms[shaderProgramName]->addShader(shader);
+		}
+		else
+		{
+			ShaderProgram* sp = new ShaderProgram();
+			sp->addShader(shader);
+
+
+			GLuint modelLocation = glGetUniformLocation(sp->getProgramId(), "model");
+			sp->insertNewShaderParameterLocation("model", modelLocation);
+
+			m_shaderPrograms[shaderProgramName] = sp;
+
+		}
+	}
+
+	//compile and link all program
+	for each (std::pair<std::string, ShaderProgram*> sp in m_shaderPrograms)
+	{
+		sp.second->compile();
+		sp.second->link();
+	}
 }
 
 void Scene::createMaterials()
@@ -65,13 +109,13 @@ void Scene::createMaterials()
 void Scene::levelSetup()
 {	
 
-	Object* sphere1 = new Sphere(glm::vec3(-7, 0, 0), m_materials["default"], 2, 40, 40, m_shaderPrograms["phong"]->getId());
+	Object* sphere1 = new Sphere(glm::vec3(-7, 0, 0), m_materials["default"], 2, 40, 40, m_shaderPrograms["phong"]);
 	m_objects.push_back(sphere1);
 
-	Object* sphere2 = new Sphere(glm::vec3(0, 0, 0), m_materials["orange"], 2, 40, 40, m_shaderPrograms["default"]->getId()); 
+	Object* sphere2 = new Sphere(glm::vec3(0, 0, 0), m_materials["orange"], 2, 40, 40, m_shaderPrograms["default"]); 
 	m_objects.push_back(sphere2);
 
-	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["phong"]->getId());
+	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["phong"]);
 	m_objects.push_back(sphere3);
 
 }
@@ -156,4 +200,41 @@ void Scene::lightSetup()
 {
 	Light* light1 = new Light(glm::vec3(0, 10, 0), m_materials["defaultLight"]); 
 	m_lights.push_back(light1); 
+}
+
+
+//Create the proper shader type according to filename extension
+Shader* Scene::createShader(const boost::filesystem::path& path)
+{
+	Shader* s = nullptr;
+	std::string ext = path.extension().string();
+	if (ext == ".fg")
+		s = new FragmentShader(path.string());
+	else if (ext == ".vx")
+		s = new VertexShader(path.string());
+
+
+	return s;
+}
+
+void Scene::changeShaderProgramName(int car)
+{
+	if (car == GLFW_KEY_1)
+	{
+		m_shaderProgramName = "default";
+	}
+	else if (car == GLFW_KEY_2)
+	{
+		m_shaderProgramName = "phong";
+	}
+	else if (car == GLFW_KEY_3)
+	{
+		m_shaderProgramName = "normals";
+	}
+
+	for each (Object* obj in m_objects)
+	{
+		if (m_shaderPrograms[m_shaderProgramName])
+			obj->changeShader(m_shaderPrograms[m_shaderProgramName]);
+	}
 }

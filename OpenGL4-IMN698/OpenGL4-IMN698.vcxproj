@@ -77,7 +77,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3dll.lib;OpenGL32.Lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3dll.lib;OpenGL32.Lib;glew32.lib;libboost_filesystem-vc120-mt-gd-1_57.lib;libboost_system-vc120-mt-gd-1_57.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -128,31 +128,37 @@
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FragmentShader.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="Types.glsl" />
+    <ClCompile Include="VertexShader.cpp" />
     <ClCompile Include="Viewer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="FragmentShader.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="VertexShader.h" />
     <ClInclude Include="Viewer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="defaultFS.glsl" />
-    <None Include="defaultVS.glsl" />
-    <None Include="Phong.fg" />
-    <None Include="Phong.vs" />
+    <None Include="shaders\default.fg" />
+    <None Include="shaders\default.vs" />
+    <None Include="shaders\Phong.fg" />
+    <None Include="shaders\Phong.vs" />
+    <None Include="shaders\Types.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

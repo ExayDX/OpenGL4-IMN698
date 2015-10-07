@@ -4,7 +4,7 @@
 
 #include "ShaderProgram.h"
 
-Object::Object(glm::vec3 position, Material* material, GLuint shaderProgram)
+Object::Object(glm::vec3 position, Material* material, ShaderProgram* shaderProgram)
 	: Actor(position, material)
 	, m_shaderProgram(shaderProgram)
 	, m_numIndices(0)
@@ -32,4 +32,9 @@ void Object::setupObject()
 	defineVBO();
 	defineEBO();
 	defineVAO(); 
+}
+
+void Object::changeShader(ShaderProgram* sp)
+{
+	m_shaderProgram = sp;
 }

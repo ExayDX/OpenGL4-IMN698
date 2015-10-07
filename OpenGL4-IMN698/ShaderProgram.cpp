@@ -1,48 +1,41 @@
-#include "ShaderProgram.h"
+
+
 #include <cassert>
-#include <fstream>
 
+#include "ShaderProgram.h"
+#include "FragmentShader.h"
+#include "VertexShader.h"
+#include "Shader.h"
 
-bool ShaderProgram::compileShader(GLenum type, const std::string& filename, GLuint& outShaderId)
+ShaderProgram::ShaderProgram() :
+	m_programId(glCreateProgram())
 {
-	outShaderId = glCreateShader(type);
 
-	//read file and extract code
-	std::ifstream file(filename);
-
-	if (!file.is_open())
-	{
-		std::string errorMessage = "ERROR::SHADER::FILE CAN'T BE READ\n";
-		throw std::runtime_error(errorMessage);
-	}
-
-
-	std::string shaderCode = std::string((std::istreambuf_iterator<char>(file)),
-										std::istreambuf_iterator<char>());
-
-	const char* code = shaderCode.c_str();
-	glShaderSource(outShaderId, 1, &code, NULL);
-	glCompileShader(outShaderId);
-
-	GLint isCompiled = GL_FALSE;
-
-	GLchar infoLog[512];
-	glGetShaderiv(outShaderId, GL_COMPILE_STATUS, &isCompiled);
-	if (!isCompiled)
-	{
-		glGetShaderInfoLog(outShaderId, 512, nullptr, infoLog);
-		std::string errorMessage = "ERROR::SHADER::COMPILATION_FAILED\n";
-		errorMessage.append(infoLog).append("\n");
-		throw std::runtime_error(errorMessage);
-	}
-
-	return isCompiled;
 }
 
+void ShaderProgram::addShader(Shader* shader)
+{
+	//according to shader type, assign to according variable
+	VertexShader* vs = dynamic_cast<VertexShader*>(shader);
+	FragmentShader* fs = dynamic_cast<FragmentShader*>(shader);
+	if (vs)
+	{
+		m_vertexShader = vs;
+	}
+	else if (fs)
+	{
+		m_fragmentShader = fs;
+	}
+}
 
 bool ShaderProgram::link()
 {
 	GLint isLinked = GL_FALSE;
+	
+	if (m_vertexShader)
+		glAttachShader(m_programId, m_vertexShader->getShaderId());
+	if (m_fragmentShader)
+		glAttachShader(m_programId, m_fragmentShader->getShaderId());
 
 	glLinkProgram(m_programId);
 	glGetProgramiv(m_programId, GL_LINK_STATUS, &isLinked);
@@ -60,22 +53,35 @@ bool ShaderProgram::link()
 
 }
 
-ShaderProgram::ShaderProgram(std::string vertexShaderName, std::string fragmentShaderName) :
-m_programId(glCreateProgram())
+bool ShaderProgram::compile()
 {
-	assert(vertexShaderName.size() > 0, "Attempted to create a Shader program without valid vertex shader filename");
-	assert(vertexShaderName.size() > 0, "Attempted to create a Shader program without valid fragment shader filename ");
+	bool result = true;
 
-	GLuint vertexShader, fragmentShader;
-	assert(compileShader(GL_VERTEX_SHADER, vertexShaderName, vertexShader), "Failed to compile vertex shader, see logs for details.");
-	assert(compileShader(GL_FRAGMENT_SHADER, fragmentShaderName, fragmentShader), "Failed to compile fragment shader, see logs for details.");
+	if (m_vertexShader)
+		result = result && m_vertexShader->compile();
+	else
+		result = false;
 
-	//Attach shaders
-	glAttachShader(m_programId, vertexShader);
-	glAttachShader(m_programId, fragmentShader);
+	if (m_fragmentShader)
+		result = result && m_fragmentShader->compile();
+	else
+		result = false;
 
-	assert(link(), "Shader linking to ShaderProgram failed. See logs for more details.");
+	return result;
+}
 
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+
+GLuint ShaderProgram::getProgramId()
+{
+	return m_programId;
+}
+
+void ShaderProgram::insertNewShaderParameterLocation(std::string parameterName, GLuint paremeterLocation)
+{
+	m_shaderParametersLocation.insert(std::pair<std::string, GLuint>(parameterName, paremeterLocation));
+}
+
+GLuint ShaderProgram::getShaderParamenterLocation(std::string parameterName)
+{
+	return m_shaderParametersLocation[parameterName];
 }

@@ -73,6 +73,10 @@ void Viewer::key_callback_impl(GLFWwindow* window, int key, int scancode, int ac
 		}
 			
 	}
+	else if (key == GLFW_KEY_1 || GLFW_KEY_2 && action == GLFW_PRESS)
+	{
+		m_scene->changeShaderProgramName(key);
+	}
 	
 	// Realtime (key held) interaction management
 	if (key >= 0 && key < 1024)
