@@ -21,7 +21,7 @@ void main()
 	Normal = normalMatrix * normal; 
 
 	FragPosition = vec3(view * model * vec4(position, 1.0f));
-	for(int i =0; i < MAX_LIGHTS; ++i) 
+	for(int i =0; i < NB_LIGHTS; ++i) 
 	{
 		LightsPositions[i] = vec3(view * vec4(lightsPositions[i], 1.0));
 	} 
