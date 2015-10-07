@@ -16,17 +16,14 @@ class VertexShader;
 class ShaderProgram
 {
 public:
-	ShaderProgram(VertexShader* vs, FragmentShader* fs);
+	ShaderProgram(std::string vertexShaderName, std::string fragmentShaderName);
+	GLuint getId(){ return m_programId; }
 
-	GLuint getProgramId();
-	void insertNewShaderParameterLocation(std::string parameterName, GLuint paremeterLocation); 
-	GLuint getShaderParamenterLocation(std::string parameterName); 
-	
 private:
+
 	GLuint m_programId;
-	std::map<std::string, GLuint> m_shaderParametersLocation;
-	bool compile(VertexShader* vs, FragmentShader* fs);
 	bool link();
+	bool compileShader(GLenum shaderType, const std::string& filename, GLuint& outShaderId); 
 };
 
 #endif // __SHADERPROGRAM_H__
