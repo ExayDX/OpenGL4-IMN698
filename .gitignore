@@ -10,12 +10,9 @@
 *.app
 
 # Visual Studio files
-*.sln
 *.suo
 *.sdf
 *.opensdf
-*.vcxproj
-*.vcxproj.filters
 
 *.pdb
 *.ilk

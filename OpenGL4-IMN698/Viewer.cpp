@@ -285,11 +285,8 @@ void Viewer::loop()
 		glm::mat4 view = m_camera->GetViewMatrix();
 		glm::mat4 projection = glm::perspective(m_camera->getZoomLevel(), m_width / m_height, 0.1f, 100.0f); 
 
-		GLuint viewLoc = glGetUniformLocation(m_scene->getAShaderProgramId("default"), "view");
-		GLuint projectionLoc = glGetUniformLocation(m_scene->getAShaderProgramId("default"), "projection");
-
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		m_scene->setViewMatrix(view);
+		m_scene->setProjectionMatrix(projection); 
 
 		m_scene->draw(); 
 

@@ -11,12 +11,8 @@
 class Sphere :public Object
 {
 public:
-	Sphere(glm::vec3 position, glm::vec3 color, double radius, GLuint nLats, GLuint nLongs, ShaderProgram* shaderProgram);
+	Sphere(glm::vec3 position, Material* material, double radius, GLuint nLats, GLuint nLongs, GLuint shaderProgram);
 	~Sphere(){};
-
-
-	void draw() const override;
-	void setShaderProgram(ShaderProgram* sp);
 
 	void defineVBO();
 	void defineEBO();

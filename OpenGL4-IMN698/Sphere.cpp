@@ -1,36 +1,16 @@
-
-
-#define GLFW_INCLUDE_GLU
-
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 #include "GLM/glm/gtc/constants.hpp"
 
 #include "Sphere.h"
 
-#define space 10
-
-Sphere::Sphere(glm::vec3 position, glm::vec3 color, double radius, GLuint nLats, GLuint nLongs, ShaderProgram* shaderProgram)
-	: Object(position, color, shaderProgram)
+Sphere::Sphere(glm::vec3 position, Material* material, double radius, GLuint nLats, GLuint nLongs, GLuint shaderProgram)
+	: Object(position, material, shaderProgram)
 	, m_radius(radius)
 	, m_nLats(nLats)
 	, m_nLongs(nLongs)
 {
-
-}
-
-void Sphere::draw() const
-{
-	glUseProgram(m_shaderProgram->getProgramId());
-	glBindVertexArray(m_VAO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-	glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-}
-
-void Sphere::setShaderProgram(ShaderProgram* sp)
-{
-	m_shaderProgram = sp;
+	setupObject(); 
 }
 
 // Code from http://learningwebgl.com/blog/?p=1253 (converted to c++)
@@ -56,19 +36,21 @@ void Sphere::defineVBO()
 			GLfloat u = 1 - (longNumber / m_nLongs);
 			GLfloat v = 1 - (latNumber / m_nLats);
 
-			//normalData.push(x);
-			//normalData.push(y);
-			//normalData.push(z);
+			// Set the vertex's position
 			vertices.push_back(m_radius * x);
 			vertices.push_back(m_radius * y);
 			vertices.push_back(m_radius * z);
+
+			// Set the vertex's normal
+			vertices.push_back(x); 
+			vertices.push_back(y);
+			vertices.push_back(z); 
 		}
 	}
 
 	glGenBuffers(1, &m_VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), &vertices[0], GL_STATIC_DRAW);
-	
 }
 
 void Sphere::defineEBO()
@@ -102,7 +84,11 @@ void Sphere::defineVAO()
 {
 	glGenVertexArrays(1, &m_VAO);
 	glBindVertexArray(m_VAO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+	
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
-
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+	
+	glBindVertexArray(0);
 }

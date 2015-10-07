@@ -3,8 +3,7 @@
 
 #include "Scene.h"
 #include "Sphere.h"
-#include "FragmentShader.h"
-#include "VertexShader.h"
+#include "Light.h"
 
 #include "GLM/glm/glm.hpp"
 #include "GLM/glm/gtc/matrix_transform.hpp"
@@ -13,7 +12,9 @@
 Scene::Scene()
 {
 	createShaderPrograms();
+	createMaterials(); 
 	levelSetup();
+	lightSetup(); 
 }
 
 Scene::~Scene()
@@ -23,39 +24,56 @@ Scene::~Scene()
 
 void Scene::createShaderPrograms()
 {
-	// Create Default Shader Program
-	VertexShader defaultVertexShader("defaultVS.glsl");
-	FragmentShader defaultFragmentShader("defaultFS.glsl");
-	ShaderProgram* defaultShaderProgram = new ShaderProgram(&defaultVertexShader, &defaultFragmentShader);
-
-	GLuint modelLocation = glGetUniformLocation(defaultShaderProgram->getProgramId(), "model");
-	defaultShaderProgram->insertNewShaderParameterLocation("model", modelLocation); 
-
-	// Create Phong Shader Program
-	VertexShader phongVertexShader("Phong.vs");
-	FragmentShader phongFragmentShader("Phong.fg");
-	ShaderProgram* phongShaderProgram = new ShaderProgram(&phongVertexShader, &phongFragmentShader);
+	// Create Shader programs
+	ShaderProgram* defaultShaderProgram = new ShaderProgram("defaultVS.glsl", "defaultFS.glsl");
+	ShaderProgram* phongShaderProgram = new ShaderProgram("Phong.vs", "Phong.fg");
 
 	// Insert ShaderProgram in the list
 	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("default", defaultShaderProgram));
 	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("phong", phongShaderProgram)); 
 }
 
-void Scene::levelSetup()
+void Scene::createMaterials()
 {
-	Object* sphere1 = new Sphere(glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), 2, 40, 40, m_shaderPrograms["default"]); 
-	sphere1->setupObject();
+	Material* defaultMaterial =		 new Material(glm::vec3(0.2f, 0.1f, 0.05f),
+												  glm::vec3(0.8f, 0.4f, 0.31f),
+												  glm::vec3(0.5f, 0.5f, 0.5f),
+												  32.0f);
+
+	Material* blueMaterial =		 new Material(glm::vec3(0.0f, 0.1f, 0.06f),
+												  glm::vec3(0.0f, 0.5f, 0.5f),
+												  glm::vec3(0.5f, 0.5f, 0.5f),
+												  128.0f);
+
+	Material* orangeMaterial =		 new Material(glm::vec3(1.0f, 0.6f, 0.0f),
+												  glm::vec3(1.0f, 0.6f, 0.0f),
+												  glm::vec3(1.0f, 1.0f, 1.0f),
+												  32); 
+	
+	Material* defaultLightMaterial = new Material(glm::vec3(1.0f), 
+												  glm::vec3(1.0f),
+												  glm::vec3(1.0f),
+												  1.0f); 
+
+	m_materials.insert(std::pair<std::string, Material*>("default", defaultMaterial)); 
+	m_materials.insert(std::pair<std::string, Material*>("blue", blueMaterial)); 
+	m_materials.insert(std::pair<std::string, Material*>("orange", orangeMaterial)); 
+	m_materials.insert(std::pair<std::string, Material*>("defaultLight", defaultLightMaterial));
+
+}
+
+void Scene::levelSetup()
+{	
+
+	Object* sphere1 = new Sphere(glm::vec3(-7, 0, 0), m_materials["default"], 2, 40, 40, m_shaderPrograms["phong"]->getId());
 	m_objects.push_back(sphere1);
 
-	Object* sphere2 = new Sphere(glm::vec3(-7, 0, 0), glm::vec3(1, 0, 0), 2, 40, 40, m_shaderPrograms["default"]);
-	sphere2->setupObject(); 
+	Object* sphere2 = new Sphere(glm::vec3(0, 0, 0), m_materials["orange"], 2, 40, 40, m_shaderPrograms["default"]->getId()); 
 	m_objects.push_back(sphere2);
 
-	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), glm::vec3(1, 0, 0), 2, 40, 40, m_shaderPrograms["default"]);
-	sphere3->setupObject(); 
+	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["phong"]->getId());
 	m_objects.push_back(sphere3);
 
-	glBindVertexArray(0);
 }
 
 void Scene::levelTearDown()
@@ -66,9 +84,20 @@ void Scene::levelTearDown()
 	}
 	m_shaderPrograms.clear();
 
+	for (auto it = m_materials.begin(); it != m_materials.end(); ++it)
+	{
+		delete it->second; it->second = nullptr;
+	}
+	m_materials.clear();
+
 	for (int i = 0; i < m_objects.size(); ++i)
 	{
 		delete m_objects[i]; m_objects[i] = nullptr; 
+	}
+
+	for (int i = 0; i < m_lights.size(); ++i)
+	{
+		delete m_lights[i]; m_lights[i] = nullptr;
 	}
 }
 
@@ -77,36 +106,54 @@ void Scene::draw()
 {	
 	for each (Object* obj in m_objects)
 	{
-		// TODO : Move these calls to a shaderprogram (cuz it's shaderprog dependant)
-		GLuint modelLoc = glGetUniformLocation(obj->getShaderProgramId(), "model");
-		
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(obj->getModelMatrix()));
+		GLuint shaderProgramID = obj->getShaderProgramId(); 
+		glUseProgram(shaderProgramID);
 
+		// Compute/Get information to pass to uniforms
+		glm::mat4 modelMatrix = obj->getModelMatrix();
+		glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(m_viewMatrix * modelMatrix)));
+		const Material* objectMaterial = obj->getMaterial();
+		const Material* lightMaterial = m_lights[0]->getMaterial();
+		glm::vec3 lightPosition = m_lights[0]->getPosition();
+
+		// Get Uniforms location
+		GLuint modelLoc = glGetUniformLocation(shaderProgramID, "model");
+		GLuint viewLoc = glGetUniformLocation(shaderProgramID, "view");
+		GLuint projectionLoc = glGetUniformLocation(shaderProgramID, "projection");
+		GLuint normalMatrixLoc = glGetUniformLocation(shaderProgramID, "normalMatrix");
+		GLuint objectColorLoc = glGetUniformLocation(shaderProgramID, "objectColor");
+		GLuint lightColorLoc = glGetUniformLocation(shaderProgramID, "lightColor");
+		GLuint lightPositionLoc = glGetUniformLocation(shaderProgramID, "lightPosition");
+		GLuint objectAmbientLoc = glGetUniformLocation(shaderProgramID, "objectMaterial.ambientCoefs"); 
+		GLuint objectDiffuseLoc = glGetUniformLocation(shaderProgramID, "objectMaterial.diffuseCoefs");
+		GLuint objectSpecularLoc = glGetUniformLocation(shaderProgramID, "objectMaterial.specularCoefs");
+		GLuint objectShininessLoc = glGetUniformLocation(shaderProgramID, "objectMaterial.shininess");
+		GLuint lightAmbientLoc = glGetUniformLocation(shaderProgramID, "lightMaterial.ambientCoefs");
+		GLuint lightDiffuseLoc = glGetUniformLocation(shaderProgramID, "lightMaterial.diffuseCoefs");
+		GLuint lightSpecularLoc = glGetUniformLocation(shaderProgramID, "lightMaterial.specularCoefs");
+		GLuint lightShininessLoc = glGetUniformLocation(shaderProgramID, "lightMaterial.shininess");
+
+		// Assign Uniforms Values
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(m_viewMatrix));
+		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(m_projectionMatrix));
+		glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix)); 
+		glUniform3f(lightPositionLoc, lightPosition.x, lightPosition.y, lightPosition.z); 
+		glUniform3f(objectAmbientLoc, objectMaterial->m_ambientCoefs.x, objectMaterial->m_ambientCoefs.y, objectMaterial->m_ambientCoefs.z);
+		glUniform3f(objectDiffuseLoc, objectMaterial->m_diffuseCoefs.x, objectMaterial->m_diffuseCoefs.y, objectMaterial->m_diffuseCoefs.z);
+		glUniform3f(objectSpecularLoc, objectMaterial->m_specularCoefs.x, objectMaterial->m_specularCoefs.y, objectMaterial->m_specularCoefs.z);
+		glUniform1f(objectShininessLoc, 32.0f); 
+		glUniform3f(lightAmbientLoc, lightMaterial->m_ambientCoefs.x, lightMaterial->m_ambientCoefs.y, lightMaterial->m_ambientCoefs.z);
+		glUniform3f(lightDiffuseLoc, lightMaterial->m_diffuseCoefs.x, lightMaterial->m_diffuseCoefs.y, lightMaterial->m_diffuseCoefs.z);
+		glUniform3f(lightSpecularLoc, lightMaterial->m_specularCoefs.x, lightMaterial->m_specularCoefs.y, lightMaterial->m_specularCoefs.z);
+		glUniform1f(lightShininessLoc, 32.0f);
 
 		obj->draw();
 	}
 }
 
-GLuint Scene::getAShaderProgramId(std::string shaderName)
+void Scene::lightSetup()
 {
-	return m_shaderPrograms[shaderName]->getProgramId(); 
-}
-
-void Scene::setupLight()
-{
-	glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-
-	GLfloat diffuse[] = { 1, 1, 1, 1.0 };
-	GLfloat ambient[] = { 1, 1, 1, 1.0 };
-	GLfloat specular[] = { 1, 1, 1, 1.0 };
-
-	GLfloat pos[] = { 0, 0, 1, 1.0 };
-
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
-
-	glLightfv(GL_LIGHT0, GL_POSITION, pos);
+	Light* light1 = new Light(glm::vec3(0, 10, 0), m_materials["defaultLight"]); 
+	m_lights.push_back(light1); 
 }
