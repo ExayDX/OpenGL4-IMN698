@@ -25,6 +25,21 @@
     <Filter Include="Source Files\Actors">
       <UniqueIdentifier>{871a43bf-a3c6-448c-bc7e-f8164d18d8cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Rendering Techniques">
+      <UniqueIdentifier>{67ee9a47-d884-4869-88ec-3656c07f6794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rendering Techniques">
+      <UniqueIdentifier>{60d2dbea-ce37-40f0-9f57-774ba727c295}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scenes &amp; Levels">
+      <UniqueIdentifier>{d12ffe47-66f3-4831-80a7-9754b8da2f03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{3124fca4-b30a-48e7-98cb-ccde4ccce461}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scenes &amp; Levels">
+      <UniqueIdentifier>{052c94bc-40f2-4848-a826-2cb3f3dd95bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -55,14 +70,14 @@
       <Filter>Source Files\Actors</Filter>
     </ClCompile>
     <ClCompile Include="Types.glsl">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="DefaultTestLevel.cpp">
+      <Filter>Source Files\Scenes &amp; Levels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Viewer.h">
@@ -86,19 +101,34 @@
     <ClInclude Include="Material.h">
       <Filter>Header Files\Actors</Filter>
     </ClInclude>
+    <ClInclude Include="SeparableSSS.h">
+      <Filter>Header Files\Rendering Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files\Scenes &amp; Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultTestLevel.h">
+      <Filter>Header Files\Scenes &amp; Levels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="defaultFS.glsl">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="defaultVS.glsl">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="Phong.fg">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="Phong.vs">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="SSS.fg">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="SSS.vs">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

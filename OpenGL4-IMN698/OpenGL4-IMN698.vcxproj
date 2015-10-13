@@ -128,6 +128,7 @@
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DefaultTestLevel.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Object.cpp" />
@@ -140,10 +141,12 @@
   <ItemGroup>
     <ClInclude Include="Actor.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="DefaultTestLevel.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="SeparableSSS.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Viewer.h" />
@@ -153,6 +156,8 @@
     <None Include="defaultVS.glsl" />
     <None Include="Phong.fg" />
     <None Include="Phong.vs" />
+    <None Include="SSS.fg" />
+    <None Include="SSS.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

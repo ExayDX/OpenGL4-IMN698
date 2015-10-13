@@ -12,6 +12,7 @@
 #include "Viewer.h"
 #include "Camera.h"
 #include "Scene.h"
+#include "DefaultTestLevel.h"
 
 
 Viewer* Viewer::m_instance = nullptr; 
@@ -214,7 +215,6 @@ Viewer::Viewer()
 	: m_lastMousePosition(0, 0)
 	, m_firstClick(true)
 	, m_camera(nullptr)
-	, m_scene(nullptr)
 	, m_wireFrameEnabled(false)
 	, m_mouseIsClicked(false)
 {
@@ -241,7 +241,7 @@ Viewer::Viewer()
 	glfwSwapInterval(1);
 
 	m_camera = new Camera(&glm::vec3(0.0f, 1.0f, 0.0f), &glm::vec3(0.0f, 0.0f, 10.0f), &glm::vec3(0, 0, 0));
-	m_scene = new Scene();
+	m_scenes.push_back(new DefaultTestLevel()); 
 }
 
 Viewer::~Viewer()
@@ -254,10 +254,10 @@ Viewer::~Viewer()
 		m_camera = nullptr; 
 	}
 
-	if (m_scene)
+	for (int i = 0; i < m_scenes.size(); ++i)
 	{
-		delete m_scene;
-		m_scene = nullptr;
+		delete m_scenes[i];
+		m_scenes[i] = nullptr;
 	}
 	
 	glfwTerminate();
@@ -267,8 +267,23 @@ Viewer::~Viewer()
 
 void Viewer::loop()
 {
+	// Initialize first level
+	std::vector<Scene*>::iterator sceneIterator = m_scenes.begin(); 
+	Scene* currentScene = *sceneIterator;
+	currentScene->Initialize();
+
 	while (!glfwWindowShouldClose(m_window))
 	{
+		// Verify if level is still active
+		if (currentScene->getLevelIsDone())
+		{
+			currentScene->sceneTearDown();
+			++sceneIterator;
+			currentScene = *sceneIterator; 
+			currentScene->Initialize(); 
+		}
+		
+		// Get time information
 		GLfloat currentFrameTime = glfwGetTime();
 		m_deltaTime = currentFrameTime - m_lastFrameTime;
 		m_lastFrameTime = currentFrameTime;
@@ -285,10 +300,10 @@ void Viewer::loop()
 		glm::mat4 view = m_camera->GetViewMatrix();
 		glm::mat4 projection = glm::perspective(m_camera->getZoomLevel(), m_width / m_height, 0.1f, 100.0f); 
 
-		m_scene->setViewMatrix(view);
-		m_scene->setProjectionMatrix(projection); 
-
-		m_scene->draw(); 
+		// Level drawing
+		currentScene->setViewMatrix(view);
+		currentScene->setProjectionMatrix(projection);
+		currentScene->draw(); 
 
 		// Swap the buffers
 		glfwSwapBuffers(m_window);

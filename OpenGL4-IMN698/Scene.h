@@ -17,13 +17,15 @@ public :
 	Scene();
 	~Scene();
 
-	void draw(); 
+	virtual void Initialize(); 
+	virtual void sceneTearDown();
+	virtual void draw() = 0; 
 
-	GLuint getAShaderProgramId(std::string shaderName); 
-	void setViewMatrix(const glm::mat4& aViewMatrix){ m_viewMatrix = aViewMatrix; }
-	void setProjectionMatrix(const glm::mat4& aProjectionMatrix){ m_projectionMatrix = aProjectionMatrix; }
+	virtual void setViewMatrix(const glm::mat4& aViewMatrix){ m_viewMatrix = aViewMatrix; }
+	virtual void setProjectionMatrix(const glm::mat4& aProjectionMatrix){ m_projectionMatrix = aProjectionMatrix; }
+	virtual bool getLevelIsDone(){ return m_levelIsDone; }
 
-private : 
+protected : 
 
 	std::vector<Object*> m_objects;
 	std::vector<Light*> m_lights; 
@@ -33,14 +35,15 @@ private :
 	glm::mat4 m_viewMatrix; 
 	glm::mat4 m_projectionMatrix; 
 
+	bool m_levelIsDone;
+
 	//float m_ambientLightingStrength; 
 	//glm::vec3 ambient; 
 
-	void levelSetup();
-	void lightSetup(); 
-	void levelTearDown();
-	void createShaderPrograms();
-	void createMaterials(); 
+	virtual void levelSetup() = 0;
+	virtual void lightSetup() = 0; 
+	virtual void createShaderPrograms() = 0;
+	virtual void createMaterials() = 0; 
 
 };
 
