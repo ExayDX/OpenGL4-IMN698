@@ -18,14 +18,23 @@
 class Light : public Actor
 {
 public:
+	struct AttenuationProperties
+	{
+		float m_constant;
+		float m_linear;
+		float m_quadratic;
+	};
+
 	// TODO: Manage syncing between physical representation and own actor (should be the same actor but...)
 	//Light(Object* anObject);
-
-	Light(glm::vec3 aPosition, Material* material); 
+	Light(glm::vec3 aPosition, Material* material, AttenuationProperties attenuationProp); 
 	~Light(){};
 
+	const AttenuationProperties& getAttenuationProperties(){ return m_attenuationProperties; };
+
 private : 
-	//Object* m_physicalRepresentation; 
+	AttenuationProperties m_attenuationProperties;
+
 };
 
 

@@ -8,8 +8,9 @@
 //
 //}
 
-Light::Light(glm::vec3 aPosition, Material* aMaterial)
+Light::Light(glm::vec3 aPosition, Material* aMaterial, AttenuationProperties attenuationProp)
 	: Actor(aPosition, aMaterial)
+	, m_attenuationProperties(attenuationProp)
 	//, m_physicalRepresentation(nullptr)
 {
 
