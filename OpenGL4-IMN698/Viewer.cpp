@@ -241,7 +241,8 @@ Viewer::Viewer()
 	glfwSwapInterval(1);
 
 	m_camera = new Camera(&glm::vec3(0.0f, 1.0f, 0.0f), &glm::vec3(0.0f, 0.0f, 10.0f), &glm::vec3(0, 0, 0));
-	m_scene = new Scene();
+	m_scene = new Scene(m_camera);
+
 }
 
 Viewer::~Viewer()

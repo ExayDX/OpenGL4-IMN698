@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include "glm/glm/glm.hpp"
+#include "Camera.h"
 
 // Forward Declaration
 class Object; 
@@ -14,7 +15,7 @@ class Material;
 class Scene
 {
 public : 
-	Scene();
+	Scene(Camera* camera);
 	~Scene();
 
 	void draw(); 
@@ -33,6 +34,8 @@ private :
 	glm::mat4 m_viewMatrix; 
 	glm::mat4 m_projectionMatrix; 
 
+	Camera* m_camera;
+
 	//float m_ambientLightingStrength; 
 	//glm::vec3 ambient; 
 
@@ -41,6 +44,8 @@ private :
 	void levelTearDown();
 	void createShaderPrograms();
 	void createMaterials(); 
+
+
 
 };
 
