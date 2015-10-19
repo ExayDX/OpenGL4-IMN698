@@ -135,6 +135,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="SSSSTestLevel.cpp" />
     <ClCompile Include="Types.glsl" />
     <ClCompile Include="Viewer.cpp" />
   </ItemGroup>
@@ -149,13 +150,12 @@
     <ClInclude Include="SeparableSSS.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="SSSSTestLevel.h" />
     <ClInclude Include="Viewer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="defaultFS.glsl" />
-    <None Include="defaultVS.glsl" />
-    <None Include="Phong.fg" />
-    <None Include="Phong.vs" />
+    <None Include="BlinnPhong.fg" />
+    <None Include="BlinnPhong.vs" />
     <None Include="SSS.fg" />
     <None Include="SSS.vs" />
   </ItemGroup>

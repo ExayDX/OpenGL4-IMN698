@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include "glm/glm/glm.hpp"
+#include "GL/glew.h"
 
 // Forward Declaration
 class Object; 
@@ -37,9 +38,11 @@ protected :
 
 	bool m_levelIsDone;
 
-	//float m_ambientLightingStrength; 
-	//glm::vec3 ambient; 
+	// Buffers
+	GLuint* hdrFBO;
+	GLuint* colorBuffers; 
 
+	// Methods
 	virtual void levelSetup() = 0;
 	virtual void lightSetup() = 0; 
 	virtual void createShaderPrograms() = 0;

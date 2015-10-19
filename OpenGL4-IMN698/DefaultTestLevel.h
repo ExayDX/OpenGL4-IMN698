@@ -14,7 +14,6 @@ private :
 	virtual void lightSetup() override;
 	virtual void createShaderPrograms() override;
 	virtual void createMaterials() override;
-
 };
 
 #endif // _DEFAULT_TEST_LEVEL_H_

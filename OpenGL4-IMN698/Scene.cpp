@@ -11,6 +11,8 @@
 
 Scene::Scene()
 	: m_levelIsDone(false)
+	, hdrFBO(nullptr)
+	, colorBuffers(nullptr)
 {
 
 }

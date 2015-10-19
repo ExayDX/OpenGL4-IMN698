@@ -51,9 +51,6 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderProgram.cpp">
       <Filter>Source Files\Shaders</Filter>
     </ClCompile>
@@ -73,6 +70,12 @@
       <Filter>Resource Files\Shaders</Filter>
     </ClCompile>
     <ClCompile Include="DefaultTestLevel.cpp">
+      <Filter>Source Files\Scenes &amp; Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="SSSSTestLevel.cpp">
+      <Filter>Source Files\Scenes &amp; Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
       <Filter>Source Files\Scenes &amp; Levels</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,24 +113,21 @@
     <ClInclude Include="DefaultTestLevel.h">
       <Filter>Header Files\Scenes &amp; Levels</Filter>
     </ClInclude>
+    <ClInclude Include="SSSSTestLevel.h">
+      <Filter>Header Files\Scenes &amp; Levels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="defaultFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="defaultVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Phong.fg">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Phong.vs">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="SSS.fg">
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="SSS.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="BlinnPhong.fg">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="BlinnPhong.vs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>

@@ -1,4 +1,4 @@
-#include "DefaultTestLevel.h"
+#include "SSSSTestLevel.h"
 
 #include "Sphere.h"
 #include "Light.h"
@@ -7,14 +7,14 @@
 #include "GLM/glm/gtc/matrix_transform.hpp"
 #include "GLM/glm/gtc/type_ptr.hpp"
 
-DefaultTestLevel::DefaultTestLevel()
-	: Scene()
+SSSSTestLevel::SSSSTestLevel()
+: Scene()
 {
 
 }
 
 // LOOP
-void DefaultTestLevel::draw()
+void SSSSTestLevel::draw()
 {
 	for each (Object* obj in m_objects)
 	{
@@ -105,18 +105,18 @@ void DefaultTestLevel::draw()
 	}
 }
 
-void DefaultTestLevel::createShaderPrograms()
+void SSSSTestLevel::createShaderPrograms()
 {
 	// Create Shader programs
-	ShaderProgram* BlinnPhongShaderProgram = new ShaderProgram("BlinnPhong.vs", "BlinnPhong.fg");
+	ShaderProgram* phongShaderProgram = new ShaderProgram("BlinnPhong.vs", "BlinnPhong.fg");
 	ShaderProgram* SSSProgram = new ShaderProgram("SSS.vs", "SSS.fg");
 
 	// Insert ShaderProgram in the list
-	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("BlinnPhong", BlinnPhongShaderProgram));
+	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("BlinnPhong", phongShaderProgram));
 	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("SSS", SSSProgram));
 }
 
-void DefaultTestLevel::createMaterials()
+void SSSSTestLevel::createMaterials()
 {
 	Material* defaultMaterial = new Material(glm::vec3(0.2f, 0.1f, 0.05f),
 		glm::vec3(0.8f, 0.4f, 0.31f),
@@ -128,9 +128,9 @@ void DefaultTestLevel::createMaterials()
 		glm::vec3(0.5f, 0.5f, 0.5f),
 		128.0f);
 
-	Material* orangeMaterial = new Material(glm::vec3(0.15f, 0.1f, 0.0f),
-		glm::vec3(0.8f, 0.6f, 0.0f),
-		glm::vec3(0.6f, 0.6f, 0.5f),
+	Material* orangeMaterial = new Material(glm::vec3(1.0f, 0.6f, 0.0f),
+		glm::vec3(1.0f, 0.6f, 0.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
 		32);
 
 	Material* defaultLightMaterial = new Material(glm::vec3(1.0f),
@@ -150,7 +150,7 @@ void DefaultTestLevel::createMaterials()
 	m_materials.insert(std::pair<std::string, Material*>("black", blackMaterial));
 }
 
-void DefaultTestLevel::levelSetup()
+void SSSSTestLevel::levelSetup()
 {
 
 	Object* sphere1 = new Sphere(glm::vec3(-7, 0, 0), m_materials["default"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
@@ -159,12 +159,12 @@ void DefaultTestLevel::levelSetup()
 	Object* sphere2 = new Sphere(glm::vec3(0, 0, 0), m_materials["orange"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
 	m_objects.push_back(sphere2);
 
-	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
+	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["SSS"]->getId());
 	m_objects.push_back(sphere3);
 
 }
 
-void DefaultTestLevel::lightSetup()
+void SSSSTestLevel::lightSetup()
 {
 	Light::AttenuationProperties attenuationProp;
 	attenuationProp.m_constant = 1.0f;
