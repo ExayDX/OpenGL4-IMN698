@@ -13,6 +13,10 @@
 #include "Camera.h"
 #include "Scene.h"
 #include "DefaultTestLevel.h"
+#include "SSSSTestLevel.h"
+#include "RenderBuffer.h"
+#include "ShaderProgram.h"
+#include "Quad.h"
 
 
 Viewer* Viewer::m_instance = nullptr; 
@@ -90,6 +94,7 @@ void Viewer::window_size_callback_impl(GLFWwindow* window, int width, int height
 	glfwSetWindowSize(window, width, height); 
 	m_width = width; 
 	m_height = height; 
+	RenderBuffer::setDimensions(m_width, m_height); 
 }
 
 void Viewer::mouse_callback_impl(GLFWwindow* window, double xpos, double ypos)
@@ -197,6 +202,7 @@ void Viewer::createWindow()
 	}
 
 	glfwMakeContextCurrent(m_window);
+	RenderBuffer::setDimensions(m_width, m_height);
 }
 
 void Viewer::setupViewport()
@@ -241,7 +247,7 @@ Viewer::Viewer()
 	glfwSwapInterval(1);
 
 	m_camera = new Camera(&glm::vec3(0.0f, 1.0f, 0.0f), &glm::vec3(0.0f, 0.0f, 10.0f), &glm::vec3(0, 0, 0));
-	m_scenes.push_back(new DefaultTestLevel()); 
+	m_scenes.push_back(new SSSSTestLevel()); 
 }
 
 Viewer::~Viewer()
@@ -264,11 +270,12 @@ Viewer::~Viewer()
 	exit(EXIT_SUCCESS);
 }
 
-
 void Viewer::loop()
 {
 	// Initialize first level
-	std::vector<Scene*>::iterator sceneIterator = m_scenes.begin(); 
+	auto sceneIterator = m_scenes.begin(); 
+	assert(sceneIterator != m_scenes.end(), "No scene to render. Please initialize a scene.");
+
 	Scene* currentScene = *sceneIterator;
 	currentScene->Initialize();
 
@@ -293,10 +300,6 @@ void Viewer::loop()
 		moveCamera();
 
 		// Clear the colorbuffer
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Coordinate system matrices 
 		glm::mat4 view = m_camera->GetViewMatrix();
 		glm::mat4 projection = glm::perspective(m_camera->getZoomLevel(), m_width / m_height, 0.1f, 100.0f); 
 
@@ -309,3 +312,5 @@ void Viewer::loop()
 		glfwSwapBuffers(m_window);
 	}
 }
+
+

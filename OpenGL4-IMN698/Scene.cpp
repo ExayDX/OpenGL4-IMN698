@@ -11,8 +11,7 @@
 
 Scene::Scene()
 	: m_levelIsDone(false)
-	, hdrFBO(nullptr)
-	, colorBuffers(nullptr)
+	, m_renderQuad(nullptr)
 {
 
 }
@@ -26,6 +25,7 @@ void Scene::Initialize()
 {
 	createShaderPrograms();
 	createMaterials();
+	buffersSetup(); 
 	levelSetup();
 	lightSetup();
 }

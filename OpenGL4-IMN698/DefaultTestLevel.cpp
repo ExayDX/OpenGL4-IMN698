@@ -6,6 +6,9 @@
 #include "GLM/glm/glm.hpp"
 #include "GLM/glm/gtc/matrix_transform.hpp"
 #include "GLM/glm/gtc/type_ptr.hpp"
+#include "Quad.h"
+
+#include <string>
 
 DefaultTestLevel::DefaultTestLevel()
 	: Scene()
@@ -16,6 +19,8 @@ DefaultTestLevel::DefaultTestLevel()
 // LOOP
 void DefaultTestLevel::draw()
 {
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for each (Object* obj in m_objects)
 	{
 		GLuint shaderProgramID = obj->getShaderProgramId();
@@ -25,55 +30,28 @@ void DefaultTestLevel::draw()
 		glm::mat4 modelMatrix = obj->getModelMatrix();
 		glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(m_viewMatrix * modelMatrix)));
 		const Material* objectMaterial = obj->getMaterial();
-		const Material* lightMaterial0 = m_lights[0]->getMaterial();
-		const Material* lightMaterial1 = m_lights[1]->getMaterial();
-		glm::vec3 lightPosition0 = m_lights[0]->getPosition();
-		glm::vec3 lightPosition1 = m_lights[1]->getPosition();
-		Light::AttenuationProperties lightProperties0 = m_lights[0]->getAttenuationProperties();
-		Light::AttenuationProperties lightProperties1 = m_lights[1]->getAttenuationProperties();
-
+		
 		// Get Uniforms location
 		// Display matrixes
-		GLuint modelLoc = glGetUniformLocation(shaderProgramID, "model");
-		GLuint viewLoc = glGetUniformLocation(shaderProgramID, "view");
-		GLuint projectionLoc = glGetUniformLocation(shaderProgramID, "projection");
+		GLuint modelLoc 	   = glGetUniformLocation(shaderProgramID, "model");
+		GLuint viewLoc  	   = glGetUniformLocation(shaderProgramID, "view");
+		GLuint projectionLoc   = glGetUniformLocation(shaderProgramID, "projection");
 		GLuint normalMatrixLoc = glGetUniformLocation(shaderProgramID, "normalMatrix");
-		GLuint nbLightLoc = glGetUniformLocation(shaderProgramID, "nbLights");
+		GLuint nbLightLoc  	   = glGetUniformLocation(shaderProgramID, "nbLights");
 
 		// Object information
-		GLuint objectColorLoc = glGetUniformLocation(shaderProgramID, "objectColor");
-		GLuint objectAmbientLoc = glGetUniformLocation(shaderProgramID, "objectMaterial.ambientCoefs");
-		GLuint objectDiffuseLoc = glGetUniformLocation(shaderProgramID, "objectMaterial.diffuseCoefs");
-		GLuint objectSpecularLoc = glGetUniformLocation(shaderProgramID, "objectMaterial.specularCoefs");
+		GLuint objectColorLoc     = glGetUniformLocation(shaderProgramID, "objectColor");
+		GLuint objectAmbientLoc   = glGetUniformLocation(shaderProgramID, "objectMaterial.ambientCoefs");
+		GLuint objectDiffuseLoc   = glGetUniformLocation(shaderProgramID, "objectMaterial.diffuseCoefs");
+		GLuint objectSpecularLoc  = glGetUniformLocation(shaderProgramID, "objectMaterial.specularCoefs");
 		GLuint objectShininessLoc = glGetUniformLocation(shaderProgramID, "objectMaterial.shininess");
 
-		// Light0 information
-		GLuint light0PositionLoc = glGetUniformLocation(shaderProgramID, "lightsPositions[0]");
-		GLuint light0AmbientLoc = glGetUniformLocation(shaderProgramID, "lightsProperties[0].material.ambientCoefs");
-		GLuint light0DiffuseLoc = glGetUniformLocation(shaderProgramID, "lightsProperties[0].material.diffuseCoefs");
-		GLuint light0SpecularLoc = glGetUniformLocation(shaderProgramID, "lightsProperties[0].material.specularCoefs");
-		GLuint light0ShininessLoc = glGetUniformLocation(shaderProgramID, "lightsProperties[0].material.shininess");
-		GLuint light0AttConstant = glGetUniformLocation(shaderProgramID, "lightsProperties[0].constant");
-		GLuint light0AttLinear = glGetUniformLocation(shaderProgramID, "lightsProperties[0].linear");
-		GLuint light0AttQuadratic = glGetUniformLocation(shaderProgramID, "lightsProperties[0].quadratic");
-
-		// Light1 information
-		GLuint light1PositionLoc = glGetUniformLocation(shaderProgramID, "lightsPositions[1]");
-		GLuint light1AmbientLoc = glGetUniformLocation(shaderProgramID, "lightsProperties[1].material.ambientCoefs");
-		GLuint light1DiffuseLoc = glGetUniformLocation(shaderProgramID, "lightsProperties[1].material.diffuseCoefs");
-		GLuint light1SpecularLoc = glGetUniformLocation(shaderProgramID, "lightsProperties[1].material.specularCoefs");
-		GLuint light1ShininessLoc = glGetUniformLocation(shaderProgramID, "lightsProperties[1].material.shininess");
-		GLuint light1AttConstant = glGetUniformLocation(shaderProgramID, "lightsProperties[1].constant");
-		GLuint light1AttLinear = glGetUniformLocation(shaderProgramID, "lightsProperties[1].linear");
-		GLuint light1AttQuadratic = glGetUniformLocation(shaderProgramID, "lightsProperties[1].quadratic");
-
-		// Assign Uniforms Values
 		// Display Matrixes 
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(m_viewMatrix));
-		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(m_projectionMatrix));
+		glUniformMatrix4fv(modelLoc,        1, GL_FALSE, glm::value_ptr(modelMatrix));
+		glUniformMatrix4fv(viewLoc,         1, GL_FALSE, glm::value_ptr(m_viewMatrix));
+		glUniformMatrix4fv(projectionLoc,   1, GL_FALSE, glm::value_ptr(m_projectionMatrix));
 		glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
-		glUniform1f(nbLightLoc, m_lights.size());
+		glUniform1f(	   nbLightLoc,      m_lights.size());
 
 		// Object information 
 		glUniform3f(objectAmbientLoc, objectMaterial->m_ambientCoefs.x, objectMaterial->m_ambientCoefs.y, objectMaterial->m_ambientCoefs.z);
@@ -81,25 +59,31 @@ void DefaultTestLevel::draw()
 		glUniform3f(objectSpecularLoc, objectMaterial->m_specularCoefs.x, objectMaterial->m_specularCoefs.y, objectMaterial->m_specularCoefs.z);
 		glUniform1f(objectShininessLoc, objectMaterial->m_shininess);
 
-		// Light0 information
-		glUniform3f(light0PositionLoc, lightPosition0.x, lightPosition0.y, lightPosition0.z);
-		glUniform3f(light0AmbientLoc, lightMaterial0->m_ambientCoefs.x, lightMaterial0->m_ambientCoefs.y, lightMaterial0->m_ambientCoefs.z);
-		glUniform3f(light0DiffuseLoc, lightMaterial0->m_diffuseCoefs.x, lightMaterial0->m_diffuseCoefs.y, lightMaterial0->m_diffuseCoefs.z);
-		glUniform3f(light0SpecularLoc, lightMaterial0->m_specularCoefs.x, lightMaterial0->m_specularCoefs.y, lightMaterial0->m_specularCoefs.z);
-		glUniform1f(light0ShininessLoc, lightMaterial0->m_shininess);
-		glUniform1f(light0AttConstant, lightProperties0.m_constant);
-		glUniform1f(light0AttLinear, lightProperties0.m_linear);
-		glUniform1f(light0AttQuadratic, lightProperties0.m_quadratic);
+		// Lights information
+		for (int i = 0; i < m_lights.size(); ++i)
+		{
+			glm::vec3 lightPosition = m_lights[i]->getPosition();
+			const Material* lightMaterial = m_lights[i]->getMaterial();
+			Light::AttenuationProperties lightProperties = m_lights[i]->getAttenuationProperties();
 
-		// Light1 information
-		glUniform3f(light1PositionLoc, lightPosition1.x, lightPosition1.y, lightPosition1.z);
-		glUniform3f(light1AmbientLoc, lightMaterial1->m_ambientCoefs.x, lightMaterial1->m_ambientCoefs.y, lightMaterial1->m_ambientCoefs.z);
-		glUniform3f(light1DiffuseLoc, lightMaterial1->m_diffuseCoefs.x, lightMaterial1->m_diffuseCoefs.y, lightMaterial1->m_diffuseCoefs.z);
-		glUniform3f(light1SpecularLoc, lightMaterial1->m_specularCoefs.x, lightMaterial1->m_specularCoefs.y, lightMaterial1->m_specularCoefs.z);
-		glUniform1f(light1ShininessLoc, lightMaterial1->m_shininess);
-		glUniform1f(light1AttConstant, lightProperties1.m_constant);
-		glUniform1f(light1AttLinear, lightProperties1.m_linear);
-		glUniform1f(light1AttQuadratic, lightProperties1.m_quadratic);
+			GLuint lightPositionLoc  = glGetUniformLocation(shaderProgramID, ("lightsPositions[" + std::to_string(i) + "]").c_str());
+			GLuint lightAmbientLoc   = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].material.ambientCoefs").c_str());
+			GLuint lightDiffuseLoc   = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].material.diffuseCoefs").c_str());
+			GLuint lightSpecularLoc  = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].material.specularCoefs").c_str());
+			GLuint lightShininessLoc = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].material.shininess").c_str());
+			GLuint lightAttConstant  = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].constant").c_str());
+			GLuint lightAttLinear    = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].linear").c_str());
+			GLuint lightAttQuadratic = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].quadratic").c_str());
+
+			glUniform3f(lightPositionLoc,  lightPosition.x,					 lightPosition.y,				   lightPosition.z);
+			glUniform3f(lightAmbientLoc,   lightMaterial->m_ambientCoefs.x,  lightMaterial->m_ambientCoefs.y,  lightMaterial->m_ambientCoefs.z);
+			glUniform3f(lightDiffuseLoc,   lightMaterial->m_diffuseCoefs.x,  lightMaterial->m_diffuseCoefs.y,  lightMaterial->m_diffuseCoefs.z);
+			glUniform3f(lightSpecularLoc,  lightMaterial->m_specularCoefs.x, lightMaterial->m_specularCoefs.y, lightMaterial->m_specularCoefs.z);
+			glUniform1f(lightShininessLoc, lightMaterial->m_shininess);
+			glUniform1f(lightAttConstant,  lightProperties.m_constant);
+			glUniform1f(lightAttLinear,    lightProperties.m_linear);
+			glUniform1f(lightAttQuadratic, lightProperties.m_quadratic);
+		}
 
 		obj->draw();
 	}
@@ -176,4 +160,9 @@ void DefaultTestLevel::lightSetup()
 
 	Light* light2 = new Light(glm::vec3(-30, 40, 0), m_materials["defaultLight"], attenuationProp);
 	m_lights.push_back(light2);
+}
+
+void DefaultTestLevel::buffersSetup()
+{
+
 }

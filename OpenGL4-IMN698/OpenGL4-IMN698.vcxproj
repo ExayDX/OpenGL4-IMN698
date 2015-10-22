@@ -132,6 +132,8 @@
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Quad.cpp" />
+    <ClCompile Include="RenderBuffer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -146,6 +148,8 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="Quad.h" />
+    <ClInclude Include="RenderBuffer.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SeparableSSS.h" />
     <ClInclude Include="ShaderProgram.h" />
@@ -156,6 +160,8 @@
   <ItemGroup>
     <None Include="BlinnPhong.fg" />
     <None Include="BlinnPhong.vs" />
+    <None Include="hdr.fg" />
+    <None Include="hdr.vs" />
     <None Include="SSS.fg" />
     <None Include="SSS.vs" />
   </ItemGroup>
