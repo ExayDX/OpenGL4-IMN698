@@ -4,12 +4,16 @@
 #include "Scene.h"
 #include "Sphere.h"
 #include "Light.h"
+#include "ModelLoader.h"
+
+#include "SOIL/SOIL.h"
 
 #include "GLM/glm/glm.hpp"
 #include "GLM/glm/gtc/matrix_transform.hpp"
 #include "GLM/glm/gtc/type_ptr.hpp"
 
-Scene::Scene()
+Scene::Scene(Camera* camera):
+	m_camera(camera)
 {
 	createShaderPrograms();
 	createMaterials(); 
@@ -27,10 +31,12 @@ void Scene::createShaderPrograms()
 	// Create Shader programs
 	ShaderProgram* defaultShaderProgram = new ShaderProgram("defaultVS.glsl", "defaultFS.glsl");
 	ShaderProgram* phongShaderProgram = new ShaderProgram("Phong.vs", "Phong.fg");
+	ShaderProgram* skinShaderProgram = new ShaderProgram("Skin.vs", "Skin.fg");
 
 	// Insert ShaderProgram in the list
 	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("default", defaultShaderProgram));
 	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("phong", phongShaderProgram)); 
+	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("skin", skinShaderProgram));
 }
 
 void Scene::createMaterials()
@@ -70,14 +76,17 @@ void Scene::createMaterials()
 void Scene::levelSetup()
 {	
 
-	Object* sphere1 = new Sphere(glm::vec3(-7, 0, 0), m_materials["default"], 2, 40, 40, m_shaderPrograms["phong"]->getId());
+	Object* sphere1 = new Sphere(glm::vec3(-7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["phong"]->getId());
 	m_objects.push_back(sphere1);
 
 	Object* sphere2 = new Sphere(glm::vec3(0, 0, 0), m_materials["orange"], 2, 40, 40, m_shaderPrograms["default"]->getId()); 
-	m_objects.push_back(sphere2);
+	//m_objects.push_back(sphere2);
 
 	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["phong"]->getId());
-	m_objects.push_back(sphere3);
+	//m_objects.push_back(sphere3);
+
+	Object* model1 = ModelLoader::loadModel("./HeadModel/head_tri.obj", m_materials["default"], m_shaderPrograms["skin"]->getId());
+	m_objects.push_back(model1);
 
 }
 
@@ -132,6 +141,7 @@ void Scene::draw()
 		GLuint projectionLoc =		glGetUniformLocation(shaderProgramID, "projection");
 		GLuint normalMatrixLoc =	glGetUniformLocation(shaderProgramID, "normalMatrix");
 		GLuint nbLightLoc = glGetUniformLocation(shaderProgramID, "nbLights");
+		GLuint cameraPosition = glGetUniformLocation(shaderProgramID, "cameraPos");
 		
 		// Object information
 		GLuint objectColorLoc     =	glGetUniformLocation(shaderProgramID, "objectColor");
@@ -167,6 +177,7 @@ void Scene::draw()
 		glUniformMatrix4fv(projectionLoc,   1, GL_FALSE, glm::value_ptr(m_projectionMatrix));
 		glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 		glUniform1f(nbLightLoc, m_lights.size()); 
+		glUniform3f(cameraPosition, m_camera->getPosition().x, m_camera->getPosition().y, m_camera->getPosition().z);
 
 		// Object information 
 		glUniform3f(objectAmbientLoc,   objectMaterial->m_ambientCoefs.x,  objectMaterial->m_ambientCoefs.y,  objectMaterial->m_ambientCoefs.z);
@@ -195,6 +206,7 @@ void Scene::draw()
 		glUniform1f(light1AttQuadratic, lightProperties1.m_quadratic);
 
 		obj->draw();
+
 	}
 }
 
@@ -205,9 +217,9 @@ void Scene::lightSetup()
 	attenuationProp.m_linear = 0.02f;
 	attenuationProp.m_quadratic = 0.0005f;
 
-	Light* light1 = new Light(glm::vec3(0, 10, 0), m_materials["defaultLight"], attenuationProp); 
+	Light* light1 = new Light(glm::vec3(-10, 40, 50), m_materials["defaultLight"], attenuationProp); 
 	m_lights.push_back(light1); 
 
-	Light* light2 = new Light(glm::vec3(-30, 40, 0), m_materials["defaultLight"], attenuationProp);
+	Light* light2 = new Light(glm::vec3(0, 40, -100), m_materials["defaultLight"], attenuationProp);
 	m_lights.push_back(light2);
 }

@@ -28,6 +28,8 @@ public:
 	{
 		return m_zoom; 
 	}
+
+	glm::vec3 getPosition() { return m_position; }
 protected:
 
 	glm::vec3 m_position; 

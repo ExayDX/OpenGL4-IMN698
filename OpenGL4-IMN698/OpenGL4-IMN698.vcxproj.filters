@@ -25,6 +25,12 @@
     <Filter Include="Source Files\Actors">
       <UniqueIdentifier>{871a43bf-a3c6-448c-bc7e-f8164d18d8cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ModelLoader">
+      <UniqueIdentifier>{cab476b8-ad84-4b30-8948-0481f56bc0e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ModelLoader">
+      <UniqueIdentifier>{71cf0e02-1eb0-4299-a284-8e5a6c4dea3c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -57,6 +63,15 @@
     <ClCompile Include="Types.glsl">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="ModelLoader.cpp">
+      <Filter>Source Files\ModelLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjModelLoader.cpp">
+      <Filter>Source Files\ModelLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjMesh.cpp">
+      <Filter>Source Files\Actors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -84,6 +99,15 @@
       <Filter>Header Files\Actors</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
+      <Filter>Header Files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>Header Files\ModelLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjModelLoader.h">
+      <Filter>Header Files\ModelLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjMesh.h">
       <Filter>Header Files\Actors</Filter>
     </ClInclude>
   </ItemGroup>
