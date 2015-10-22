@@ -11,7 +11,7 @@
 class Sphere :public Object
 {
 public:
-	Sphere(glm::vec3 position, Material* material, double radius, GLuint nLats, GLuint nLongs, GLuint shaderProgram);
+	Sphere(glm::vec3 position, Material* material, double radius, GLuint nLats, GLuint nLongs, ShaderProgram* shaderProgram);
 	~Sphere(){};
 
 	void defineVBO();

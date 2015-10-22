@@ -4,6 +4,9 @@
 #include <vector>
 #include <map>
 #include "glm/glm/glm.hpp"
+#include <boost/filesystem.hpp>
+
+#include "Shader.h"
 
 // Forward Declaration
 class Object; 
@@ -23,6 +26,15 @@ public :
 	void setViewMatrix(const glm::mat4& aViewMatrix){ m_viewMatrix = aViewMatrix; }
 	void setProjectionMatrix(const glm::mat4& aProjectionMatrix){ m_projectionMatrix = aProjectionMatrix; }
 
+	void changeShaderProgramName(int car);
+
+private:
+	static Shader* createShader(const boost::filesystem::path& path);
+	void levelSetup();
+	void lightSetup();
+	void levelTearDown();
+	void createShaderPrograms();
+	void createMaterials();
 private : 
 
 	std::vector<Object*> m_objects;
@@ -33,14 +45,12 @@ private :
 	glm::mat4 m_viewMatrix; 
 	glm::mat4 m_projectionMatrix; 
 
+	std::string m_shaderProgramName;
+
 	//float m_ambientLightingStrength; 
 	//glm::vec3 ambient; 
 
-	void levelSetup();
-	void lightSetup(); 
-	void levelTearDown();
-	void createShaderPrograms();
-	void createMaterials(); 
+
 
 };
 
