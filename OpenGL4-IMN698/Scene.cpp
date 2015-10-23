@@ -16,6 +16,9 @@ Scene::Scene()
 
 }
 
+//Scene::Scene(Camera* camera):
+//	m_camera(camera)
+
 Scene::~Scene()
 {
 	sceneTearDown(); 
@@ -29,7 +32,6 @@ void Scene::Initialize()
 	levelSetup();
 	lightSetup();
 }
-
 
 void Scene::sceneTearDown()
 {

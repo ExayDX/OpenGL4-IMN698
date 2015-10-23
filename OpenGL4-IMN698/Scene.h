@@ -6,6 +6,7 @@
 #include "glm/glm/glm.hpp"
 #include "GL/glew.h"
 #include "RenderBuffer.h"
+//#include "Camera.h"
 
 // Forward Declaration
 class Object; 
@@ -39,6 +40,7 @@ protected :
 	glm::mat4 m_projectionMatrix; 
 
 	bool m_levelIsDone;
+	//Camera* m_camera;
 
 	Quad* m_renderQuad; 
 

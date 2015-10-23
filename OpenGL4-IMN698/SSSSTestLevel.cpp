@@ -6,6 +6,7 @@
 #include "Quad.h"
 #include <iostream>
 #include <string>
+#include "ModelLoader.h"
 
 #include "GLM/glm/glm.hpp"
 #include "GLM/glm/gtc/matrix_transform.hpp"
@@ -111,11 +112,13 @@ void SSSSTestLevel::createShaderPrograms()
 	ShaderProgram* BlinnPhongProgram = new ShaderProgram("BlinnPhong.vs", "BlinnPhong.fg");
 	ShaderProgram* HDRProgram = new ShaderProgram("hdr.vs", "hdr.fg"); 
 	ShaderProgram* SSSProgram = new ShaderProgram("SSS.vs", "SSS.fg");
+	ShaderProgram* SkinProgram = new ShaderProgram("Skin.vs", "Skin.fg"); 
 
 	// Insert ShaderProgram in the list
 	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("BlinnPhong", BlinnPhongProgram));
 	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("HDR", HDRProgram));
 	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("SSS", SSSProgram));
+	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("Skin", SkinProgram)); 
 }
 
 void SSSSTestLevel::createMaterials()
@@ -157,6 +160,10 @@ void SSSSTestLevel::levelSetup()
 	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["SSS"]->getId());
 	m_objects.push_back(sphere3);
 
+	Object* model1 = ModelLoader::loadModel("./HeadModel/head_tri.obj", m_materials["default"], m_shaderPrograms["Skin"]->getId());
+	assert(model1, "model Not correctly loaded"); 
+	m_objects.push_back(model1);
+	
 	m_renderQuad = new Quad(glm::vec3(0.0f), nullptr, m_shaderPrograms["HDR"]->getId()); 
 
 }
