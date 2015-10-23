@@ -168,8 +168,8 @@
     <None Include="BlinnPhong.vs" />
     <None Include="hdr.fg" />
     <None Include="hdr.vs" />
-    <None Include="Skin.fg" />
-    <None Include="Skin.vs" />
+    <None Include="BumpColorMaps.fg" />
+    <None Include="BumpColorMaps.vs" />
     <None Include="SSS.fg" />
     <None Include="SSS.vs" />
   </ItemGroup>

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include "ModelLoader.h"
+#include "Camera.h"
 
 #include "GLM/glm/glm.hpp"
 #include "GLM/glm/gtc/matrix_transform.hpp"
@@ -22,9 +23,6 @@ SSSSTestLevel::SSSSTestLevel()
 // LOOP
 void SSSSTestLevel::draw()
 {
-	//ShaderProgram hdrShader("hdr.vs", "hdr.fg"); 
-	//Quad aQuad(glm::vec3(0.0f), nullptr, hdrShader.getId()); 
-
 	glBindFramebuffer(GL_FRAMEBUFFER, m_hdrFBO);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -112,13 +110,13 @@ void SSSSTestLevel::createShaderPrograms()
 	ShaderProgram* BlinnPhongProgram = new ShaderProgram("BlinnPhong.vs", "BlinnPhong.fg");
 	ShaderProgram* HDRProgram = new ShaderProgram("hdr.vs", "hdr.fg"); 
 	ShaderProgram* SSSProgram = new ShaderProgram("SSS.vs", "SSS.fg");
-	ShaderProgram* SkinProgram = new ShaderProgram("Skin.vs", "Skin.fg"); 
+	ShaderProgram* BumpColorMapsProgram = new ShaderProgram("BumpColorMaps.vs", "BumpColorMaps.fg");
 
 	// Insert ShaderProgram in the list
 	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("BlinnPhong", BlinnPhongProgram));
 	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("HDR", HDRProgram));
 	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("SSS", SSSProgram));
-	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("Skin", SkinProgram)); 
+	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("BumpColorMaps", BumpColorMapsProgram));
 }
 
 void SSSSTestLevel::createMaterials()
@@ -153,16 +151,16 @@ void SSSSTestLevel::levelSetup()
 {
 	Object* sphere1 = new Sphere(glm::vec3(-7, 0, 0), m_materials["default"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
 	m_objects.push_back(sphere1);
-
+	
 	Object* sphere2 = new Sphere(glm::vec3(0, 0, 0), m_materials["orange"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
 	m_objects.push_back(sphere2);
-
+	
 	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["SSS"]->getId());
 	m_objects.push_back(sphere3);
 
-	Object* model1 = ModelLoader::loadModel("./HeadModel/head_tri.obj", m_materials["default"], m_shaderPrograms["Skin"]->getId());
-	assert(model1, "model Not correctly loaded"); 
-	m_objects.push_back(model1);
+	//Object* model1 = ModelLoader::loadModel("./HeadModel/head_tri.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId());
+	//assert(model1, "model Not correctly loaded"); 
+	//m_objects.push_back(model1);
 	
 	m_renderQuad = new Quad(glm::vec3(0.0f), nullptr, m_shaderPrograms["HDR"]->getId()); 
 
@@ -194,16 +192,16 @@ void SSSSTestLevel::buffersSetup()
 	colorBuffer0Param[GL_TEXTURE_MAG_FILTER] = GL_LINEAR;
 	//colorBuffer0Param[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_EDGE;
 	//colorBuffer0Param[GL_TEXTURE_WRAP_T] = GL_CLAMP_TO_EDGE;
-	RenderBuffer* colorBuffer0 = new RenderBuffer(RenderBuffer::BufferType::eColor, &colorBuffer0Param);
-	RenderBuffer* depthBuffer0 = new RenderBuffer(RenderBuffer::BufferType::eDepth);
+	RenderBuffer colorBuffer0 = RenderBuffer(RenderBuffer::BufferType::eColor, &colorBuffer0Param);
+	RenderBuffer depthBuffer0 = RenderBuffer(RenderBuffer::BufferType::eDepth);
 	
 	// Create Vectors of renderbuffers for each buffer type
 	std::vector<GLuint>* colorBuffers = new std::vector<GLuint>;
 	std::vector<GLuint>* depthBuffers = new std::vector<GLuint>;
 
 	// Fill vectors
-	colorBuffers->push_back(colorBuffer0->getData()); 
-	depthBuffers->push_back(depthBuffer0->getData()); 
+	colorBuffers->push_back(colorBuffer0.getData()); 
+	depthBuffers->push_back(depthBuffer0.getData()); 
 	
 	// Assign vectors to the buffers map
 	m_renderBuffers[RenderBuffer::BufferType::eColor] = colorBuffers; 

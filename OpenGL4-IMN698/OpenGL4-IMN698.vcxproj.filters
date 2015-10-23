@@ -112,10 +112,10 @@
     <None Include="SSS.vs">
       <Filter>Shaders\PostProcesses</Filter>
     </None>
-    <None Include="Skin.fg">
+    <None Include="BumpColorMaps.fg">
       <Filter>Shaders\RenderingPass</Filter>
     </None>
-    <None Include="Skin.vs">
+    <None Include="BumpColorMaps.vs">
       <Filter>Shaders\RenderingPass</Filter>
     </None>
   </ItemGroup>

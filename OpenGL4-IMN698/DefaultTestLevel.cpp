@@ -94,12 +94,12 @@ void DefaultTestLevel::createShaderPrograms()
 	// Create Shader programs
 	ShaderProgram* BlinnPhongShaderProgram = new ShaderProgram("BlinnPhong.vs", "BlinnPhong.fg");
 	ShaderProgram* SSSProgram = new ShaderProgram("SSS.vs", "SSS.fg");
-	ShaderProgram* SkinProgram = new ShaderProgram("Skin.vs", "Skin.fg");
+	ShaderProgram* BumpColorMapsProgram = new ShaderProgram("BumpColorMaps.vs", "BumpColorMaps.fg");
 
 	// Insert ShaderProgram in the list
 	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("BlinnPhong", BlinnPhongShaderProgram));
 	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("SSS", SSSProgram));
-	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("Skin", SkinProgram));
+	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("BumpColorMaps", BumpColorMapsProgram));
 }
 
 void DefaultTestLevel::createMaterials()
@@ -148,11 +148,9 @@ void DefaultTestLevel::levelSetup()
 	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
 	m_objects.push_back(sphere3);
 
-	Object* model1 = ModelLoader::loadModel("./HeadModel/head_tri.obj", m_materials["default"], m_shaderPrograms["Skin"]->getId());
+	Object* model1 = ModelLoader::loadModel("./HeadModel/head_tri.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId());
 	assert(model1, "model Not correctly loaded");
 	m_objects.push_back(model1);
-
-
 }
 
 void DefaultTestLevel::lightSetup()

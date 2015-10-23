@@ -4,6 +4,8 @@
 #include "Actor.h"
 #include <GLM/glm/glm.hpp>
 
+#include <vector>
+
 // Forward declaration
 class ShaderProgram;
 
@@ -21,6 +23,7 @@ public:
 
 	// Setters
 	void assignMaterial(Material* material) { m_material = material; } 
+	void addPostProcess(GLuint aShaderProgram) { m_postProcesses.push_back(aShaderProgram); }
 
 protected : 
 	// Constructor for implementing classes
@@ -34,6 +37,7 @@ protected :
 
 	// Object's look characteristics
 	GLuint m_shaderProgram; 
+	std::vector<GLuint> m_postProcesses; // These will be applyed in the order they have been set in. 
 
 	// Object's shape definition variables
 	GLuint m_VBO;

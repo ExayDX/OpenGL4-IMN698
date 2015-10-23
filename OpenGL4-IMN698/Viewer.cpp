@@ -193,7 +193,7 @@ void Viewer::createWindow()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE) //Mac OSX
 
-	m_window = glfwCreateWindow(m_width, m_height, "Simple example", nullptr, nullptr);
+	m_window = glfwCreateWindow(m_width, m_height, "Opengl4 Viewer", nullptr, nullptr);
 	if (!m_window)
 	{
 		throw std::runtime_error("Failed to create a GLFW window");

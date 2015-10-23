@@ -47,6 +47,12 @@ void Scene::sceneTearDown()
 	}
 	m_materials.clear();
 
+	for (auto it = m_renderBuffers.begin(); it != m_renderBuffers.end(); ++it)
+	{
+		delete it->second; it->second = nullptr; 
+	}
+	m_renderBuffers.clear();
+
 	for (int i = 0; i < m_objects.size(); ++i)
 	{
 		delete m_objects[i]; m_objects[i] = nullptr; 
@@ -55,5 +61,10 @@ void Scene::sceneTearDown()
 	for (int i = 0; i < m_lights.size(); ++i)
 	{
 		delete m_lights[i]; m_lights[i] = nullptr;
+	}
+
+	if (m_renderQuad)
+	{
+		delete m_renderQuad; m_renderQuad = nullptr; 
 	}
 }
