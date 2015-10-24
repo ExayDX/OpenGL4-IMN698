@@ -1,6 +1,9 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include "Camera.h"
+
+#include <gl/glew.h>
 #include <vector>
 #include <map>
 #include "glm/glm/glm.hpp"
@@ -17,7 +20,7 @@ class FrameBuffer;
 class Scene
 {
 public : 
-	Scene();
+	Scene(Camera* camera);
 	~Scene();
 
 	virtual void Initialize(); 
@@ -27,6 +30,13 @@ public :
 	virtual void setViewMatrix(const glm::mat4& aViewMatrix){ m_viewMatrix = aViewMatrix; }
 	virtual void setProjectionMatrix(const glm::mat4& aProjectionMatrix){ m_projectionMatrix = aProjectionMatrix; }
 	virtual bool getLevelIsDone(){ return m_levelIsDone; }
+
+public : 
+	std::vector<Object*> getObjectsAndLights() const;
+	glm::mat4 getProjectionMatrix() { return m_projectionMatrix; }
+	glm::mat4 getViewMatrix() { return m_viewMatrix; }
+
+	void setDrawLight(bool val);
 
 protected : 
 
@@ -52,6 +62,8 @@ protected :
 	virtual void buffersSetup() = 0;
 	virtual void createShaderPrograms() = 0;
 	virtual void createMaterials() = 0; 
+
+	Camera* m_camera;
 };
 
 #endif

@@ -124,17 +124,52 @@ void ObjMesh::defineVAO()
 
 void ObjMesh::draw() const
 {
-	//uniforms for texture are: texture0, texture1, texture2, ...
-	for (int i = 0; i < m_textures.size(); ++i)
+	if (isVisible())
 	{
-		std::string uniformName = "texture" + std::to_string(i);
-		glActiveTexture(GL_TEXTURE0 + i*0x0001);
-		glBindTexture(GL_TEXTURE_2D, m_textures[i]);
-		glUniform1i(glGetUniformLocation(m_shaderProgram, uniformName.c_str()), i);
-		
+		//uniforms for texture are: texture0, texture1, texture2, ...
+		for (int i = 0; i < m_textures.size(); ++i)
+		{
+			std::string uniformName = "texture" + std::to_string(i);
+			glActiveTexture(GL_TEXTURE0 + i * 0x0001);
+			glBindTexture(GL_TEXTURE_2D, m_textures[i]);
+			glUniform1i(glGetUniformLocation(m_shaderProgram, uniformName.c_str()), i);
+
+		}
+
+		glBindVertexArray(m_VAO);
+		glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
+		glBindVertexArray(0);
+	}
+}
+
+void ObjMesh::computeBoundingBox()
+{
+	BoundingBox bbox;
+
+	double	minX = std::numeric_limits<double>::max(),
+		minY = std::numeric_limits<double>::max(),
+		minZ = std::numeric_limits<double>::max();
+	double	maxX = std::numeric_limits<double>::lowest(),
+		maxY = std::numeric_limits<double>::lowest(),
+		maxZ = std::numeric_limits<double>::lowest();
+
+	//go through all vertices and compute bounding box
+	for (int i = 0; i < m_vertices.size(); ++i)
+	{
+		if (m_vertices[i].vertex.x < minX)
+			minX = m_vertices[i].vertex.x;
+		if (m_vertices[i].vertex.y < minY)
+			minY = m_vertices[i].vertex.y;
+		if (m_vertices[i].vertex.z < minZ)
+			minZ = m_vertices[i].vertex.z;
+
+		if (m_vertices[i].vertex.x > maxX)
+			maxX = m_vertices[i].vertex.x;
+		if (m_vertices[i].vertex.y > maxY)
+			maxY = m_vertices[i].vertex.y;
+		if (m_vertices[i].vertex.z > maxZ)
+			maxZ = m_vertices[i].vertex.z;
 	}
 
-	glBindVertexArray(m_VAO);
-	glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
-	glBindVertexArray(0);
+	m_bbox = BoundingBox(BoundingBox::Point(minX, minY, minZ), BoundingBox::Point(maxX, maxY, maxZ));
 }

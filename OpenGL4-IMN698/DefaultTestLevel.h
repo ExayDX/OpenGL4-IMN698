@@ -6,7 +6,7 @@
 class DefaultTestLevel : public Scene
 {
 public : 
-	DefaultTestLevel();
+	DefaultTestLevel(Camera* cam);
 	virtual void draw() override;
 
 private : 

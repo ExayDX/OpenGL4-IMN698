@@ -1,22 +1,42 @@
 #ifndef _ACTOR_H_
 #define _ACTOR_H_
 
+#include <gl/glew.h>
+#include "Types.h"
 #include "glm/glm/glm.hpp"
 #include "Material.h"
+
 
 class Actor
 {
 public :
-	virtual glm::mat4 getModelMatrix() { return m_modelMatrix; }
-	virtual const Material* getMaterial() { return m_material; }
-	virtual glm::vec3 getPosition() { return m_centerPosition; }
+	virtual Matrix4x4 getModelMatrix() const;
+	virtual Matrix4x4 getModelMatrixStart() const;
+	virtual const Material* getMaterial() const;
+	virtual Vec3 getPosition() const;
+
+	void applyTransformation(const glm::mat4x4& matrix);
+
+	void setRotation(const Matrix4x4& m);
+	void rotate(const Matrix4x4& m);
+	void translate(const Vec3& translation);
+	void updateTransformationData();
+
+	bool isVisible() const;
+	void setVisible(bool val);
 
 protected : 
-	Actor(glm::vec3 centerPosition, Material* material);
+	Actor(Vec3 centerPosition, Material* material);
 
 	Material* m_material;
-	glm::vec3 m_centerPosition;
-	glm::mat4 m_modelMatrix;
+	bool m_isVisible;
+
+	//Transformations used to compute model matrix
+	Matrix4x4 m_rotation;
+	Matrix4x4 m_rotationStart;
+	Vec3 m_position;
+
+
 };
 
 #endif // _ACTOR_H

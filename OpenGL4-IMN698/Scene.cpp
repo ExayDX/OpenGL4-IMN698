@@ -1,17 +1,20 @@
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "Camera.h"
 #include "Scene.h"
 #include "Sphere.h"
 #include "Light.h"
+#include "ModelLoader.h"
 
 #include "GLM/glm/glm.hpp"
 #include "GLM/glm/gtc/matrix_transform.hpp"
 #include "GLM/glm/gtc/type_ptr.hpp"
 
-Scene::Scene()
+Scene::Scene(Camera* cam)
 	: m_levelIsDone(false)
 	, m_renderQuad(nullptr)
+	, m_camera(cam)
 {
 
 }
@@ -28,7 +31,7 @@ void Scene::Initialize()
 {
 	createShaderPrograms();
 	createMaterials();
-	buffersSetup(); 
+	buffersSetup();
 	levelSetup();
 	lightSetup();
 }
@@ -66,4 +69,22 @@ void Scene::sceneTearDown()
 	{
 		delete m_renderQuad; m_renderQuad = nullptr; 
 	}
+}
+
+void Scene::setDrawLight(bool val)
+{
+	for each (Light* light in m_lights)
+	{
+		light->setVisible(val);
+	}
+}
+
+std::vector<Object*> Scene::getObjectsAndLights() const
+{
+	std::vector<Object*> objs(m_objects);
+	for each (Light* light in m_lights)
+	{
+		objs.push_back(light);
+	}
+	return objs;
 }

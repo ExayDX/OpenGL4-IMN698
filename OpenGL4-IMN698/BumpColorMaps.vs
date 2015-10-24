@@ -23,8 +23,8 @@ uniform vec3 lightsPositions[NB_LIGHTS];
 out VS_OUT {
     vec2 TexCoords;
     vec3 TBNViewPosition;
-	vec3 FragPosition;
-	vec3 LightsPositions[NB_LIGHTS];
+	  vec3 FragPosition;
+	  vec3 LightsPositions[NB_LIGHTS];
 } vs_out;
 
 void main()
@@ -37,12 +37,12 @@ void main()
 	vec3 B = normalize(normalMatrix * bitangent);
 	vec3 N = normalize(normalMatrix * normal);
 	mat3 TBN = transpose(mat3(T, B, N));
-	
+
 	// Return values
 	vs_out.TexCoords = vec2(texCoords.x, 1 - texCoords.y);
-	vs_out.TBNViewPosition = TBN * vec3(0.0f, 0.0f, 0.0f); // Camera is at 0.0f,0.0f,0.0f; 
+	vs_out.TBNViewPosition = TBN * vec3(0.0f, 0.0f, 0.0f); // Camera is at 0.0f,0.0f,0.0f;
 	vs_out.FragPosition = TBN * vec3(model * view * vec4(position, 1.0));
-	
+
 	for(int i =0; i < NB_LIGHTS; ++i)
 	{
 		vs_out.LightsPositions[i] = TBN * vec3(view * vec4(lightsPositions[i], 1.0));

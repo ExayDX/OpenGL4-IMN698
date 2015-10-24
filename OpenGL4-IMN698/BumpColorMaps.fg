@@ -30,9 +30,8 @@ uniform sampler2D texture1;
 in VS_OUT {
     vec2 TexCoords;
     vec3 TBNViewPosition;
-	vec3 Normal;
-	vec3 FragPosition;
-	vec3 LightsPositions[NB_LIGHTS];
+	  vec3 FragPosition;
+	  vec3 LightsPositions[NB_LIGHTS];
 } fg_in;
 
 out vec4 fragColor;
@@ -42,15 +41,15 @@ vec3 computeLightContribution(int i, vec3 norm)
 	// Compute Diffuse color
 	vec3 diffuseColor = texture(texture0, fg_in.TexCoords).rgb;
 
-	// Compute Ambient 
+	// Compute Ambient
 	vec3 ambient = 0.5 * diffuseColor;
-	
+
 	// Compute lighting information
 	vec3 frag2Light = fg_in.LightsPositions[i] - fg_in.FragPosition;
 	vec3 lightDir = normalize(frag2Light);
-	float distance = length(frag2Light); 
-	float factor = (lightsProperties[i].constant + (lightsProperties[i].linear * distance) + (lightsProperties[i].quadratic * (distance*distance))); 
-	float attenuation = 1.0f / factor; 
+	float distance = length(frag2Light);
+	float factor = (lightsProperties[i].constant + (lightsProperties[i].linear * distance) + (lightsProperties[i].quadratic * (distance*distance)));
+	float attenuation = 1.0f / factor;
 
 	// Compute Diffuse lighting
 	float diffCoef = max(dot(norm, lightDir), 0.0);
@@ -78,8 +77,8 @@ void main()
 	vec3 result;
 	for(int i =0; i < NB_LIGHTS; ++i)
 	{
-		result += computeLightContribution(i, normal); 
+		result += computeLightContribution(i, normal);
 	}
-	
-    fragColor = vec4(result, 1.0f); 
+
+    fragColor = vec4(result, 1.0f);
 }

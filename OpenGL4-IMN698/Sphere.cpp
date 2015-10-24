@@ -1,8 +1,9 @@
-#include <gl/glew.h>
-#include <GLFW/glfw3.h>
-#include "GLM/glm/gtc/constants.hpp"
 
 #include "Sphere.h"
+
+#include "GLM/glm/gtc/constants.hpp"
+
+
 
 Sphere::Sphere(glm::vec3 position, Material* material, double radius, GLuint nLats, GLuint nLongs, GLuint shaderProgram)
 	: Object(position, material, shaderProgram)
@@ -46,6 +47,11 @@ void Sphere::defineVBO()
 			vertices.push_back(y);
 			vertices.push_back(z); 
 		}
+	}
+
+	for (int i = 0; i < vertices.size(); i+=3)
+	{
+		m_vertices.push_back( Vertice(vertices[i], vertices[i + 1], vertices[i + 2]));
 	}
 
 	glGenBuffers(1, &m_VBO);

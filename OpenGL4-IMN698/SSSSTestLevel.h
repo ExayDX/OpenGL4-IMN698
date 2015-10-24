@@ -8,7 +8,7 @@
 class SSSSTestLevel : public Scene
 {
 public:
-	SSSSTestLevel();
+	SSSSTestLevel(Camera* cam);
 	virtual void draw() override;
 	virtual void setFOVY(GLfloat fovy){ m_fovy = fovy; }
 

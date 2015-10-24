@@ -2,6 +2,7 @@
 #ifndef __OBJ_MODEL_LOADER_H__
 #define __OBJ_MODEL_LOADER_H__
 
+#include <gl/glew.h>
 
 #include "ModelLoader.h"
 
