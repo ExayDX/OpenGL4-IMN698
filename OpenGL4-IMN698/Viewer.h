@@ -53,7 +53,8 @@ private :
 	// Methods
 	void createWindow(); 
 	void setCallbacks();
-	void moveCamera(); 
+	void moveCameraBetweenFrame(double timeBetweenFrame);
+	void moveCamera(double xoffset, double yoffset);
 	void setupViewport(); 
 
 	// Instance
@@ -82,6 +83,8 @@ private :
 	GLfloat m_lastFrameTime;
 
 	ConsoleListener* m_listener;
+
+	glm::vec2 m_lastMousePosition;
 };
 
 #endif

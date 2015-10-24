@@ -8,19 +8,20 @@
 #include <limits>
 #include <algorithm>
 
+
 BoundingBox::BoundingBox()
 {
-	m_pMin = glm::vec3(std::numeric_limits<double>::max());
-	m_pMax = glm::vec3(std::numeric_limits<double>::lowest());
+	m_pMin = Point(std::numeric_limits<double>::max());
+	m_pMax = Point(std::numeric_limits<double>::lowest());
 }
 
-BoundingBox::BoundingBox(const glm::vec3&a_p)
+BoundingBox::BoundingBox(const Point& a_p)
 {
 	m_pMin = a_p;
 	m_pMax = a_p;
 }
 
-BoundingBox::BoundingBox(const glm::vec3& a_p1, const glm::vec3& a_p2)
+BoundingBox::BoundingBox(const Point& a_p1, const Point& a_p2)
 {
 	//find min/max values of x/y/z
 	double minX = std::min(a_p1.x, a_p2.x);
@@ -31,8 +32,8 @@ BoundingBox::BoundingBox(const glm::vec3& a_p1, const glm::vec3& a_p2)
 	double maxY = std::max(a_p1.y, a_p2.y);
 	double maxZ = std::max(a_p1.z, a_p2.z);
 
-	m_pMin = glm::vec3(minX, minY, minZ);
-	m_pMax = glm::vec3(maxX, maxY, maxZ);
+	m_pMin = Point(minX, minY, minZ);
+	m_pMax = Point(maxX, maxY, maxZ);
 }
 
 bool BoundingBox::overlaps(const BoundingBox& a_bb) const
@@ -40,7 +41,7 @@ bool BoundingBox::overlaps(const BoundingBox& a_bb) const
 	return a_bb.contains(m_pMin) || a_bb.contains(m_pMax);
 }
 
-bool BoundingBox::contains(const glm::vec3& a_p) const
+bool BoundingBox::contains(const Point& a_p) const
 {
 	return a_p.x < m_pMax.x && a_p.x > m_pMin.x &&
 		a_p.y < m_pMax.y && a_p.y > m_pMin.y &&
@@ -72,7 +73,7 @@ bool BoundingBox::intersect(const Ray& a_r, double& a_t0, double& a_t1) const
 	return a_t0InBound && a_t0 <= a_t1;
 }
 
-BoundingBox combine(const BoundingBox& a_bb, const glm::vec3& a_p)
+BoundingBox combine(const BoundingBox& a_bb, const BoundingBox::Point& a_p)
 {
 	double minX = std::min(a_bb.m_pMin.x, a_p.x);
 	double minY = std::min(a_bb.m_pMin.y, a_p.y);
@@ -81,7 +82,7 @@ BoundingBox combine(const BoundingBox& a_bb, const glm::vec3& a_p)
 	double maxY = std::max(a_bb.m_pMax.y, a_p.y);
 	double maxZ = std::max(a_bb.m_pMax.z, a_p.z);
 
-	return BoundingBox(glm::vec3(minX, minY, minZ), glm::vec3(maxX, maxY, maxZ));
+	return BoundingBox(BoundingBox::Point(minX, minY, minZ), BoundingBox::Point(maxX, maxY, maxZ));
 }
 
 BoundingBox combine(const BoundingBox& a_bb1, const BoundingBox& a_bb2)
@@ -93,5 +94,5 @@ BoundingBox combine(const BoundingBox& a_bb1, const BoundingBox& a_bb2)
 	double maxY = std::max(a_bb1.m_pMax.y, a_bb2.m_pMax.y);
 	double maxZ = std::max(a_bb1.m_pMax.z, a_bb2.m_pMax.z);
 
-	return BoundingBox(glm::vec3(minX, minY, minZ), glm::vec3(maxX, maxY, maxZ));
+	return BoundingBox(BoundingBox::Point(minX, minY, minZ), BoundingBox::Point(maxX, maxY, maxZ));
 }

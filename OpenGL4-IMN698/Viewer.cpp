@@ -1,7 +1,6 @@
 
 #include "Viewer.h"
 #include "ViewerState.h"
-
 #include "Camera.h"
 #include "Scene.h"
 #include "DefaultTestLevel.h"
@@ -9,8 +8,6 @@
 #include "FrameBuffer.h"
 #include "ShaderProgram.h"
 #include "Quad.h"
-
-#include "glf/glf.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -86,19 +83,19 @@ void Viewer::scroll_callback_impl(GLFWwindow* window, double xoffset, double yof
 
 // Viewer class
 // According to how the viewerstate is currently made, shouldn't this be in viewerstate?
-void Viewer::moveCamera()
+void Viewer::moveCameraBetweenFrame(double deltaTime)
 {
 	if (m_state->getInteractionMode() != LOCKED)
 	{
 		// Camera controls
 		if (m_state->getKeys()[GLFW_KEY_W])
-			m_camera->move(Camera::CameraDirection::eForward, m_deltaTime);
+			m_camera->move(Camera::CameraDirection::eForward, deltaTime);
 		if (m_state->getKeys()[GLFW_KEY_S])
-			m_camera->move(Camera::CameraDirection::eBackward, m_deltaTime);
+			m_camera->move(Camera::CameraDirection::eBackward, deltaTime);
 		if (m_state->getKeys()[GLFW_KEY_A])
-			m_camera->move(Camera::CameraDirection::eLeft, m_deltaTime);
+			m_camera->move(Camera::CameraDirection::eLeft, deltaTime);
 		if (m_state->getKeys()[GLFW_KEY_D])
-			m_camera->move(Camera::CameraDirection::eRight, m_deltaTime);
+			m_camera->move(Camera::CameraDirection::eRight, deltaTime);
 		if (m_state->getKeys()[GLFW_KEY_Z])
 			m_camera->zoom(0.001);
 		if (m_state->getKeys()[GLFW_KEY_X])
@@ -177,6 +174,7 @@ Viewer::Viewer()
 	: m_camera(nullptr)
 	, m_viewingIsOver(false)
 	, m_currentScene(nullptr)
+	, m_lastMousePosition(0, 0)
 {
 	// GLFW initialization
 	if (!glfwInit())
@@ -258,12 +256,12 @@ void Viewer::loop()
 		}
 
 		GLfloat currentFrameTime = glfwGetTime();
-		m_deltaTime = currentFrameTime - m_lastFrameTime;
+		double deltaTime = currentFrameTime - m_lastFrameTime;
 		m_lastFrameTime = currentFrameTime;
 
 		// Check and call events
 		glfwPollEvents();
-		moveCamera();
+		moveCameraBetweenFrame(deltaTime);
 
 		// Update Matrix
 		m_viewMatrix = m_camera->GetViewMatrix();
@@ -282,4 +280,9 @@ void Viewer::loop()
 void Viewer::loadModel(const std::string& path, Vec3 position, std::string shaderProgram)
 {
 	m_currentScene->loadModel(path, position, shaderProgram);
+}
+
+void Viewer::moveCamera(double xoffset, double yoffset)
+{
+	m_camera->rotate(xoffset, yoffset);
 }

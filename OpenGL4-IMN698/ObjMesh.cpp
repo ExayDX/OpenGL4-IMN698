@@ -1,7 +1,7 @@
 #include "ObjMesh.h"
+#include "BoundingBox.h"
 
 #include "SOIL/SOIL.h"
-#include "BoundingBox.h"
 
 #include <string>
 
@@ -170,5 +170,5 @@ void ObjMesh::computeBoundingBox()
 			maxZ = m_vertices[i].vertex.z;
 	}
 
-	*m_bbox = BoundingBox(glm::vec3(minX, minY, minZ), glm::vec3(maxX, maxY, maxZ));
+	m_bbox = BoundingBox(BoundingBox::Point(minX, minY, minZ), BoundingBox::Point(maxX, maxY, maxZ));
 }

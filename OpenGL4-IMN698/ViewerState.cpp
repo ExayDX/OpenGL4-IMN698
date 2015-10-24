@@ -1,9 +1,17 @@
+
 #include "ViewerState.h"
 #include "Scene.h"
 #include "Camera.h"
 #include "Object.h"
+
+#include <GL/glew.h>
 #include "glm/glm/gtc/matrix_transform.hpp"
 
+
+//forward declaration
+class Camera;
+class Scene;
+class Viewer;
 
 ViewerState::ViewerState() :
 	m_viewingMode(ViewingMode::NORMAL),
@@ -51,9 +59,10 @@ void ViewerState::handleMouseClick(GLFWwindow* window, int button, int action)
 		float z = 1.0f;
 		glm::vec3 ray(x,y,z);
 		glm::vec4 ray_clip(ray.x, ray.y, -1.0, 1.0);
-		glm::vec4 ray_eye = glm::inverse(Viewer::getInstance()->getProjectionMatrix()) * ray_clip;
+
+		glm::vec4 ray_eye = glm::inverse(Viewer::getInstance()->getCurrentScene()->getProjectionMatrix()) * ray_clip;
 		ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
-		glm::vec4 ray_wor4 = (glm::inverse(Viewer::getInstance()->getViewMatrix()) * ray_eye);
+		glm::vec4 ray_wor4 = (glm::inverse(Viewer::getInstance()->getCurrentScene()->getViewMatrix()) * ray_eye);
 
 		glm::vec3 ray_wor(ray_wor4.x, ray_wor4.y, ray_wor4.z);
 		// don't forget to normalise the vector at some point
@@ -71,7 +80,7 @@ void ViewerState::handleMouseClick(GLFWwindow* window, int button, int action)
 		objects.reserve(sceneObjects.size() + sceneLights.size());
 		objects.insert(objects.end(), sceneObjects.begin(), sceneObjects.end());
 		objects.insert(objects.end(), sceneLights.begin(), sceneLights.end()); 
-		
+
 		double minT = std::numeric_limits<double>::max();
 		for (int i = 0; i < objects.size(); ++i)
 		{
@@ -128,7 +137,6 @@ void ViewerState::handleMouseMovement(double xPos, double yPos)
 			{
 				//we move on the camera plane 
 				Matrix4x4 viewMat = Viewer::getInstance()->getCamera()->GetViewMatrix();
-
 				glm::vec4 v(xoffset / 100, yoffset / 100, 0, 0);
 				m_currentlySelectedObject->translate(Vec3(v*viewMat));
 			}
@@ -154,7 +162,7 @@ void ViewerState::handleKeyboardInput(GLFWwindow* window, int key, int scancode,
 	//-------------------------------------------------------------------------
 
 	// Wireframe management
-	if (key == GLFW_KEY_F && action == GLFW_PRESS)
+	else if (key == GLFW_KEY_F && action == GLFW_PRESS)
 	{
 		if (m_viewingMode == ViewingMode::NORMAL)
 		{
@@ -181,6 +189,7 @@ void ViewerState::handleKeyboardInput(GLFWwindow* window, int key, int scancode,
 	// Interaction and Transformation Modes
 	//-------------------------------------------------------------------------
 
+	//Interaction Mode management
 	else if (key == GLFW_KEY_T && action == GLFW_PRESS) //Transformation
 	{
 		m_interactionMode = TRANSFORMATION;

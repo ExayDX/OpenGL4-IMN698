@@ -1,8 +1,12 @@
-#include <gl/glew.h>
+
+#ifndef __OBJ_MESH_H__
+#define __OBJ_MESH_H__
 
 #include "Object.h"
 #include "Material.h"
 #include "ShaderProgram.h"
+
+#include <gl/glew.h>
 
 struct vertexStruct
 {
@@ -41,3 +45,5 @@ private:
 
 	std::vector<GLuint> m_textures;
 };
+
+#endif //__OBJ_MESH_H__

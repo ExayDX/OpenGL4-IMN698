@@ -10,7 +10,7 @@ Object::Object(glm::vec3 position, Material* material, GLuint shaderProgram)
 	, m_shaderProgram(shaderProgram)
 	, m_numIndices(0)
 {
-	m_bbox = new BoundingBox(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
+	m_bbox = BoundingBox(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
 }
 
 Object::~Object()
@@ -18,7 +18,6 @@ Object::~Object()
 	glDeleteVertexArrays(1, &m_VAO); 
 	glDeleteBuffers(1, &m_VBO);
 	glDeleteBuffers(1, &m_EBO);
-	delete m_bbox; m_bbox = nullptr; 
 }
 
 void Object::draw() const
@@ -42,11 +41,12 @@ void Object::computeBoundingBox()
 {
 	BoundingBox bbox;
 
-	double	minX = std::numeric_limits<double>::max(),
+
+	double	minX = std::numeric_limits<double>::max(), 
 			minY = std::numeric_limits<double>::max(),
 			minZ = std::numeric_limits<double>::max();
 	double	maxX = std::numeric_limits<double>::lowest(),
-			maxY = std::numeric_limits<double>::lowest(),
+			maxY = std::numeric_limits<double>::lowest(), 
 			maxZ = std::numeric_limits<double>::lowest();
 
 	//go through all vertices and compute bounding box
@@ -67,9 +67,8 @@ void Object::computeBoundingBox()
 			maxZ = m_vertices[i].z;
 	}
 
-	*m_bbox = BoundingBox(glm::vec3(minX, minY, minZ), glm::vec3(maxX, maxY, maxZ));
+	m_bbox = BoundingBox(BoundingBox::Point(minX, minY, minZ), BoundingBox::Point(maxX, maxY, maxZ));
 }
-
 
 bool Object::intersect(Ray r, double& t0, double& t1)
 {
@@ -87,5 +86,5 @@ bool Object::intersect(Ray r, double& t0, double& t1)
 		);
 	Ray ray(origin, dir, std::numeric_limits<double>::epsilon(), std::numeric_limits<double>::infinity());
 
-	return m_bbox->intersect(ray, t0, t1);
+	return m_bbox.intersect(ray, t0, t1);
 }

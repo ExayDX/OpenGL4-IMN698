@@ -87,10 +87,8 @@ void Scene::loadModel(const std::string& path, Vec3 position, std::string shader
 	m_objectsToBeCreated.push(obj);
 }
 
-
 void Scene::loadPendingModels()
 {
-	//TODO
 	while (!m_objectsToBeCreated.empty())
 	{
 		ObjectPending obj = m_objectsToBeCreated.front();
@@ -114,3 +112,4 @@ std::vector<std::string> Scene::getShaderList() const
 	}
 	return shaders;
 }
+

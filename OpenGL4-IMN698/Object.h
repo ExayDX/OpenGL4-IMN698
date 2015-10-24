@@ -6,6 +6,7 @@
 
 #include "Actor.h"
 #include "BoundingBox.h"
+#include "ShaderProgram.h"
 
 #include <vector>
 
@@ -36,6 +37,8 @@ public:
 	virtual void computeBoundingBox(); 
 	virtual bool intersect(Ray r, double& t0, double& t1); 
 
+	void changeShader(ShaderProgram* sp);
+
 protected : 
 	typedef glm::vec3 Vertice; 
 
@@ -59,9 +62,9 @@ protected :
 	GLuint m_EBO; 
 
 	GLuint m_numIndices;
+
 	std::vector<Vertice> m_vertices;
-	
-	BoundingBox* m_bbox; 
+	BoundingBox m_bbox;
 };
 
 #endif // ! OBJECT_H
