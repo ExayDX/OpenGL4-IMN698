@@ -33,6 +33,14 @@ public :
 
 	virtual void drawAllLights(bool allLightsAreDrawn);
 
+protected:
+	// Methods
+	virtual void levelSetup() = 0;
+	virtual void lightSetup() = 0;
+	virtual void buffersSetup() = 0;
+	virtual void createShaderPrograms() = 0;
+	virtual void createMaterials() = 0;
+
 protected : 
 	Quad* m_renderQuad; 
 	
@@ -50,12 +58,6 @@ protected :
 	// Buffers
 	std::map<std::string, FrameBuffer*> m_frameBuffers;
 
-	// Methods
-	virtual void levelSetup() = 0;
-	virtual void lightSetup() = 0; 
-	virtual void buffersSetup() = 0;
-	virtual void createShaderPrograms() = 0;
-	virtual void createMaterials() = 0; 
 };
 
 #endif

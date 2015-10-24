@@ -60,6 +60,12 @@
       <Filter>Source Files</Filter>
 >>>>>>> d0d10588eac17b1724bb62b5564009d6f7669641
     </ClCompile>
+    <ClCompile Include="BoundingBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewerState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h">
@@ -130,6 +136,15 @@
     <ClInclude Include="Types.h">
       <Filter>Header Files</Filter>
 >>>>>>> d0d10588eac17b1724bb62b5564009d6f7669641
+    </ClInclude>
+    <ClInclude Include="BoundingBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewerState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

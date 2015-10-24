@@ -12,7 +12,6 @@
 // Forward declaration
 class ShaderProgram;
 
-
 //Base class for a drawable object
 class Object : public Actor
 {

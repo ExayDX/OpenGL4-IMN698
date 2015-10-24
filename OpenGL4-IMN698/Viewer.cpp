@@ -15,6 +15,13 @@
 #include <iostream>
 #include <fstream>
 
+#include "glf/glf.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <iostream>
+#include <fstream>
+
 Viewer* Viewer::m_instance = nullptr; 
 
 
@@ -254,7 +261,6 @@ void Viewer::loop()
 			}
 		}
 
-		// Get time information
 		GLfloat currentFrameTime = glfwGetTime();
 		m_deltaTime = currentFrameTime - m_lastFrameTime;
 		m_lastFrameTime = currentFrameTime;
