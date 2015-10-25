@@ -22,11 +22,20 @@ SSSSTestLevel::SSSSTestLevel()
 // LOOP
 void SSSSTestLevel::draw()
 {
+	loadPendingModels();
+	std::lock_guard<std::mutex> lock(m_objectVectorMutex);
+
 	FrameBuffer* mainFBO = m_frameBuffers["mainFBO"];
 	mainFBO->bind();
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	
 	glActiveTexture(GL_TEXTURE1); // To assure that the second buffer of mainFBO be cleared
+
+	FrameBuffer* hdrFBO = m_frameBuffers["hdrFBO"];
+	hdrFBO->bind();
+
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for each (Object* obj in m_objects)
 	{

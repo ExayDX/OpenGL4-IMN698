@@ -2,6 +2,8 @@
 #define VIEWER_H
 
 #include "Types.h"
+#include "Camera.h"
+#include "ConsoleListener.h"
 #include "Scene.h"
 
 #include <gl/glew.h>
@@ -40,6 +42,9 @@ public :
 
 	void setDrawLight(bool val) { m_currentScene->drawAllLights(val); }
 
+	//interface between consoleListener and Scene
+	void loadModel(const std::string& path, Vec3 position, std::string shaderProgram);
+
 private : 
 	// Ctors/Dtors
 	Viewer();
@@ -75,6 +80,8 @@ private :
 	// -- Time and general computation variables
 	GLfloat m_deltaTime;
 	GLfloat m_lastFrameTime;
+
+	ConsoleListener* m_listener;
 };
 
 #endif
