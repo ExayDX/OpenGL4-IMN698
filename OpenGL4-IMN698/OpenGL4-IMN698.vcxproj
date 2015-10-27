@@ -130,12 +130,12 @@
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DefaultTestLevel.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Quad.cpp" />
-    <ClCompile Include="RenderBuffer.cpp" />
     <ClCompile Include="ObjMesh.cpp" />
     <ClCompile Include="ObjModelLoader.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -148,12 +148,12 @@
     <ClInclude Include="Actor.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DefaultTestLevel.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Quad.h" />
-    <ClInclude Include="RenderBuffer.h" />
     <ClInclude Include="ObjMesh.h" />
     <ClInclude Include="ObjModelLoader.h" />
     <ClInclude Include="Scene.h" />
@@ -164,10 +164,14 @@
     <ClInclude Include="Viewer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="AdditiveBlending.fg" />
     <None Include="BlinnPhong.fg" />
     <None Include="BlinnPhong.vs" />
+    <None Include="BloomHDR.fg" />
+    <None Include="GammaCorrect.fg" />
+    <None Include="GaussianBlur.fg" />
     <None Include="hdr.fg" />
-    <None Include="hdr.vs" />
+    <None Include="basicPPVS.vs" />
     <None Include="BumpColorMaps.fg" />
     <None Include="BumpColorMaps.vs" />
     <None Include="SSS.fg" />

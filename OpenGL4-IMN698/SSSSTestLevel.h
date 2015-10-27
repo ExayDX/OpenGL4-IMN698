@@ -12,9 +12,9 @@ public:
 	virtual void draw() override;
 	virtual void setFOVY(GLfloat fovy){ m_fovy = fovy; }
 
-private:
+protected:
 	GLfloat m_fovy;
-	GLuint m_color; 
+	GLuint m_color;
 
 	virtual void levelSetup() override;
 	virtual void lightSetup() override;

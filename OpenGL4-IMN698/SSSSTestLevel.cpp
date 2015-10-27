@@ -2,12 +2,11 @@
 
 #include "Sphere.h"
 #include "Light.h"
-#include "RenderBuffer.h"
 #include "Quad.h"
 #include <iostream>
 #include <string>
 #include "ModelLoader.h"
-#include "Camera.h"
+#include "FrameBuffer.h"
 
 #include "GLM/glm/glm.hpp"
 #include "GLM/glm/gtc/matrix_transform.hpp"
@@ -23,9 +22,12 @@ SSSSTestLevel::SSSSTestLevel()
 // LOOP
 void SSSSTestLevel::draw()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, m_hdrFBO);
+	FrameBuffer* hdrFBO = m_frameBuffers["hdrFBO"];
+	hdrFBO->bind();
+
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	for each (Object* obj in m_objects)
 	{
 		GLuint shaderProgramID = obj->getShaderProgramId();
@@ -93,30 +95,82 @@ void SSSSTestLevel::draw()
 		obj->draw();
 	}
 
+	// Get shader programs that will be used as post processes
+	GLboolean bloom = false; 
+	GLuint BloomHDRProg = m_shaderPrograms["BloomHDR"]->getId(),
+		   BlurProg		= m_shaderPrograms["Blur"]->getId();
+
+	FrameBuffer* ppFBO = nullptr;
+	
+	if (bloom)
+	{
+		// Blur bright fragments (Bloom)
+		GLboolean horizontal = true;
+		GLuint amount = 10;
+		glUseProgram(BlurProg);
+
+		for (GLuint i = 0; i < amount; ++i)
+		{
+			// Get the right FBO and color buffer
+			GLuint textureBO;
+
+			if (horizontal)
+				ppFBO = m_frameBuffers["ppFBO1"];
+			else
+				ppFBO = m_frameBuffers["ppFBO0"];
+
+			if (i == 0)
+				textureBO = hdrFBO->getRenderBuffer(FrameBuffer::BufferType::eColor, 1);
+			else
+				textureBO = ppFBO->getRenderBuffer(FrameBuffer::BufferType::eColor, 0);
+
+			ppFBO->bind();
+
+			// Assign uniforms
+			glUniform1i(glGetUniformLocation(BlurProg, "horizontal"), horizontal);
+			glBindTexture(GL_TEXTURE_2D, textureBO);
+			m_renderQuad->draw();
+			horizontal = !horizontal;
+		}
+	}
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	// blababla
+	GLuint finalBuffer = hdrFBO->getRenderBuffer(FrameBuffer::BufferType::eColor, 0);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glUseProgram(m_renderQuad->getShaderProgramId());
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_renderBuffers[RenderBuffer::BufferType::eColor]->at(0));
-	glUniform1i(glGetUniformLocation(m_renderQuad->getShaderProgramId(), "hdr"), true);
-	glUniform1f(glGetUniformLocation(m_renderQuad->getShaderProgramId(), "exposure"), 1.0);
+	glUseProgram(BloomHDRProg); 
+	glActiveTexture(GL_TEXTURE0); 
+	glBindTexture(GL_TEXTURE_2D, finalBuffer); 
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, bloom? ppFBO->getRenderBuffer(FrameBuffer::BufferType::eColor, 0) : finalBuffer); 
+	glUniform1i(glGetUniformLocation(BloomHDRProg, "exposure"), bloom);
+	glUniform1f(glGetUniformLocation(BloomHDRProg, "exposure"), 1.5);
 	m_renderQuad->draw();
 }
 
 void SSSSTestLevel::createShaderPrograms()
 {
 	// Create Shader programs
+	// -- Render Shaders
 	ShaderProgram* BlinnPhongProgram = new ShaderProgram("BlinnPhong.vs", "BlinnPhong.fg");
-	ShaderProgram* HDRProgram = new ShaderProgram("hdr.vs", "hdr.fg"); 
-	ShaderProgram* SSSProgram = new ShaderProgram("SSS.vs", "SSS.fg");
 	ShaderProgram* BumpColorMapsProgram = new ShaderProgram("BumpColorMaps.vs", "BumpColorMaps.fg");
 
+	// -- PostProcess Shaders
+	ShaderProgram* BlurProgram = new ShaderProgram("basicPPVS.vs", "GaussianBlur.fg");
+	ShaderProgram* SSSProgram = new ShaderProgram("SSS.vs", "SSS.fg");
+	ShaderProgram* BloomHDRProgram = new ShaderProgram("basicPPVS.vs", "BloomHDR.fg");
+
 	// Insert ShaderProgram in the list
-	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("BlinnPhong", BlinnPhongProgram));
-	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("HDR", HDRProgram));
-	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("SSS", SSSProgram));
-	m_shaderPrograms.insert(std::pair<std::string, ShaderProgram*>("BumpColorMaps", BumpColorMapsProgram));
+	// -- Render Shaders
+	m_shaderPrograms["BlinnPhong"] =  BlinnPhongProgram;
+	m_shaderPrograms["BumpColorMaps"] = BumpColorMapsProgram;
+
+	// -- PostProcess Shaders
+	m_shaderPrograms["Blur"] =  BlurProgram;
+	m_shaderPrograms["SSS"] = SSSProgram;
+	m_shaderPrograms["BloomHDR"] = BloomHDRProgram;
 }
 
 void SSSSTestLevel::createMaterials()
@@ -162,7 +216,7 @@ void SSSSTestLevel::levelSetup()
 	//assert(model1, "model Not correctly loaded"); 
 	//m_objects.push_back(model1);
 	
-	m_renderQuad = new Quad(glm::vec3(0.0f), nullptr, m_shaderPrograms["HDR"]->getId()); 
+	m_renderQuad = new Quad(glm::vec3(0.0f), nullptr, 0); 
 
 }
 
@@ -182,32 +236,56 @@ void SSSSTestLevel::lightSetup()
 
 void SSSSTestLevel::buffersSetup()
 {
-	// Create and Bind Frame buffer
-	glGenFramebuffers(1, &m_hdrFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_hdrFBO);
+	// Create and Frame buffers
+	FrameBuffer* hdrFBO = new FrameBuffer();
+	FrameBuffer* ppFBO0 = new FrameBuffer();
+	FrameBuffer* ppFBO1 = new FrameBuffer();
 
-	// Create RenderBuffers
-	RenderBuffer::ParameterMap colorBuffer0Param;
-	colorBuffer0Param[GL_TEXTURE_MIN_FILTER] = GL_LINEAR;
-	colorBuffer0Param[GL_TEXTURE_MAG_FILTER] = GL_LINEAR;
-	//colorBuffer0Param[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_EDGE;
-	//colorBuffer0Param[GL_TEXTURE_WRAP_T] = GL_CLAMP_TO_EDGE;
-	RenderBuffer colorBuffer0 = RenderBuffer(RenderBuffer::BufferType::eColor, &colorBuffer0Param);
-	RenderBuffer depthBuffer0 = RenderBuffer(RenderBuffer::BufferType::eDepth);
-	
-	// Create Vectors of renderbuffers for each buffer type
-	std::vector<GLuint>* colorBuffers = new std::vector<GLuint>;
-	std::vector<GLuint>* depthBuffers = new std::vector<GLuint>;
+	// Define colorBuffers parameters 
+	FrameBuffer::ParameterMap colorBufferParam;
+	colorBufferParam[GL_TEXTURE_MIN_FILTER] = GL_LINEAR;
+	colorBufferParam[GL_TEXTURE_MAG_FILTER] = GL_LINEAR;
+	colorBufferParam[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_EDGE;
+	colorBufferParam[GL_TEXTURE_WRAP_T] = GL_CLAMP_TO_EDGE;
 
-	// Fill vectors
-	colorBuffers->push_back(colorBuffer0.getData()); 
-	depthBuffers->push_back(depthBuffer0.getData()); 
+	// Create FBO0 RenderBuffers
+	hdrFBO->bind();
+	{
+		hdrFBO->addBuffer(FrameBuffer::BufferType::eColor, 0, &colorBufferParam);
+		hdrFBO->addBuffer(FrameBuffer::BufferType::eColor, 1, &colorBufferParam);
+		hdrFBO->addBuffer(FrameBuffer::BufferType::eDepth, 0);
+
+		//// Attachments
+		GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+		glDrawBuffers(2, attachments); 
+
+		// -- Check if Frame buffer is complete
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			std::cout << "Framebuffer not complete!" << std::endl;
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+	hdrFBO->unBind();
+
+	// Create PingPong FrameBuffers
+	ppFBO0->bind();
+	{
+		ppFBO0->addBuffer(FrameBuffer::BufferType::eColor, 0, &colorBufferParam);
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			std::cout << "Framebuffer not complete!" << std::endl;
 	
-	// Assign vectors to the buffers map
-	m_renderBuffers[RenderBuffer::BufferType::eColor] = colorBuffers; 
-	m_renderBuffers[RenderBuffer::BufferType::eDepth] = depthBuffers;
-	
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "Framebuffer not complete!" << std::endl;
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+	ppFBO0->unBind();
+
+	ppFBO1->bind();
+	{
+		ppFBO1->addBuffer(FrameBuffer::BufferType::eColor, 0, &colorBufferParam);
+	}
+	ppFBO1->unBind(); 
+
+	// Add all framebuffers 
+	m_frameBuffers["hdrFBO"] = hdrFBO;
+	m_frameBuffers["ppFBO0"] = ppFBO0;
+	m_frameBuffers["ppFBO1"] = ppFBO1; 
+
+
 }

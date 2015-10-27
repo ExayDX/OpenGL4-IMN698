@@ -19,9 +19,6 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Scenes/Levels</Filter>
     </ClCompile>
-    <ClCompile Include="RenderBuffer.cpp">
-      <Filter>RenderResources</Filter>
-    </ClCompile>
     <ClCompile Include="ObjMesh.cpp">
       <Filter>Actors/Objects\ModelLoader</Filter>
     </ClCompile>
@@ -41,7 +38,10 @@
       <Filter>Actors/Objects\Predefined Objects</Filter>
     </ClCompile>
     <ClCompile Include="ShaderProgram.cpp">
-      <Filter>Shaders\ShaderManagement</Filter>
+      <Filter>RenderResources\ShaderManagement</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>RenderResources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -61,9 +61,6 @@
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Scenes/Levels</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderBuffer.h">
-      <Filter>RenderResources</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>RenderResources</Filter>
@@ -90,7 +87,10 @@
       <Filter>RenderResources\RenderTechniques</Filter>
     </ClInclude>
     <ClInclude Include="ShaderProgram.h">
-      <Filter>Shaders\ShaderManagement</Filter>
+      <Filter>RenderResources\ShaderManagement</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>RenderResources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -101,9 +101,6 @@
       <Filter>Shaders\RenderingPass</Filter>
     </None>
     <None Include="hdr.fg">
-      <Filter>Shaders\PostProcesses</Filter>
-    </None>
-    <None Include="hdr.vs">
       <Filter>Shaders\PostProcesses</Filter>
     </None>
     <None Include="SSS.fg">
@@ -117,6 +114,21 @@
     </None>
     <None Include="BumpColorMaps.vs">
       <Filter>Shaders\RenderingPass</Filter>
+    </None>
+    <None Include="GammaCorrect.fg">
+      <Filter>Shaders\PostProcesses</Filter>
+    </None>
+    <None Include="basicPPVS.vs">
+      <Filter>Shaders\PostProcesses</Filter>
+    </None>
+    <None Include="GaussianBlur.fg">
+      <Filter>Shaders\PostProcesses</Filter>
+    </None>
+    <None Include="AdditiveBlending.fg">
+      <Filter>Shaders\PostProcesses</Filter>
+    </None>
+    <None Include="BloomHDR.fg">
+      <Filter>Shaders\PostProcesses</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -144,14 +156,14 @@
     <Filter Include="RenderResources\RenderTechniques">
       <UniqueIdentifier>{52cae08a-e72c-4ff7-bee3-b963c23d4159}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders\ShaderManagement">
-      <UniqueIdentifier>{0ffce19a-cce5-456e-80a7-5455e8e62781}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders\RenderingPass">
       <UniqueIdentifier>{b20d020a-4d69-49ac-b139-54910cad63e0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shaders\PostProcesses">
       <UniqueIdentifier>{c796fd14-fe86-4d5a-bf86-4f8f247f0cb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderResources\ShaderManagement">
+      <UniqueIdentifier>{0ffce19a-cce5-456e-80a7-5455e8e62781}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

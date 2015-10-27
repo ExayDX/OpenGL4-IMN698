@@ -47,11 +47,10 @@ void Scene::sceneTearDown()
 	}
 	m_materials.clear();
 
-	for (auto it = m_renderBuffers.begin(); it != m_renderBuffers.end(); ++it)
+	for (auto it = m_frameBuffers.begin(); it != m_frameBuffers.end(); ++it)
 	{
 		delete it->second; it->second = nullptr; 
 	}
-	m_renderBuffers.clear();
 
 	for (int i = 0; i < m_objects.size(); ++i)
 	{

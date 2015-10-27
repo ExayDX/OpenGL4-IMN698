@@ -5,8 +5,6 @@
 #include <map>
 #include "glm/glm/glm.hpp"
 #include "GL/glew.h"
-#include "RenderBuffer.h"
-//#include "Camera.h"
 
 // Forward Declaration
 class Object; 
@@ -14,6 +12,7 @@ class Light;
 class ShaderProgram;
 class Material; 
 class Quad; 
+class FrameBuffer; 
 
 class Scene
 {
@@ -45,8 +44,7 @@ protected :
 	Quad* m_renderQuad; 
 
 	// Buffers
-	GLuint m_hdrFBO;
-	std::map<RenderBuffer::BufferType, std::vector<GLuint>* > m_renderBuffers;
+	std::map<std::string, FrameBuffer*> m_frameBuffers;
 
 	// Methods
 	virtual void levelSetup() = 0;

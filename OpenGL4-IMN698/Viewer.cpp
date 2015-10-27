@@ -14,7 +14,7 @@
 #include "Scene.h"
 #include "DefaultTestLevel.h"
 #include "SSSSTestLevel.h"
-#include "RenderBuffer.h"
+#include "FrameBuffer.h"
 #include "ShaderProgram.h"
 #include "Quad.h"
 
@@ -94,7 +94,7 @@ void Viewer::window_size_callback_impl(GLFWwindow* window, int width, int height
 	glfwSetWindowSize(window, width, height); 
 	m_width = width; 
 	m_height = height; 
-	RenderBuffer::setDimensions(m_width, m_height); 
+	FrameBuffer::setDimensions(m_width, m_height); 
 }
 
 void Viewer::mouse_callback_impl(GLFWwindow* window, double xpos, double ypos)
@@ -202,7 +202,7 @@ void Viewer::createWindow()
 	}
 
 	glfwMakeContextCurrent(m_window);
-	RenderBuffer::setDimensions(m_width, m_height);
+	FrameBuffer::setDimensions(m_width, m_height);
 }
 
 void Viewer::setupViewport()
