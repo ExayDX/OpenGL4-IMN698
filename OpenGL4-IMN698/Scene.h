@@ -4,27 +4,31 @@
 #include <vector>
 #include <map>
 #include "glm/glm/glm.hpp"
-#include "Camera.h"
+#include "GL/glew.h"
 
 // Forward Declaration
 class Object; 
 class Light; 
 class ShaderProgram;
 class Material; 
+class Quad; 
+class FrameBuffer; 
 
 class Scene
 {
 public : 
-	Scene(Camera* camera);
+	Scene();
 	~Scene();
 
-	void draw(); 
+	virtual void Initialize(); 
+	virtual void sceneTearDown();
+	virtual void draw() = 0;
 
-	GLuint getAShaderProgramId(std::string shaderName); 
-	void setViewMatrix(const glm::mat4& aViewMatrix){ m_viewMatrix = aViewMatrix; }
-	void setProjectionMatrix(const glm::mat4& aProjectionMatrix){ m_projectionMatrix = aProjectionMatrix; }
+	virtual void setViewMatrix(const glm::mat4& aViewMatrix){ m_viewMatrix = aViewMatrix; }
+	virtual void setProjectionMatrix(const glm::mat4& aProjectionMatrix){ m_projectionMatrix = aProjectionMatrix; }
+	virtual bool getLevelIsDone(){ return m_levelIsDone; }
 
-private : 
+protected : 
 
 	std::vector<Object*> m_objects;
 	std::vector<Light*> m_lights; 
@@ -34,19 +38,20 @@ private :
 	glm::mat4 m_viewMatrix; 
 	glm::mat4 m_projectionMatrix; 
 
-	Camera* m_camera;
+	bool m_levelIsDone;
+	//Camera* m_camera;
 
-	//float m_ambientLightingStrength; 
-	//glm::vec3 ambient; 
+	Quad* m_renderQuad; 
 
-	void levelSetup();
-	void lightSetup(); 
-	void levelTearDown();
-	void createShaderPrograms();
-	void createMaterials(); 
+	// Buffers
+	std::map<std::string, FrameBuffer*> m_frameBuffers;
 
-
-
+	// Methods
+	virtual void levelSetup() = 0;
+	virtual void lightSetup() = 0; 
+	virtual void buffersSetup() = 0;
+	virtual void createShaderPrograms() = 0;
+	virtual void createMaterials() = 0; 
 };
 
 #endif

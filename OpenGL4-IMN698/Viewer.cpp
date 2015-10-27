@@ -12,6 +12,11 @@
 #include "Viewer.h"
 #include "Camera.h"
 #include "Scene.h"
+#include "DefaultTestLevel.h"
+#include "SSSSTestLevel.h"
+#include "FrameBuffer.h"
+#include "ShaderProgram.h"
+#include "Quad.h"
 
 
 Viewer* Viewer::m_instance = nullptr; 
@@ -89,6 +94,7 @@ void Viewer::window_size_callback_impl(GLFWwindow* window, int width, int height
 	glfwSetWindowSize(window, width, height); 
 	m_width = width; 
 	m_height = height; 
+	FrameBuffer::setDimensions(m_width, m_height); 
 }
 
 void Viewer::mouse_callback_impl(GLFWwindow* window, double xpos, double ypos)
@@ -187,7 +193,7 @@ void Viewer::createWindow()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE) //Mac OSX
 
-	m_window = glfwCreateWindow(m_width, m_height, "Simple example", nullptr, nullptr);
+	m_window = glfwCreateWindow(m_width, m_height, "Opengl4 Viewer", nullptr, nullptr);
 	if (!m_window)
 	{
 		throw std::runtime_error("Failed to create a GLFW window");
@@ -196,6 +202,7 @@ void Viewer::createWindow()
 	}
 
 	glfwMakeContextCurrent(m_window);
+	FrameBuffer::setDimensions(m_width, m_height);
 }
 
 void Viewer::setupViewport()
@@ -214,7 +221,6 @@ Viewer::Viewer()
 	: m_lastMousePosition(0, 0)
 	, m_firstClick(true)
 	, m_camera(nullptr)
-	, m_scene(nullptr)
 	, m_wireFrameEnabled(false)
 	, m_mouseIsClicked(false)
 {
@@ -241,8 +247,7 @@ Viewer::Viewer()
 	glfwSwapInterval(1);
 
 	m_camera = new Camera(&glm::vec3(0.0f, 1.0f, 0.0f), &glm::vec3(0.0f, 0.0f, 10.0f), &glm::vec3(0, 0, 0));
-	m_scene = new Scene(m_camera);
-
+	m_scenes.push_back(new SSSSTestLevel()); 
 }
 
 Viewer::~Viewer()
@@ -255,21 +260,37 @@ Viewer::~Viewer()
 		m_camera = nullptr; 
 	}
 
-	if (m_scene)
+	for (int i = 0; i < m_scenes.size(); ++i)
 	{
-		delete m_scene;
-		m_scene = nullptr;
+		delete m_scenes[i];
+		m_scenes[i] = nullptr;
 	}
 	
 	glfwTerminate();
 	exit(EXIT_SUCCESS);
 }
 
-
 void Viewer::loop()
 {
+	// Initialize first level
+	auto sceneIterator = m_scenes.begin(); 
+	assert(sceneIterator != m_scenes.end(), "No scene to render. Please initialize a scene.");
+
+	Scene* currentScene = *sceneIterator;
+	currentScene->Initialize();
+
 	while (!glfwWindowShouldClose(m_window))
 	{
+		// Verify if level is still active
+		if (currentScene->getLevelIsDone())
+		{
+			currentScene->sceneTearDown();
+			++sceneIterator;
+			currentScene = *sceneIterator; 
+			currentScene->Initialize(); 
+		}
+		
+		// Get time information
 		GLfloat currentFrameTime = glfwGetTime();
 		m_deltaTime = currentFrameTime - m_lastFrameTime;
 		m_lastFrameTime = currentFrameTime;
@@ -279,19 +300,17 @@ void Viewer::loop()
 		moveCamera();
 
 		// Clear the colorbuffer
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Coordinate system matrices 
 		glm::mat4 view = m_camera->GetViewMatrix();
 		glm::mat4 projection = glm::perspective(m_camera->getZoomLevel(), m_width / m_height, 0.1f, 100.0f); 
 
-		m_scene->setViewMatrix(view);
-		m_scene->setProjectionMatrix(projection); 
-
-		m_scene->draw(); 
+		// Level drawing
+		currentScene->setViewMatrix(view);
+		currentScene->setProjectionMatrix(projection);
+		currentScene->draw(); 
 
 		// Swap the buffers
 		glfwSwapBuffers(m_window);
 	}
 }
+
+
