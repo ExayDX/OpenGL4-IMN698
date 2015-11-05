@@ -10,8 +10,8 @@
 
 #include <string>
 
-DefaultTestLevel::DefaultTestLevel()
-	: Scene()
+DefaultTestLevel::DefaultTestLevel(Camera* cam)
+	: Scene(cam)
 {
 
 }
@@ -87,6 +87,35 @@ void DefaultTestLevel::draw()
 
 		obj->draw();
 	}
+
+	for each (Light* light in m_lights)
+	{
+		if (!light->isVisible())
+			continue;
+
+		GLuint shaderProgramID = light->getShaderProgramId();
+		glUseProgram(shaderProgramID);
+
+		glm::mat4 modelMatrix = light->getModelMatrix();
+		glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(m_viewMatrix * modelMatrix)));
+
+		GLuint modelLoc = glGetUniformLocation(shaderProgramID, "model");
+		GLuint viewLoc = glGetUniformLocation(shaderProgramID, "view");
+		GLuint projectionLoc = glGetUniformLocation(shaderProgramID, "projection");
+		GLuint normalMatrixLoc = glGetUniformLocation(shaderProgramID, "normalMatrix");
+		GLuint nbLightLoc = glGetUniformLocation(shaderProgramID, "nbLights");
+		GLuint cameraPosition = glGetUniformLocation(shaderProgramID, "cameraPos");
+
+
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(m_viewMatrix));
+		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(m_projectionMatrix));
+		glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+		glUniform1f(nbLightLoc, m_lights.size());
+		glUniform3f(cameraPosition, m_camera->getPosition().x, m_camera->getPosition().y, m_camera->getPosition().z);
+
+		light->draw();
+	}
 }
 
 void DefaultTestLevel::createShaderPrograms()
@@ -140,15 +169,19 @@ void DefaultTestLevel::levelSetup()
 {
 
 	Object* sphere1 = new Sphere(glm::vec3(-7, 0, 0), m_materials["default"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
+	sphere1->setVisible(true);
 	m_objects.push_back(sphere1);
 
 	Object* sphere2 = new Sphere(glm::vec3(0, 0, 0), m_materials["orange"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
+	sphere2->setVisible(true);
 	m_objects.push_back(sphere2);
 
 	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
+	sphere3->setVisible(true);
 	m_objects.push_back(sphere3);
 
 	Object* model1 = ModelLoader::loadModel("./HeadModel/head_tri.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId());
+	model1->setVisible(true);
 	assert(model1, "model Not correctly loaded");
 	m_objects.push_back(model1);
 }
@@ -160,10 +193,10 @@ void DefaultTestLevel::lightSetup()
 	attenuationProp.m_linear = 0.02f;
 	attenuationProp.m_quadratic = 0.0005f;
 
-	Light* light1 = new Light(glm::vec3(0, 10, 0), m_materials["defaultLight"], attenuationProp);
+	Light* light1 = new Light(glm::vec3(0, 5, 30), m_materials["defaultLight"], attenuationProp, m_shaderPrograms["BlinnPhong"]->getId());
 	m_lights.push_back(light1);
 
-	Light* light2 = new Light(glm::vec3(-30, 40, 0), m_materials["defaultLight"], attenuationProp);
+	Light* light2 = new Light(glm::vec3(0, 2, 30), m_materials["defaultLight"], attenuationProp, m_shaderPrograms["BlinnPhong"]->getId());
 	m_lights.push_back(light2);
 }
 

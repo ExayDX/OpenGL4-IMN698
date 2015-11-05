@@ -1,15 +1,23 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
+#include "Types.h"
+#include "Scene.h"
+
+
+#include <gl/glew.h>
+
 #include <GLFW/glfw3.h>
+
 #include "GLM/glm/glm.hpp"
 #include "GLM/glm/gtc/matrix_transform.hpp"
-
 #include <vector>
+
 
 // Forward declarations
 class Camera;
 class Scene; 
+class ViewerState;
 
 class Viewer
 {
@@ -27,6 +35,13 @@ public :
 
 	void loop();
 
+	//utility function
+	void moveCamera(double xoffset, double yoffset);
+	Scene* getScene() { return m_currentScene; }
+	Camera* getCamera() { return m_camera; }
+
+	void setDrawLight(bool val) { m_scenes[0]->setDrawLight(val); }
+
 private : 
 	// Ctors/Dtors
 	Viewer();
@@ -35,7 +50,7 @@ private :
 	// Methods
 	void createWindow(); 
 	void setCallbacks();
-	void moveCamera(); 
+	void moveCameraBetweenFrame(double timeBetweenFrame); 
 	void setupViewport(); 
 
 	// Instance
@@ -45,20 +60,17 @@ private :
 	// -- Display variables
 	GLFWwindow* m_window;
 	Camera* m_camera; 
+
 	GLfloat m_width;
 	GLfloat m_height;
 	std::vector<Scene*> m_scenes;
+	Scene* m_currentScene;
 
 	// -- Time and general computation variables
 	GLfloat m_deltaTime;
 	GLfloat m_lastFrameTime;
 
-	// -- Interaction variables
-	bool m_keys[1024]; // All the keys that can be pressed
-	glm::vec2 m_lastMousePosition;
-	bool m_firstClick; 
-	bool m_wireFrameEnabled; 
-	bool m_mouseIsClicked; 
+	ViewerState* m_state;
 };
 
 #endif

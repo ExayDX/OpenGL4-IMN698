@@ -3,6 +3,8 @@
 #ifndef __MODEL_LOADER_H__
 #define __MODEL_LOADER_H__
 
+#include <gl/glew.h>
+
 #include "Object.h"
 
 #include <string>

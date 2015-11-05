@@ -1,11 +1,15 @@
 #ifndef _LIGHT_H_
 #define _LIGHT_H_
 
+#include <gl/glew.h>
+
+#include "Object.h"
 #include "glm/glm/glm.hpp"
 #include "Actor.h"
+#include "ShaderProgram.h"
 
 // Forward declaration
-//class Object; 
+class Object; 
 
 /*
 * m_Material corresponds to the force of the light source for each light's component,
@@ -15,7 +19,7 @@
 * spread in the graphics community we decided to do like everybody else...
 * Shininess doesn't mean anything for now. 
 */
-class Light : public Actor
+class Light : public Object
 {
 public:
 	struct AttenuationProperties
@@ -27,13 +31,21 @@ public:
 
 	// TODO: Manage syncing between physical representation and own actor (should be the same actor but...)
 	//Light(Object* anObject);
-	Light(glm::vec3 aPosition, Material* material, AttenuationProperties attenuationProp); 
+	Light(glm::vec3 aPosition, Material* material, AttenuationProperties attenuationProp, GLuint shaderProgram); 
 	~Light(){};
 
-	const AttenuationProperties& getAttenuationProperties(){ return m_attenuationProperties; };
+	const AttenuationProperties& getAttenuationProperties() const { return m_attenuationProperties; };
+
+	virtual void defineVBO();
+	virtual void defineVAO();
+	virtual void defineEBO();
 
 private : 
 	AttenuationProperties m_attenuationProperties;
+
+	double m_radius;
+	GLuint m_nLats;
+	GLuint m_nLongs;
 
 };
 
