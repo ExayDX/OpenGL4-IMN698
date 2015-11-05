@@ -22,12 +22,12 @@ SSSSTestLevel::SSSSTestLevel()
 // LOOP
 void SSSSTestLevel::draw()
 {
-	FrameBuffer* hdrFBO = m_frameBuffers["hdrFBO"];
-	hdrFBO->bind();
-
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	FrameBuffer* mainFBO = m_frameBuffers["mainFBO"];
+	mainFBO->bind();
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	
+	glActiveTexture(GL_TEXTURE1); // To assure that the second buffer of mainFBO be cleared
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	for each (Object* obj in m_objects)
 	{
 		GLuint shaderProgramID = obj->getShaderProgramId();
@@ -53,6 +53,9 @@ void SSSSTestLevel::draw()
 		GLuint objectSpecularLoc = glGetUniformLocation(shaderProgramID, "objectMaterial.specularCoefs");
 		GLuint objectShininessLoc = glGetUniformLocation(shaderProgramID, "objectMaterial.shininess");
 
+		// Brightness threshold
+		GLuint brightnessThresholdLoc = glGetUniformLocation(shaderProgramID, "brightnessThreshold"); 
+
 		// Display Matrixes 
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(m_viewMatrix));
@@ -66,6 +69,9 @@ void SSSSTestLevel::draw()
 		glUniform3f(objectSpecularLoc, objectMaterial->m_specularCoefs.x, objectMaterial->m_specularCoefs.y, objectMaterial->m_specularCoefs.z);
 		glUniform1f(objectShininessLoc, objectMaterial->m_shininess);
 
+		// Brightness threshold
+		glUniform3f(brightnessThresholdLoc, 0.7f, 0.7f, 0.7f); 
+
 		// Lights information
 		for (int i = 0; i < m_lights.size(); ++i)
 		{
@@ -73,80 +79,79 @@ void SSSSTestLevel::draw()
 			const Material* lightMaterial = m_lights[i]->getMaterial();
 			Light::AttenuationProperties lightProperties = m_lights[i]->getAttenuationProperties();
 
-			GLuint lightPositionLoc = glGetUniformLocation(shaderProgramID, ("lightsPositions[" + std::to_string(i) + "]").c_str());
-			GLuint lightAmbientLoc = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].material.ambientCoefs").c_str());
-			GLuint lightDiffuseLoc = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].material.diffuseCoefs").c_str());
-			GLuint lightSpecularLoc = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].material.specularCoefs").c_str());
+			GLuint lightPositionLoc  = glGetUniformLocation(shaderProgramID, ("lightsPositions["  + std::to_string(i) + "]").c_str());
+			GLuint lightAmbientLoc   = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].material.ambientCoefs").c_str());
+			GLuint lightDiffuseLoc   = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].material.diffuseCoefs").c_str());
+			GLuint lightSpecularLoc  = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].material.specularCoefs").c_str());
 			GLuint lightShininessLoc = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].material.shininess").c_str());
-			GLuint lightAttConstant = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].constant").c_str());
-			GLuint lightAttLinear = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].linear").c_str());
+			GLuint lightAttConstant	 = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].constant").c_str());
+			GLuint lightAttLinear	 = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].linear").c_str());
 			GLuint lightAttQuadratic = glGetUniformLocation(shaderProgramID, ("lightsProperties[" + std::to_string(i) + "].quadratic").c_str());
 
-			glUniform3f(lightPositionLoc, lightPosition.x, lightPosition.y, lightPosition.z);
-			glUniform3f(lightAmbientLoc, lightMaterial->m_ambientCoefs.x, lightMaterial->m_ambientCoefs.y, lightMaterial->m_ambientCoefs.z);
-			glUniform3f(lightDiffuseLoc, lightMaterial->m_diffuseCoefs.x, lightMaterial->m_diffuseCoefs.y, lightMaterial->m_diffuseCoefs.z);
-			glUniform3f(lightSpecularLoc, lightMaterial->m_specularCoefs.x, lightMaterial->m_specularCoefs.y, lightMaterial->m_specularCoefs.z);
+			glUniform3f(lightPositionLoc,  lightPosition.x,                  lightPosition.y,                  lightPosition.z);
+			glUniform3f(lightAmbientLoc,   lightMaterial->m_ambientCoefs.x,  lightMaterial->m_ambientCoefs.y,  lightMaterial->m_ambientCoefs.z);
+			glUniform3f(lightDiffuseLoc,   lightMaterial->m_diffuseCoefs.x,  lightMaterial->m_diffuseCoefs.y,  lightMaterial->m_diffuseCoefs.z);
+			glUniform3f(lightSpecularLoc,  lightMaterial->m_specularCoefs.x, lightMaterial->m_specularCoefs.y, lightMaterial->m_specularCoefs.z);
 			glUniform1f(lightShininessLoc, lightMaterial->m_shininess);
-			glUniform1f(lightAttConstant, lightProperties.m_constant);
-			glUniform1f(lightAttLinear, lightProperties.m_linear);
+			glUniform1f(lightAttConstant,  lightProperties.m_constant);
+			glUniform1f(lightAttLinear,    lightProperties.m_linear);
 			glUniform1f(lightAttQuadratic, lightProperties.m_quadratic);
 		}
 
 		obj->draw();
 	}
 
-	// Get shader programs that will be used as post processes
-	GLboolean bloom = false; 
-	GLuint BloomHDRProg = m_shaderPrograms["BloomHDR"]->getId(),
-		   BlurProg		= m_shaderPrograms["Blur"]->getId();
+	mainFBO->unBind();
 
-	FrameBuffer* ppFBO = nullptr;
-	
+	// Post Processes 
+	GLboolean bloom = true; 
+
+	// Initialize buffers 
+	GLuint mainBuffer, finalBuffer; 
+	mainBuffer = mainFBO->getRenderBuffer(FrameBuffer::BufferType::eColor, 0);
+	finalBuffer = mainFBO->getRenderBuffer(FrameBuffer::BufferType::eColor, 1);
+
 	if (bloom)
 	{
-		// Blur bright fragments (Bloom)
+		// Set inital values
 		GLboolean horizontal = true;
+		GLuint BlurProg = m_shaderPrograms["Blur"]->getId(); // Gaussian Blur PP.
+
+		FrameBuffer* ppFBOs[2] = { m_frameBuffers["ppFBO0"], m_frameBuffers["ppFBO1"] };
+		GLuint ppTex[2] = { ppFBOs[0]->getRenderBuffer(FrameBuffer::BufferType::eColor, 0),
+							ppFBOs[1]->getRenderBuffer(FrameBuffer::BufferType::eColor, 0) };
+
 		GLuint amount = 10;
 		glUseProgram(BlurProg);
-
+	
 		for (GLuint i = 0; i < amount; ++i)
 		{
-			// Get the right FBO and color buffer
-			GLuint textureBO;
+			if (i != 0)
+				finalBuffer = ppTex[!horizontal];
 
-			if (horizontal)
-				ppFBO = m_frameBuffers["ppFBO1"];
-			else
-				ppFBO = m_frameBuffers["ppFBO0"];
-
-			if (i == 0)
-				textureBO = hdrFBO->getRenderBuffer(FrameBuffer::BufferType::eColor, 1);
-			else
-				textureBO = ppFBO->getRenderBuffer(FrameBuffer::BufferType::eColor, 0);
-
-			ppFBO->bind();
-
-			// Assign uniforms
+			glBindFramebuffer(GL_FRAMEBUFFER, ppFBOs[horizontal]->getId());
 			glUniform1i(glGetUniformLocation(BlurProg, "horizontal"), horizontal);
-			glBindTexture(GL_TEXTURE_2D, textureBO);
-			m_renderQuad->draw();
+			glActiveTexture(GL_TEXTURE0); 
+			glBindTexture(GL_TEXTURE_2D, finalBuffer );  // bind texture of other framebuffer (or scene if first iteration)
+			m_renderQuad->draw(); 
 			horizontal = !horizontal;
 		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0); 
 	}
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// blababla
-	GLuint finalBuffer = hdrFBO->getRenderBuffer(FrameBuffer::BufferType::eColor, 0);
+	
+	//  ...
+	GLuint BloomHDRProg = m_shaderPrograms["BloomHDR"]->getId(); 
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(BloomHDRProg); 
-	glActiveTexture(GL_TEXTURE0); 
-	glBindTexture(GL_TEXTURE_2D, finalBuffer); 
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, bloom? ppFBO->getRenderBuffer(FrameBuffer::BufferType::eColor, 0) : finalBuffer); 
+	glUniform1i(glGetUniformLocation(BloomHDRProg, "scene"), 0);
+	glUniform1i(glGetUniformLocation(BloomHDRProg, "bloomBlur"), 1);
 	glUniform1i(glGetUniformLocation(BloomHDRProg, "exposure"), bloom);
 	glUniform1f(glGetUniformLocation(BloomHDRProg, "exposure"), 1.5);
+	glActiveTexture(GL_TEXTURE0); 
+	glBindTexture(GL_TEXTURE_2D, mainBuffer);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, finalBuffer);
 	m_renderQuad->draw();
 }
 
@@ -159,8 +164,10 @@ void SSSSTestLevel::createShaderPrograms()
 
 	// -- PostProcess Shaders
 	ShaderProgram* BlurProgram = new ShaderProgram("basicPPVS.vs", "GaussianBlur.fg");
-	ShaderProgram* SSSProgram = new ShaderProgram("SSS.vs", "SSS.fg");
+	ShaderProgram* SSSProgram = new ShaderProgram("basicPPVS.vs", "SSS.fg");
 	ShaderProgram* BloomHDRProgram = new ShaderProgram("basicPPVS.vs", "BloomHDR.fg");
+	ShaderProgram* HDRProgram = new ShaderProgram("basicPPVS.vs", "hdr.fg");
+	ShaderProgram* DebugProgram = new ShaderProgram("Debug.vs", "Debug.fg"); 
 
 	// Insert ShaderProgram in the list
 	// -- Render Shaders
@@ -171,6 +178,9 @@ void SSSSTestLevel::createShaderPrograms()
 	m_shaderPrograms["Blur"] =  BlurProgram;
 	m_shaderPrograms["SSS"] = SSSProgram;
 	m_shaderPrograms["BloomHDR"] = BloomHDRProgram;
+	m_shaderPrograms["HDR"] = HDRProgram; 
+
+	m_shaderPrograms["Debug"] = DebugProgram; 
 }
 
 void SSSSTestLevel::createMaterials()
@@ -209,7 +219,8 @@ void SSSSTestLevel::levelSetup()
 	Object* sphere2 = new Sphere(glm::vec3(0, 0, 0), m_materials["orange"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
 	m_objects.push_back(sphere2);
 	
-	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["SSS"]->getId());
+	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
+	sphere3->addPostProcess(m_shaderPrograms["SSS"]->getId()); 
 	m_objects.push_back(sphere3);
 
 	//Object* model1 = ModelLoader::loadModel("./HeadModel/head_tri.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId());
@@ -237,9 +248,9 @@ void SSSSTestLevel::lightSetup()
 void SSSSTestLevel::buffersSetup()
 {
 	// Create and Frame buffers
-	FrameBuffer* hdrFBO = new FrameBuffer();
-	FrameBuffer* ppFBO0 = new FrameBuffer();
-	FrameBuffer* ppFBO1 = new FrameBuffer();
+	FrameBuffer* mainFBO = new FrameBuffer();
+	FrameBuffer* ppFBO0 = new FrameBuffer(); // ping pong FrameBuffer
+	FrameBuffer* ppFBO1 = new FrameBuffer(); // ping pong FrameBuffer
 
 	// Define colorBuffers parameters 
 	FrameBuffer::ParameterMap colorBufferParam;
@@ -249,11 +260,12 @@ void SSSSTestLevel::buffersSetup()
 	colorBufferParam[GL_TEXTURE_WRAP_T] = GL_CLAMP_TO_EDGE;
 
 	// Create FBO0 RenderBuffers
-	hdrFBO->bind();
+	mainFBO->bind();
 	{
-		hdrFBO->addBuffer(FrameBuffer::BufferType::eColor, 0, &colorBufferParam);
-		hdrFBO->addBuffer(FrameBuffer::BufferType::eColor, 1, &colorBufferParam);
-		hdrFBO->addBuffer(FrameBuffer::BufferType::eDepth, 0);
+		mainFBO->addBuffer(FrameBuffer::BufferType::eColor, 0, &colorBufferParam); // Main rendering
+		mainFBO->addBuffer(FrameBuffer::BufferType::eColor, 1, &colorBufferParam); // Brightness treshold value (for bloom and tone mapping)
+		mainFBO->addBuffer(FrameBuffer::BufferType::eDepth, 0); 
+		//mainFBO->addBuffer(FrameBuffer::BufferType::eStencil, 0); // Subsurface scattering stencil buffer
 
 		//// Attachments
 		GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
@@ -262,9 +274,8 @@ void SSSSTestLevel::buffersSetup()
 		// -- Check if Frame buffer is complete
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete!" << std::endl;
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
-	hdrFBO->unBind();
+	mainFBO->unBind(); 
 
 	// Create PingPong FrameBuffers
 	ppFBO0->bind();
@@ -275,17 +286,16 @@ void SSSSTestLevel::buffersSetup()
 	
 	}
 	ppFBO0->unBind();
-
 	ppFBO1->bind();
 	{
 		ppFBO1->addBuffer(FrameBuffer::BufferType::eColor, 0, &colorBufferParam);
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			std::cout << "Framebuffer not complete!" << std::endl;
 	}
 	ppFBO1->unBind(); 
 
 	// Add all framebuffers 
-	m_frameBuffers["hdrFBO"] = hdrFBO;
+	m_frameBuffers["mainFBO"] = mainFBO;
 	m_frameBuffers["ppFBO0"] = ppFBO0;
 	m_frameBuffers["ppFBO1"] = ppFBO1; 
-
-
 }

@@ -168,14 +168,15 @@
     <None Include="BlinnPhong.fg" />
     <None Include="BlinnPhong.vs" />
     <None Include="BloomHDR.fg" />
+    <None Include="Debug.vs" />
     <None Include="GammaCorrect.fg" />
     <None Include="GaussianBlur.fg" />
     <None Include="hdr.fg" />
     <None Include="basicPPVS.vs" />
     <None Include="BumpColorMaps.fg" />
     <None Include="BumpColorMaps.vs" />
+    <None Include="Debug.fg" />
     <None Include="SSS.fg" />
-    <None Include="SSS.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

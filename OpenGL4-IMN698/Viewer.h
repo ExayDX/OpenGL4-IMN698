@@ -48,6 +48,7 @@ private :
 	GLfloat m_width;
 	GLfloat m_height;
 	std::vector<Scene*> m_scenes;
+	GLboolean m_viewingIsOver; 
 
 	// -- Time and general computation variables
 	GLfloat m_deltaTime;

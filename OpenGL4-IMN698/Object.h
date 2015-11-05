@@ -37,7 +37,7 @@ protected :
 
 	// Object's look characteristics
 	GLuint m_shaderProgram; 
-	std::vector<GLuint> m_postProcesses; // These will be applyed in the order they have been set in. 
+	std::vector<GLuint> m_postProcesses; // This is used for postProcess effects that only applies to certain objects. 
 
 	// Object's shape definition variables
 	GLuint m_VBO;

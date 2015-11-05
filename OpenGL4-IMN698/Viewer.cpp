@@ -212,6 +212,8 @@ void Viewer::setupViewport()
 
 	// Set GL options
 	glEnable(GL_DEPTH_TEST);
+	// HACK : glDepthFunc(GL_LESS);
+	// HACK : glEnable(GL_STENCIL_TEST);
 }
 
 /*
@@ -223,6 +225,7 @@ Viewer::Viewer()
 	, m_camera(nullptr)
 	, m_wireFrameEnabled(false)
 	, m_mouseIsClicked(false)
+	, m_viewingIsOver(false)
 {
 	// GLFW initialization
 	if (!glfwInit())
@@ -279,15 +282,22 @@ void Viewer::loop()
 	Scene* currentScene = *sceneIterator;
 	currentScene->Initialize();
 
-	while (!glfwWindowShouldClose(m_window))
+	while (!glfwWindowShouldClose(m_window) && !m_viewingIsOver)
 	{
 		// Verify if level is still active
 		if (currentScene->getLevelIsDone())
 		{
 			currentScene->sceneTearDown();
 			++sceneIterator;
-			currentScene = *sceneIterator; 
-			currentScene->Initialize(); 
+			if (sceneIterator != m_scenes.end())
+			{
+				currentScene = *sceneIterator;
+				currentScene->Initialize();
+			}
+			else
+			{
+				m_viewingIsOver = true; 
+			}
 		}
 		
 		// Get time information

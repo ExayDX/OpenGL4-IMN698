@@ -106,9 +106,6 @@
     <None Include="SSS.fg">
       <Filter>Shaders\PostProcesses</Filter>
     </None>
-    <None Include="SSS.vs">
-      <Filter>Shaders\PostProcesses</Filter>
-    </None>
     <None Include="BumpColorMaps.fg">
       <Filter>Shaders\RenderingPass</Filter>
     </None>
@@ -129,6 +126,12 @@
     </None>
     <None Include="BloomHDR.fg">
       <Filter>Shaders\PostProcesses</Filter>
+    </None>
+    <None Include="Debug.vs">
+      <Filter>Shaders\RenderingPass</Filter>
+    </None>
+    <None Include="Debug.fg">
+      <Filter>Shaders\RenderingPass</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

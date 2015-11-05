@@ -61,7 +61,10 @@ void FrameBuffer::addBuffer(BufferType bufferType, GLuint attachmentPos, Paramet
 	}
 	else if (bufferType == BufferType::eStencil)
 	{
-		//...
+		glGenRenderbuffers(1, &data);
+		glBindRenderbuffer(GL_RENDERBUFFER, data);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX, m_width, m_height);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, data);
 	}
 	else
 	{

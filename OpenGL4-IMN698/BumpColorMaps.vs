@@ -14,6 +14,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 uniform mat3 normalMatrix;
+out vec3 Normal; // HACK
 
 // Lights information
 #define NB_LIGHTS 2
@@ -41,7 +42,7 @@ void main()
 	// Return values
 	vs_out.TexCoords = vec2(texCoords.x, 1 - texCoords.y);
 	vs_out.TBNViewPosition = TBN * vec3(0.0f, 0.0f, 0.0f); // Camera is at 0.0f,0.0f,0.0f; 
-	vs_out.FragPosition = TBN * vec3(model * view * vec4(position, 1.0));
+	vs_out.FragPosition = TBN * vec3( view *  model * vec4(position, 1.0));
 	
 	for(int i =0; i < NB_LIGHTS; ++i)
 	{
