@@ -14,7 +14,6 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 uniform mat3 normalMatrix;
-out vec3 Normal; // HACK
 
 // Lights information
 #define NB_LIGHTS 2

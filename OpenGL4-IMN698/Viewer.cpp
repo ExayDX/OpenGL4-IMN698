@@ -212,8 +212,8 @@ void Viewer::setupViewport()
 
 	// Set GL options
 	glEnable(GL_DEPTH_TEST);
-	// HACK : glDepthFunc(GL_LESS);
-	// HACK : glEnable(GL_STENCIL_TEST);
+	glDepthFunc(GL_LESS);
+	glEnable(GL_STENCIL_TEST);
 }
 
 /*

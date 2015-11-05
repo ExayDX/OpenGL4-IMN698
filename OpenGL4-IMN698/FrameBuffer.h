@@ -32,9 +32,6 @@ public:
 	GLuint getId(){ return m_id; }
 	const GLuint getRenderBuffer(BufferType bufferType, GLuint id); 
 	static void setDimensions(GLuint width, GLuint height);
-	static GLuint Width(){ return m_width; }; // HACK
-	static GLuint Height(){ return m_height; }; // HACK
-
 
 protected : 
 	GLuint m_id; 
