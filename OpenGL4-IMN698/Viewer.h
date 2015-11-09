@@ -85,8 +85,6 @@ private :
 
 	ConsoleListener* m_listener;
 
-	glm::vec2 m_lastMousePosition;
-
 	Clock::time_point m_lastTime;
 	int m_currentFrame;
 };

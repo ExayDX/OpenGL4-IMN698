@@ -140,7 +140,6 @@
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Quad.cpp" />
-    <ClCompile Include="ObjMesh.cpp" />
     <ClCompile Include="ObjModelLoader.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
@@ -163,10 +162,8 @@
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Quad.h" />
-    <ClInclude Include="ObjMesh.h" />
     <ClInclude Include="ObjModelLoader.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="SeparableSSS.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SSSSTestLevel.h" />

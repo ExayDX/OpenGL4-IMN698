@@ -6,12 +6,11 @@
 #include "GLM/glm/gtc/constants.hpp"
 
 Light::Light(glm::vec3 aPosition, Material* aMaterial, AttenuationProperties attenuationProp, GLuint aShaderProgram)
-	: Object(aPosition, aMaterial, aShaderProgram) // HACK.
+	: Object(aPosition, aMaterial, aShaderProgram)
 	, m_attenuationProperties(attenuationProp)
-	//, m_physicalRepresentation(nullptr)
-	, m_radius(1)	// HACK : Hardcoded parameters.... ???
-	, m_nLats(100)	// HACK : Hardcoded parameters.... ???
-	, m_nLongs(40)	// HACK : Hardcoded parameters.... ???
+	, m_radius(1)
+	, m_nLats(100)
+	, m_nLongs(40)
 {
 	setupObject(); 
 }

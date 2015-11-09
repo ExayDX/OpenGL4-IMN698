@@ -174,7 +174,6 @@ Viewer::Viewer()
 	: m_camera(nullptr)
 	, m_viewingIsOver(false)
 	, m_currentScene(nullptr)
-	, m_lastMousePosition(0, 0)
 {
 	// GLFW initialization
 	if (!glfwInit())
@@ -202,7 +201,7 @@ Viewer::Viewer()
 
 	m_camera = new Camera(&glm::vec3(0.0f, 1.0f, 0.0f), &glm::vec3(0.0f, 0.0f, 10.0f), &glm::vec3(0, 0, 0));
 	m_scenes.push_back(new DefaultTestLevel()); 
-	m_listener = new ConsoleListener(this);
+	m_listener = new ConsoleListener();
 
 	//start animation once scene is ready
 	m_currentFrame = 0;
@@ -295,7 +294,10 @@ void Viewer::loop()
 			m_lastTime = now;
 		}
 
+		m_currentScene->preDraw();
 		m_currentScene->draw(m_currentFrame);
+		m_currentScene->postDraw();
+		
 		// Swap the buffers
 		glfwSwapBuffers(m_window);
 	}

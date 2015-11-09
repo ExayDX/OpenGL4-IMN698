@@ -3,30 +3,29 @@
 #ifndef __BoundingBox_H__
 #define __BoundingBox_H__
 
+#include "Types.h"
+
 #include <gl/glew.h>
-#include <iostream>
 #include "GLM/glm/glm.hpp"
 
 
 struct Ray
 {
-	Ray(glm::vec3 origin, glm::vec3 direction, double min, double max) :
+	Ray(Vec3 origin, Vec3 direction, double min, double max) :
 		m_o(origin),
 		m_d(direction),
 		m_mint(min),
 		m_maxt(max)
 	{}
-	glm::vec3 m_o;
-	glm::vec3 m_d;
+
+	Vec3 m_o;
+	Vec3 m_d;
 	double m_mint;
 	double m_maxt;
 };
 
 class BoundingBox 
 {
-
-public:
-	typedef glm::vec3 Point;
 
 public:
 

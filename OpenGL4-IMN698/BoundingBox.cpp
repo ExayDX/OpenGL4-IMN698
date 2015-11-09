@@ -43,9 +43,9 @@ bool BoundingBox::overlaps(const BoundingBox& a_bb) const
 
 bool BoundingBox::contains(const Point& a_p) const
 {
-	return a_p.x < m_pMax.x && a_p.x > m_pMin.x &&
-		a_p.y < m_pMax.y && a_p.y > m_pMin.y &&
-		a_p.z < m_pMax.z && a_p.z > m_pMin.z;
+	return a_p.x <= m_pMax.x && a_p.x >= m_pMin.x &&
+		a_p.y <= m_pMax.y && a_p.y >= m_pMin.y &&
+		a_p.z <= m_pMax.z && a_p.z >= m_pMin.z;
 }
 
 bool BoundingBox::intersect(const Ray& a_r, double& a_t0, double& a_t1) const
@@ -73,7 +73,7 @@ bool BoundingBox::intersect(const Ray& a_r, double& a_t0, double& a_t1) const
 	return a_t0InBound && a_t0 <= a_t1;
 }
 
-BoundingBox combine(const BoundingBox& a_bb, const BoundingBox::Point& a_p)
+BoundingBox combine(const BoundingBox& a_bb, const Point& a_p)
 {
 	double minX = std::min(a_bb.m_pMin.x, a_p.x);
 	double minY = std::min(a_bb.m_pMin.y, a_p.y);
@@ -82,7 +82,7 @@ BoundingBox combine(const BoundingBox& a_bb, const BoundingBox::Point& a_p)
 	double maxY = std::max(a_bb.m_pMax.y, a_p.y);
 	double maxZ = std::max(a_bb.m_pMax.z, a_p.z);
 
-	return BoundingBox(BoundingBox::Point(minX, minY, minZ), BoundingBox::Point(maxX, maxY, maxZ));
+	return BoundingBox(Point(minX, minY, minZ), Point(maxX, maxY, maxZ));
 }
 
 BoundingBox combine(const BoundingBox& a_bb1, const BoundingBox& a_bb2)
@@ -94,5 +94,5 @@ BoundingBox combine(const BoundingBox& a_bb1, const BoundingBox& a_bb2)
 	double maxY = std::max(a_bb1.m_pMax.y, a_bb2.m_pMax.y);
 	double maxZ = std::max(a_bb1.m_pMax.z, a_bb2.m_pMax.z);
 
-	return BoundingBox(BoundingBox::Point(minX, minY, minZ), BoundingBox::Point(maxX, maxY, maxZ));
+	return BoundingBox(Point(minX, minY, minZ), Point(maxX, maxY, maxZ));
 }

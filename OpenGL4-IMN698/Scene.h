@@ -45,6 +45,8 @@ public :
 	virtual void Initialize(); 
 	virtual void sceneTearDown();
 
+	virtual void preDraw();
+	virtual void postDraw();
 	virtual void draw(int currentFrame) = 0;
 
 	virtual void setViewMatrix(const glm::mat4& aViewMatrix){ m_viewMatrix = aViewMatrix; }

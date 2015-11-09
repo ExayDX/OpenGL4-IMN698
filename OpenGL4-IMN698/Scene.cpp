@@ -112,3 +112,13 @@ std::vector<std::string> Scene::getShaderList() const
 	return shaders;
 }
 
+void Scene::preDraw()
+{
+	loadPendingModels();
+	m_objectVectorMutex.lock();
+}
+
+void Scene::postDraw()
+{
+	m_objectVectorMutex.unlock();
+}

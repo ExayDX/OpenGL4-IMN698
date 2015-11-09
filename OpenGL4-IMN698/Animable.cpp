@@ -3,16 +3,20 @@
 #include "Animable.h"
 
 
-Animation::Animation(int frameNumber) :
-	m_frameNumber(frameNumber),
-	m_loopback(false)
+Animation::Animation() :
+	m_frameNumber(),
+	m_loopback(false),
+	m_frames()
 {
-	for (int i = 0; i < frameNumber; ++i)
-	{
-		//Prepare the list of n frames but they are identity transformations
-		m_frames.push_back(Frame(Matrix4x4())); 
-	}
 }
+
+Animation::Animation(std::list<Frame> frames) :
+	m_frameNumber(frames.size()),
+	m_loopback(false),
+	m_frames(frames)
+{
+}
+
 
 //insert frame at index
 void Animation::addFrame(int frameNumber, Frame frame)

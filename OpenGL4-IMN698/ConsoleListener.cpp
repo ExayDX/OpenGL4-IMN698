@@ -7,8 +7,7 @@
 #include <string>
 #include <fstream>
 
-ConsoleListener::ConsoleListener(Viewer* viewer) :
-	m_viewer(viewer)
+ConsoleListener::ConsoleListener()
 {
 	m_thread = std::thread(&ConsoleListener::listen, this);
 }
@@ -46,7 +45,7 @@ void ConsoleListener::analyseInput(const std::string& action)
 		if (arg == "shaders")
 		{
 			//TODO
-			std::vector<std::string> shaderList = m_viewer->getCurrentScene()->getShaderList();
+			std::vector<std::string> shaderList = Viewer::getInstance()->getCurrentScene()->getShaderList();
 
 			for each (std::string shader in shaderList)
 			{
@@ -66,20 +65,37 @@ void ConsoleListener::analyseInput(const std::string& action)
 
 		if (pathIsValid(path))
 		{
+
 			std::cout << "Enter position (x,y,z): ";
 			std::string positionStr;
 			std::cin >> positionStr;
-			Vec3 position = positionStrToVec3(positionStr);
+			Vec3 position;
+			bool positionValid = false;
+			try 
+			{
+				position = positionStrToVec3(positionStr);
+				positionValid = true;
+			}
+			catch (const std::exception e)
+			{
+				std::cout << "Invalid position, aborting command" << std::endl;
+			}
 
-			std::cout << "Enter shading program: ";
-			std::string shaderProgram;
-			std::cin >> shaderProgram;
+			if (positionValid)
+			{
+				std::cout << "Enter shading program: ";
+				std::string shaderProgram;
+				std::cin >> shaderProgram;
 
-			m_viewer->loadModel(path, position, shaderProgram);
+				if (shaderProgramIsValid(shaderProgram))
+					Viewer::getInstance()->loadModel(path, position, shaderProgram);
+				else
+					std::cout << "Invalid shader program, aborting command" << std::endl;
+			}
 		}
 		else
 		{
-			std::cout << "Invalid path, abording command" << std::endl;
+			std::cout << "Invalid path, aborting command" << std::endl;
 		}
 	}
 	else
@@ -99,6 +115,19 @@ bool ConsoleListener::pathIsValid(const std::string& path)
 		return false;
 	}
 	return true;
+}
+
+bool ConsoleListener::shaderProgramIsValid(const std::string& shaderProgram)
+{
+	std::vector<std::string> shaderList =  Viewer::getInstance()->getCurrentScene()->getShaderList();
+
+	for (int i = 0; i < shaderList.size(); ++i)
+	{
+		if (shaderList[i] == shaderProgram)
+			return true;
+	}
+
+	return false;
 }
 
 Vec3 ConsoleListener::positionStrToVec3(std::string& positionStr)

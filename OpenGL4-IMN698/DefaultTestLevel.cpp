@@ -20,9 +20,6 @@ DefaultTestLevel::DefaultTestLevel()
 // LOOP
 void DefaultTestLevel::draw(int currentFrame)
 {
-	loadPendingModels();
-	std::lock_guard<std::mutex> lock(m_objectVectorMutex);
-
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for each (Object* obj in m_objects)
@@ -172,19 +169,15 @@ void DefaultTestLevel::levelSetup()
 {
 
 	Object* sphere1 = new Sphere(glm::vec3(-7, 0, 0), m_materials["default"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
-	sphere1->setVisible(true);
 	m_objects.push_back(sphere1);
 
-	//Object* sphere2 = new Sphere(glm::vec3(0, 0, 0), m_materials["orange"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
-	//sphere2->setVisible(true);
-	//m_objects.push_back(sphere2);
-
-	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
-	sphere3->setVisible(true);
-	m_objects.push_back(sphere3);
+	Object* sphere2 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
+	m_objects.push_back(sphere2);
 
 	ModelContainer* model1 = ModelLoader::loadModel("./HeadModel/head_tri_non_smooth.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId());
-	Animation* anim = new Animation(3600);
+
+	//Head rotation animation
+	Animation* anim = new Animation();
 	for (int i = 0; i < 3600; ++i)
 	{
 		Matrix4x4 m1;
@@ -192,8 +185,8 @@ void DefaultTestLevel::levelSetup()
 		Frame f(m1);
 		anim->addFrame(i, f);
 	}
+
 	model1->setAnimation(anim);
-	model1->setVisible(true);
 	model1->smoothNormals();
 
 	m_objects.push_back(model1);
