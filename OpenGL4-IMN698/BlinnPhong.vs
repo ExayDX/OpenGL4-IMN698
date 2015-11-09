@@ -1,16 +1,20 @@
 #version 330 core
   
+// Vertex Layout
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 
-#define NB_LIGHTS 2
-
+// Scene Matrixes 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 uniform mat3 normalMatrix; 
+
+// Lights information
+#define NB_LIGHTS 2
 uniform vec3 lightsPositions[NB_LIGHTS]; 
 
+// Return values
 out vec3 Normal; 
 out vec3 FragPosition;
 out vec3 LightsPositions[NB_LIGHTS]; 

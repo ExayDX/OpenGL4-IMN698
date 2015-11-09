@@ -48,6 +48,11 @@ void Sphere::defineVBO()
 		}
 	}
 
+	for (int i = 0; i < vertices.size(); i += 3)
+	{
+		m_vertices.push_back(Vertice(vertices[i], vertices[i + 1], vertices[i + 2]));
+	}
+
 	glGenBuffers(1, &m_VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), &vertices[0], GL_STATIC_DRAW);

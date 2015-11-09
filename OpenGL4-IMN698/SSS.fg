@@ -1,0 +1,18 @@
+#version 330 core
+out vec4 color;
+in vec2 TexCoords;
+
+uniform sampler2D scene; // this pass is done as a postprocess on the whole rendered scene
+uniform sampler2D stencil; // Isolate only the pixels of the objects that uses SSS
+
+void main()
+{         
+	vec3 fg = texture(stencil, TexCoords).rgb; 
+	float isConsidered = texture(stencil, TexCoords).r; 
+    if(isConsidered > 0)
+	{
+		
+	}
+	
+	color = vec4(fg, 1.0f); 
+}

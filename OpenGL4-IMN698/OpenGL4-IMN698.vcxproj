@@ -128,38 +128,60 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DefaultTestLevel.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Quad.cpp" />
     <ClCompile Include="ObjMesh.cpp" />
     <ClCompile Include="ObjModelLoader.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="Types.glsl" />
+    <ClCompile Include="SSSSTestLevel.cpp" />
     <ClCompile Include="Viewer.cpp" />
+    <ClCompile Include="ViewerState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
+    <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="DefaultTestLevel.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="Quad.h" />
     <ClInclude Include="ObjMesh.h" />
     <ClInclude Include="ObjModelLoader.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="SeparableSSS.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="SSSSTestLevel.h" />
+    <ClInclude Include="Types.h" />
     <ClInclude Include="Viewer.h" />
+    <ClInclude Include="ViewerState.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="defaultFS.glsl" />
-    <None Include="defaultVS.glsl" />
-    <None Include="Phong.fg" />
-    <None Include="Phong.vs" />
+    <None Include="AdditiveBlending.fg" />
+    <None Include="BlinnPhong.fg" />
+    <None Include="BlinnPhong.vs" />
+    <None Include="BloomHDR.fg" />
+    <None Include="Debug.vs" />
+    <None Include="GammaCorrect.fg" />
+    <None Include="GaussianBlur.fg" />
+    <None Include="hdr.fg" />
+    <None Include="basicPPVS.vs" />
+    <None Include="BumpColorMaps.fg" />
+    <None Include="BumpColorMaps.vs" />
+    <None Include="Debug.fg" />
+    <None Include="SSS.fg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

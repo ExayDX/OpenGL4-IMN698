@@ -12,6 +12,12 @@
 #include "Viewer.h"
 #include "Camera.h"
 #include "Scene.h"
+#include "DefaultTestLevel.h"
+#include "SSSSTestLevel.h"
+#include "FrameBuffer.h"
+#include "ShaderProgram.h"
+#include "Quad.h"
+#include "ViewerState.h"
 
 
 Viewer* Viewer::m_instance = nullptr; 
@@ -54,34 +60,8 @@ void Viewer::error_callback_impl(int error, const char* description)
 
 void Viewer::key_callback_impl(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	// Escape application
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GL_TRUE);
-
-	// Wireframe management
-	if (key == GLFW_KEY_L && action == GLFW_PRESS)
-	{
-		if (m_wireFrameEnabled)
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			m_wireFrameEnabled = false; 
-		}
-		else
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			m_wireFrameEnabled = true;
-		}
-			
-	}
-	
-	// Realtime (key held) interaction management
-	if (key >= 0 && key < 1024)
-	{
-		if (action == GLFW_PRESS)
-			m_keys[key] = true;
-		else if (action == GLFW_RELEASE)
-			m_keys[key] = false;
-	}
+	// Mode management according to key entered (Managed by Viewer's viewerState)
+	m_state->handleKeyboardInput(window, key, scancode, action);
 }
 
 void Viewer::window_size_callback_impl(GLFWwindow* window, int width, int height)
@@ -89,38 +69,17 @@ void Viewer::window_size_callback_impl(GLFWwindow* window, int width, int height
 	glfwSetWindowSize(window, width, height); 
 	m_width = width; 
 	m_height = height; 
+	FrameBuffer::setDimensions(m_width, m_height); 
 }
 
 void Viewer::mouse_callback_impl(GLFWwindow* window, double xpos, double ypos)
 {	
-	if (m_mouseIsClicked)
-	{
-		if (m_firstClick)
-		{
-			m_lastMousePosition.x = xpos;
-			m_lastMousePosition.y = ypos;
-			m_firstClick = false;
-		}
-
-		GLfloat xoffset = xpos - m_lastMousePosition.x;
-		GLfloat yoffset = m_lastMousePosition.y - ypos; // Y coordinates range from bottom to top
-
-		m_lastMousePosition.x = xpos;
-		m_lastMousePosition.y = ypos;
-
-		m_camera->rotate(xoffset, yoffset);
-	}
+	m_state->handleMouseMovement(xpos, ypos);
 }
 
 void Viewer::mouse_button_callback_impl(GLFWwindow* window, int button, int action, int mods)
 {
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-	{
-		m_mouseIsClicked = true;
-		m_firstClick = true;
-	}
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
-		m_mouseIsClicked = false; 
+	m_state->handleMouseClick(window, button, action);
 }
 
 void Viewer::scroll_callback_impl(GLFWwindow* window, double xoffset, double yoffset)
@@ -129,21 +88,25 @@ void Viewer::scroll_callback_impl(GLFWwindow* window, double xoffset, double yof
 }
 
 // Viewer class
+// According to how the viewerstate is currently made, shouldn't this be in viewerstate?
 void Viewer::moveCamera()
 {
-	// Camera controls
-	if (m_keys[GLFW_KEY_W])
-		m_camera->move(Camera::CameraDirection::eForward, m_deltaTime);
-	if (m_keys[GLFW_KEY_S])
-		m_camera->move(Camera::CameraDirection::eBackward, m_deltaTime);
-	if (m_keys[GLFW_KEY_A])
-		m_camera->move(Camera::CameraDirection::eLeft, m_deltaTime);
-	if (m_keys[GLFW_KEY_D])
-		m_camera->move(Camera::CameraDirection::eRight, m_deltaTime);
-	if (m_keys[GLFW_KEY_Z])
-		m_camera->zoom(0.001);
-	if (m_keys[GLFW_KEY_X])
-		m_camera->zoom(-0.001);
+	if (m_state->getInteractionMode() != LOCKED)
+	{
+		// Camera controls
+		if (m_state->getKeys()[GLFW_KEY_W])
+			m_camera->move(Camera::CameraDirection::eForward, m_deltaTime);
+		if (m_state->getKeys()[GLFW_KEY_S])
+			m_camera->move(Camera::CameraDirection::eBackward, m_deltaTime);
+		if (m_state->getKeys()[GLFW_KEY_A])
+			m_camera->move(Camera::CameraDirection::eLeft, m_deltaTime);
+		if (m_state->getKeys()[GLFW_KEY_D])
+			m_camera->move(Camera::CameraDirection::eRight, m_deltaTime);
+		if (m_state->getKeys()[GLFW_KEY_Z])
+			m_camera->zoom(0.001);
+		if (m_state->getKeys()[GLFW_KEY_X])
+			m_camera->zoom(-0.001);
+	}
 }
 
 Viewer* Viewer::getInstance()
@@ -187,7 +150,7 @@ void Viewer::createWindow()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE) //Mac OSX
 
-	m_window = glfwCreateWindow(m_width, m_height, "Simple example", nullptr, nullptr);
+	m_window = glfwCreateWindow(m_width, m_height, "Opengl4 Viewer", nullptr, nullptr);
 	if (!m_window)
 	{
 		throw std::runtime_error("Failed to create a GLFW window");
@@ -196,6 +159,7 @@ void Viewer::createWindow()
 	}
 
 	glfwMakeContextCurrent(m_window);
+	FrameBuffer::setDimensions(m_width, m_height);
 }
 
 void Viewer::setupViewport()
@@ -205,18 +169,17 @@ void Viewer::setupViewport()
 
 	// Set GL options
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glEnable(GL_STENCIL_TEST);
 }
 
 /*
 * @brief : Acts as the main in a non-object oriented OpenGL program.  
 */
 Viewer::Viewer()
-	: m_lastMousePosition(0, 0)
-	, m_firstClick(true)
-	, m_camera(nullptr)
-	, m_scene(nullptr)
-	, m_wireFrameEnabled(false)
-	, m_mouseIsClicked(false)
+	: m_camera(nullptr)
+	, m_viewingIsOver(false)
+	, m_currentScene(nullptr)
 {
 	// GLFW initialization
 	if (!glfwInit())
@@ -240,9 +203,10 @@ Viewer::Viewer()
 	setupViewport(); 
 	glfwSwapInterval(1);
 
-	m_camera = new Camera(&glm::vec3(0.0f, 1.0f, 0.0f), &glm::vec3(0.0f, 0.0f, 10.0f), &glm::vec3(0, 0, 0));
-	m_scene = new Scene(m_camera);
+	m_state = new ViewerState();
 
+	m_camera = new Camera(&glm::vec3(0.0f, 1.0f, 0.0f), &glm::vec3(0.0f, 0.0f, 10.0f), &glm::vec3(0, 0, 0));
+	m_scenes.push_back(new DefaultTestLevel()); 
 }
 
 Viewer::~Viewer()
@@ -255,21 +219,46 @@ Viewer::~Viewer()
 		m_camera = nullptr; 
 	}
 
-	if (m_scene)
+	for (int i = 0; i < m_scenes.size(); ++i)
 	{
-		delete m_scene;
-		m_scene = nullptr;
+		delete m_scenes[i];
+		m_scenes[i] = nullptr;
 	}
 	
+	delete m_state; m_state = nullptr; 
+
 	glfwTerminate();
 	exit(EXIT_SUCCESS);
 }
 
-
 void Viewer::loop()
 {
-	while (!glfwWindowShouldClose(m_window))
+	// Initialize first level
+	auto sceneIterator = m_scenes.begin(); 
+	assert(sceneIterator != m_scenes.end(), "No scene to render. Please initialize a scene.");
+
+	m_currentScene = *sceneIterator;
+	m_currentScene->Initialize();
+
+	while (!glfwWindowShouldClose(m_window) && !m_viewingIsOver)
 	{
+		// Verify if level is still active
+		if (m_currentScene->getLevelIsDone())
+		{
+			m_currentScene->sceneTearDown();
+			++sceneIterator;
+			if (sceneIterator != m_scenes.end())
+			{
+				m_currentScene = *sceneIterator;
+				m_currentScene->Initialize();
+			}
+			else
+			{
+				m_viewingIsOver = true; 
+			}
+		}
+		
+		// Get time information
 		GLfloat currentFrameTime = glfwGetTime();
 		m_deltaTime = currentFrameTime - m_lastFrameTime;
 		m_lastFrameTime = currentFrameTime;
@@ -278,20 +267,18 @@ void Viewer::loop()
 		glfwPollEvents();
 		moveCamera();
 
-		// Clear the colorbuffer
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// Update Matrix
+		m_viewMatrix = m_camera->GetViewMatrix();
+		m_projectionMatrix = glm::perspective(m_camera->getZoomLevel(), m_width / m_height, 0.1f, 100.0f);
 
-		// Coordinate system matrices 
-		glm::mat4 view = m_camera->GetViewMatrix();
-		glm::mat4 projection = glm::perspective(m_camera->getZoomLevel(), m_width / m_height, 0.1f, 100.0f); 
-
-		m_scene->setViewMatrix(view);
-		m_scene->setProjectionMatrix(projection); 
-
-		m_scene->draw(); 
+		// Level drawing
+		m_currentScene->setViewMatrix(m_viewMatrix);
+		m_currentScene->setProjectionMatrix(m_projectionMatrix);
+		m_currentScene->draw();
 
 		// Swap the buffers
 		glfwSwapBuffers(m_window);
 	}
 }
+
+

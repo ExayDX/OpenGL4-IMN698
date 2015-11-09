@@ -4,28 +4,44 @@
 #include <vector>
 #include <map>
 #include "glm/glm/glm.hpp"
-#include "Camera.h"
+#include "GL/glew.h"
 
 // Forward Declaration
 class Object; 
 class Light; 
 class ShaderProgram;
 class Material; 
+class Quad; 
+class FrameBuffer; 
 
 class Scene
 {
 public : 
-	Scene(Camera* camera);
+	Scene();
 	~Scene();
 
-	void draw(); 
+	virtual void Initialize(); 
+	virtual void sceneTearDown();
+	virtual void draw() = 0;
 
-	GLuint getAShaderProgramId(std::string shaderName); 
-	void setViewMatrix(const glm::mat4& aViewMatrix){ m_viewMatrix = aViewMatrix; }
-	void setProjectionMatrix(const glm::mat4& aProjectionMatrix){ m_projectionMatrix = aProjectionMatrix; }
+	virtual void setViewMatrix(const glm::mat4& aViewMatrix){ m_viewMatrix = aViewMatrix; }
+	virtual void setProjectionMatrix(const glm::mat4& aProjectionMatrix){ m_projectionMatrix = aProjectionMatrix; }
+	virtual bool getLevelIsDone(){ return m_levelIsDone; }
+	virtual std::vector<Object*> getObjects(){ return m_objects; }
+	virtual std::vector<Light*> getLights(){ return m_lights; }
 
-private : 
+	// Debug function
+	virtual void drawAllLights(bool allLightsAreDrawn){ m_allLightsAreDrawn = allLightsAreDrawn; }
 
+	// std::vector<Object*> getObjectsAndLights() const;
+	// glm::mat4 getProjectionMatrix() { return m_projectionMatrix; }
+	// glm::mat4 getViewMatrix() { return m_viewMatrix; }
+	// 
+	// void setDrawLight(bool val);
+
+protected : 
+	Quad* m_renderQuad; 
+	
 	std::vector<Object*> m_objects;
 	std::vector<Light*> m_lights; 
 	std::map<std::string, ShaderProgram*> m_shaderPrograms;
@@ -34,19 +50,18 @@ private :
 	glm::mat4 m_viewMatrix; 
 	glm::mat4 m_projectionMatrix; 
 
-	Camera* m_camera;
+	bool m_levelIsDone;
+	bool m_allLightsAreDrawn; 
 
-	//float m_ambientLightingStrength; 
-	//glm::vec3 ambient; 
+	// Buffers
+	std::map<std::string, FrameBuffer*> m_frameBuffers;
 
-	void levelSetup();
-	void lightSetup(); 
-	void levelTearDown();
-	void createShaderPrograms();
-	void createMaterials(); 
-
-
-
+	// Methods
+	virtual void levelSetup() = 0;
+	virtual void lightSetup() = 0; 
+	virtual void buffersSetup() = 0;
+	virtual void createShaderPrograms() = 0;
+	virtual void createMaterials() = 0; 
 };
 
 #endif
