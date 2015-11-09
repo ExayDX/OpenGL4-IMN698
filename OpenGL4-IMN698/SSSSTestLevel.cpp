@@ -20,7 +20,7 @@ SSSSTestLevel::SSSSTestLevel()
 
 
 // LOOP
-void SSSSTestLevel::draw()
+void SSSSTestLevel::draw(int currentFrame)
 {
 	loadPendingModels();
 	std::lock_guard<std::mutex> lock(m_objectVectorMutex);
@@ -46,7 +46,7 @@ void SSSSTestLevel::draw()
 		glUseProgram(shaderProgramID);
 
 		// Compute/Get information to pass to uniforms
-		glm::mat4 modelMatrix = obj->getModelMatrix();
+		glm::mat4 modelMatrix = obj->getModelMatrix(currentFrame);
 		glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(m_viewMatrix * modelMatrix)));
 		const Material* objectMaterial = obj->getMaterial();
 

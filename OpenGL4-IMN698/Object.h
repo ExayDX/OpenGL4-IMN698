@@ -7,6 +7,7 @@
 #include "Actor.h"
 #include "BoundingBox.h"
 #include "ShaderProgram.h"
+#include "Animable.h"
 
 #include <vector>
 
@@ -25,12 +26,15 @@ public:
 
 	virtual void draw() const;
 
+	Matrix4x4 getModelMatrix(int frame) const;
+
 	// Getters 
 	GLuint getShaderProgramId() { return m_shaderProgram; }
 
 	// Setters
 	void assignMaterial(Material* material) { m_material = material; } 
 	void addPostProcess(GLuint aShaderProgram) { m_postProcesses.push_back(aShaderProgram); }
+	void setAnimation(Animation* animation);
 
 	void updateShader(GLuint& aNewShaderProgram) { m_shaderProgram = aNewShaderProgram; };
 
@@ -65,6 +69,8 @@ protected :
 
 	std::vector<Vertice> m_vertices;
 	BoundingBox m_bbox;
+
+	Animation* m_animation;
 };
 
 #endif // ! OBJECT_H

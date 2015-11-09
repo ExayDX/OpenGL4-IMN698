@@ -9,6 +9,7 @@ Object::Object(glm::vec3 position, Material* material, GLuint shaderProgram)
 	: Actor(position, material)
 	, m_shaderProgram(shaderProgram)
 	, m_numIndices(0)
+	, m_animation(0)
 {
 	m_bbox = BoundingBox(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
 }
@@ -72,7 +73,7 @@ void Object::computeBoundingBox()
 
 bool Object::intersect(Ray r, double& t0, double& t1)
 {
-	auto inverseModel = glm::inverse(getModelMatrix());
+	auto inverseModel = glm::inverse(Actor::getModelMatrix());
 	glm::vec3 dir(
 		inverseModel[0][0] * r.m_d.x + inverseModel[1][0] * r.m_d.y + inverseModel[2][0] * r.m_d.z + inverseModel[3][0] * 0,
 		inverseModel[0][1] * r.m_d.x + inverseModel[1][1] * r.m_d.y + inverseModel[2][1] * r.m_d.z + inverseModel[3][1] * 0,
@@ -87,4 +88,21 @@ bool Object::intersect(Ray r, double& t0, double& t1)
 	Ray ray(origin, dir, std::numeric_limits<double>::epsilon(), std::numeric_limits<double>::infinity());
 
 	return m_bbox.intersect(ray, t0, t1);
+}
+
+Matrix4x4 Object::getModelMatrix(int frame) const
+{
+	Matrix4x4 model = Actor::getModelMatrix();
+	Frame f;
+	if (m_animation)
+	{
+		f = m_animation->getFrame(frame);
+	}
+		
+	return model * f.m_transformation;
+}
+
+void Object::setAnimation(Animation* animation)
+{
+	m_animation = animation;
 }

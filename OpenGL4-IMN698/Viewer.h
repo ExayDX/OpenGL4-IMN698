@@ -20,6 +20,7 @@ class ViewerState;
 
 class Viewer
 {
+	static const int FRAME_PER_SECOND = 24;
 public : 
 
 	void error_callback_impl(int error, const char* description);
@@ -85,6 +86,8 @@ private :
 	ConsoleListener* m_listener;
 
 	glm::vec2 m_lastMousePosition;
+
+	int m_lastFrame;
 };
 
 #endif

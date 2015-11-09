@@ -203,6 +203,9 @@ Viewer::Viewer()
 	m_camera = new Camera(&glm::vec3(0.0f, 1.0f, 0.0f), &glm::vec3(0.0f, 0.0f, 10.0f), &glm::vec3(0, 0, 0));
 	m_scenes.push_back(new DefaultTestLevel()); 
 	m_listener = new ConsoleListener(this);
+
+	//start animation once scene is ready
+	m_lastFrame = Clock::now().time_since_epoch().count();
 }
 
 Viewer::~Viewer()
@@ -255,6 +258,9 @@ void Viewer::loop()
 			}
 		}
 
+		glm::mat4 projection = glm::perspective(m_camera->getZoomLevel(), m_width / m_height, 0.1f, 100.0f);
+		m_currentScene->setProjectionMatrix(projection);
+
 		GLfloat currentFrameTime = glfwGetTime();
 		double deltaTime = currentFrameTime - m_lastFrameTime;
 		m_lastFrameTime = currentFrameTime;
@@ -270,7 +276,21 @@ void Viewer::loop()
 		// Level drawing
 		m_currentScene->setViewMatrix(m_viewMatrix);
 		m_currentScene->setProjectionMatrix(m_projectionMatrix);
-		m_currentScene->draw();
+
+		// Clear the colorbuffer
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Coordinate system matrices 
+		glm::mat4 view = m_camera->GetViewMatrix();
+		m_currentScene->setViewMatrix(view);
+
+		long time = Clock::now().time_since_epoch().count();
+
+		//TODO loopback mode (modulo)
+		long currentFrame = (time - m_lastFrame) / (10000000 / FRAME_PER_SECOND);
+
+		m_currentScene->draw(currentFrame);
 
 		// Swap the buffers
 		glfwSwapBuffers(m_window);

@@ -1,9 +1,52 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+<<<<<<< 4a2747d60fb45147bf8941ea2a0c7883f79a8bf1
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Actor.cpp">
       <Filter>Actors/Objects</Filter>
+=======
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Shaders">
+      <UniqueIdentifier>{91c88a62-b71a-43a5-9e24-d9fa4948771e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shaders">
+      <UniqueIdentifier>{902fbcd1-d555-43ff-bd92-7537f38999f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Actors">
+      <UniqueIdentifier>{dad9c43c-a778-4a21-b284-1184d23bacc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Actors">
+      <UniqueIdentifier>{871a43bf-a3c6-448c-bc7e-f8164d18d8cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ModelLoader">
+      <UniqueIdentifier>{cab476b8-ad84-4b30-8948-0481f56bc0e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ModelLoader">
+      <UniqueIdentifier>{71cf0e02-1eb0-4299-a284-8e5a6c4dea3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Animable">
+      <UniqueIdentifier>{de9381b7-eead-40ed-8172-00043b73176b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animable">
+      <UniqueIdentifier>{c126845e-da30-4032-9215-9a655300f00b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+>>>>>>> wip
     </ClCompile>
     <ClCompile Include="DefaultTestLevel.cpp">
       <Filter>Scenes/Levels</Filter>
@@ -74,6 +117,9 @@
     </ClCompile>
     <ClCompile Include="ViewerState.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Animable.cpp">
+      <Filter>Source Files\Animable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +212,9 @@
     </ClInclude>
     <ClInclude Include="Types.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Animable.h">
+      <Filter>Header Files\Animable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

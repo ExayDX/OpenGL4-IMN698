@@ -5,6 +5,7 @@
 #include "Object.h"
 #include "Material.h"
 #include "ShaderProgram.h"
+#include "Animable.h"
 
 #include <gl/glew.h>
 

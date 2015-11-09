@@ -1,8 +1,9 @@
 #include "ObjMesh.h"
 #include "BoundingBox.h"
 
-#include "SOIL/SOIL.h"
+#include "glm/glm/gtc/matrix_transform.hpp"
 
+#include "SOIL/SOIL.h"
 #include <string>
 
 ObjMesh::ObjMesh(Material* material,
