@@ -17,7 +17,9 @@ struct Frame
 class Animation
 {
 public:
-	Animation(int frameNumber);
+	Animation();
+	Animation(std::list<Frame> frames);
+	
 	Frame getFrame(int index) const;
 	void addFrame(int index, Frame frame);
 	void setLoopBack(bool val);

@@ -31,11 +31,6 @@ void SSSSTestLevel::draw(int currentFrame)
 	
 	glActiveTexture(GL_TEXTURE1); // To assure that the second buffer of mainFBO be cleared
 
-	FrameBuffer* hdrFBO = m_frameBuffers["hdrFBO"];
-	hdrFBO->bind();
-
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for each (Object* obj in m_objects)
 	{

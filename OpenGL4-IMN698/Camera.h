@@ -7,6 +7,7 @@
 
 class Camera
 {
+
 public:
 
 	enum CameraDirection
@@ -34,6 +35,10 @@ public:
 
 protected:
 
+	void updateVectors();
+
+protected:
+
 	glm::vec3 m_position; 
 	glm::vec3 m_target; 
 	glm::vec3 m_worldUp; 
@@ -49,10 +54,6 @@ protected:
 
 	GLfloat m_yaw;
 	GLfloat m_pitch; 
-
-	
-	void updateVectors(); 
-
 };
 
 #endif

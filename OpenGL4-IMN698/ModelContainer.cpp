@@ -53,46 +53,6 @@ void ModelContainer::addTexturePath(std::string path)
 	m_texturePaths.push_back(path);
 }
 
-void ModelContainer::computeTangents()
-{
-	m_drawArray.clear();
-
-	int currentIndex = 0;
-
-	for (int i = 0; i < m_vertexPerFaces.size(); i++)
-	{
-		int vertexPerPolygon = m_vertexPerFaces[i];
-
-		if (vertexPerPolygon != 3)
-		{
-			assert(false);
-		}
-		m_faces.push_back(std::vector<int>());
-		for (int j = 0; j < vertexPerPolygon; j++)
-		{
-			ModelContainer::VertexData vert;
-			vert.m_vertex = m_vertices[m_verticesIndices[currentIndex + j] - 1];
-			m_vertexFaces[m_verticesIndices[currentIndex + j] - 1].push_back(i);
-			m_faces[i].push_back(m_verticesIndices[currentIndex + j] - 1);
-			if (!m_normals.empty())
-			{
-				vert.m_normal = glm::normalize(m_normals[m_normalsIndices[currentIndex + j] - 1]);
-			}
-			if (!m_uvs.empty())
-			{
-				vert.m_uv = m_uvs[m_uvsIndices[currentIndex + j] - 1];
-			}
-
-			vert.m_tangent = glm::normalize(glm::vec3(-vert.m_normal.y, vert.m_normal.x, vert.m_normal.z));
-			vert.m_bitangent = glm::normalize(glm::cross(vert.m_tangent, vert.m_normal));
-
-			m_drawArray.push_back(vert);
-		}
-
-		currentIndex += vertexPerPolygon;
-	}
-}
-
 void ModelContainer::smoothNormals()
 {
 	m_normalsIndices.clear();
@@ -113,7 +73,6 @@ void ModelContainer::smoothNormals()
 			int vertexIndex = m_faces[f][i];
 			std::vector<int> adjacentFacesIndexes = m_vertexFaces[vertexIndex];
 
-
 			std::vector<Normal> adjacentFacesNormals;
 			std::vector<Tangent> adjacentFacesTangents;
 			std::vector<Bitangent> adjacentFacesBiTangents;
@@ -131,7 +90,6 @@ void ModelContainer::smoothNormals()
 
 				surfaceNormal = glm::normalize(surfaceNormal);
 				adjacentFacesNormals.push_back(surfaceNormal);
-
 
 				glm::vec3 pos1(m_vertices[verticesIndexes[0]]);
 				glm::vec3 pos2(m_vertices[verticesIndexes[1]]);
@@ -201,7 +159,6 @@ void ModelContainer::smoothNormals()
 		currentVert += m_faces[f].size();
 	}
 
-	computeTangents();
 	updateDrawArray(false, false, false);
 	setupObject();
 }

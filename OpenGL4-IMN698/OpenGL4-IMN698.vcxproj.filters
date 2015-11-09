@@ -13,7 +13,6 @@
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Quad.cpp" />
-    <ClCompile Include="ObjMesh.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -36,9 +35,7 @@
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Quad.h" />
-    <ClInclude Include="ObjMesh.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="SeparableSSS.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SSSSTestLevel.h" />
@@ -49,18 +46,49 @@
     <ClInclude Include="ModelContainer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="AdditiveBlending.fg" />
-    <None Include="BlinnPhong.fg" />
-    <None Include="BlinnPhong.vs" />
-    <None Include="BloomHDR.fg" />
-    <None Include="Debug.vs" />
-    <None Include="GammaCorrect.fg" />
-    <None Include="GaussianBlur.fg" />
-    <None Include="hdr.fg" />
-    <None Include="basicPPVS.vs" />
-    <None Include="BumpColorMaps.fg" />
-    <None Include="BumpColorMaps.vs" />
-    <None Include="Debug.fg" />
-    <None Include="SSS.fg" />
+    <None Include="AdditiveBlending.fg">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="basicPPVS.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="BlinnPhong.fg">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="BlinnPhong.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="BloomHDR.fg">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="BumpColorMaps.fg">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="BumpColorMaps.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Debug.fg">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Debug.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="GammaCorrect.fg">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="GaussianBlur.fg">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="hdr.fg">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="SSS.fg">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{6b225ca5-34d7-4ed1-8a52-f8e899b35909}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

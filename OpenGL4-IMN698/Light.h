@@ -35,6 +35,7 @@ public:
 
 	const AttenuationProperties& getAttenuationProperties() const { return m_attenuationProperties; };
 
+	//Physical representation of light is a sphere for now
 	virtual void defineVBO();
 	virtual void defineVAO();
 	virtual void defineEBO();

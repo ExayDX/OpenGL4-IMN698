@@ -68,7 +68,7 @@ void Object::computeBoundingBox()
 			maxZ = m_vertices[i].z;
 	}
 
-	m_bbox = BoundingBox(BoundingBox::Point(minX, minY, minZ), BoundingBox::Point(maxX, maxY, maxZ));
+	m_bbox = BoundingBox(Point(minX, minY, minZ), Point(maxX, maxY, maxZ));
 }
 
 bool Object::intersect(Ray r, double& t0, double& t1)

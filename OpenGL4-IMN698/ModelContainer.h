@@ -13,6 +13,7 @@ class Object;
 // container of a 3d model
 class ModelContainer: public Object
 {
+public:
 	typedef glm::vec3			Vertex;
 	typedef glm::vec3			Normal;
 	typedef glm::vec2			Uv;
@@ -54,7 +55,6 @@ public:
 	void addUvIndex(int index);
 	void addVertexPerFace(int num);
 
-
 	void addTexturePath(std::string path);
 
 	void triangulate();
@@ -63,9 +63,6 @@ public:
 	void computeNormals();
 	void smoothNormals();
 
-	void computeTangents();
-	void computeBitangents();
-	
 	void finish();
 	void updateDrawArray(
 		bool computeNormals,
@@ -73,33 +70,32 @@ public:
 		bool computeBitangents);
 
 private:
-	//std::vector<FaceIndex> findFaces(int vertexIndice);
 
-private:
-	//must all be same length
+	//data
 	std::vector<Vertex> m_vertices;
 	std::vector<Uv> m_uvs;
 	std::vector<Normal> m_normals;
 	std::vector<Tangent> m_tangents;
 	std::vector<Bitangent> m_bitangents;
 
+	//indices
 	std::vector<double> m_verticesIndices;
 	std::vector<double> m_uvsIndices;
 	std::vector<double> m_normalsIndices;
 
+	//faces
 	std::vector<int> m_vertexPerFaces;
-
-	std::vector<std::vector<int>> m_vertexFaces;
-
-	std::vector<VertexData> m_drawArray;
-
-	//std::vector<std::vector<FaceIndex>> m_facesIndex; //let us find faces that include a vertex indice
-
+	
+	//textures
 	std::vector<GLuint> m_textures;
 	std::vector<std::string> m_texturePaths;
 
+	//data for adjacent faces, needed for interpolation
 	std::vector<Face> m_faces;
 	std::vector<Face> m_facesUvs;
+	std::vector<Face> m_vertexFaces;
+
+	std::vector<VertexData> m_drawArray;
 };
 
 #endif //__MODEL_CONTAINER_H__
