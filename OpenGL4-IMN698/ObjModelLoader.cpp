@@ -1,7 +1,6 @@
 
-
 #include "ObjModelLoader.h"
-#include "ObjMesh.h"
+#include "ModelContainer.h"
 
 #include "SOIL/SOIL.h"
 
@@ -9,12 +8,14 @@
 #include <iostream>
 #include <vector>
 
+class ModelContainer;
+
 bool isVertex(const std::string& line)
 {
 	return line[0] == 'v' && line[1] == ' ';
 }
 
-void addVertex(std::vector<glm::vec3>& vertices, const std::string& line)
+void addVertex(ModelContainer* model, const std::string& line)
 {
 	glm::vec3 vertex;
 	size_t firstBlank = line.find_first_of(' ');
@@ -35,7 +36,7 @@ void addVertex(std::vector<glm::vec3>& vertices, const std::string& line)
 	vertex.z = atof(z.c_str());
 	subLine = subLine.substr(fourthBlank + 1);
 
-	vertices.push_back(vertex);
+	model->addVertex(vertex);
 }
 
 bool isUv(const std::string& line)
@@ -43,7 +44,7 @@ bool isUv(const std::string& line)
 	return line[0] == 'v' && line[1] == 't' && line[2] == ' ';
 }
 
-void addUv(std::vector<glm::vec2>& uvs, const std::string& line)
+void addUv(ModelContainer* model, const std::string& line)
 {
 	glm::vec2 uv;
 	size_t firstBlank = line.find_first_of(' ');
@@ -59,7 +60,7 @@ void addUv(std::vector<glm::vec2>& uvs, const std::string& line)
 	uv.y = atof(y.c_str());
 	subLine = subLine.substr(thirdBlank + 1);
 
-	uvs.push_back(uv);
+	model->addUv(uv);
 }
 
 bool isNormal(const std::string& line)
@@ -67,7 +68,7 @@ bool isNormal(const std::string& line)
 	return line[0] == 'v' && line[1] == 'n' && line[2] == ' ';
 }
 
-void addNormal(std::vector<glm::vec3>& normals, const std::string& line)
+void addNormal(ModelContainer* model, const std::string& line)
 {
 	glm::vec3 normal;
 	size_t firstBlank = line.find_first_of(' ');
@@ -88,7 +89,7 @@ void addNormal(std::vector<glm::vec3>& normals, const std::string& line)
 	normal.z  = atof(z.c_str());
 	subLine = subLine.substr(fourthBlank + 1);
 
-	normals.push_back(normal);
+	model->addNormal(normal);
 }
 
 bool isFace(const std::string& line)
@@ -97,10 +98,7 @@ bool isFace(const std::string& line)
 }
 
 void addFace(
-	std::vector<double>& verticesIndices, 
-	std::vector<double>& uvsIndices, 
-	std::vector<double>& normalsIndices,
-	std::vector<int>& vertexPerFaces,
+	ModelContainer* model,
 	const std::string& line)
 {
 	int vertexPerFace=0;
@@ -134,18 +132,17 @@ void addFace(
 			uvIndex = currentData;
 		}
 		
-
-		verticesIndices.push_back(atof(vertexIndex.c_str()));
+		model->addVertexIndex(atof(vertexIndex.c_str()));
 		if (!uvIndex.empty())
-			uvsIndices.push_back(atof(uvIndex.c_str()));
+			model->addUvIndex(atof(uvIndex.c_str()));
 		if (!normalIndex.empty())
-			normalsIndices.push_back(atof(normalIndex.c_str()));
+			model->addNormalIndex(atof(normalIndex.c_str()));
 
 		data = data.substr(nextDataPos + 1);
 		finished = nextDataPos == std::string::npos;
 	}
 
-	vertexPerFaces.push_back(vertexPerFace);
+	model->addVertexPerFace(vertexPerFace);
 }
 
 bool isTexturePath(const std::string& line)
@@ -154,17 +151,17 @@ bool isTexturePath(const std::string& line)
 }
 
 void addTexturePath(
-	std::vector<std::string>& texturePaths,
+	ModelContainer* model,
 	const std::string& line)
 {
 	std::string texturePath = line.substr(8);
-	texturePaths.push_back(texturePath);
+	model->addTexturePath(texturePath);
 }
 
 //-----------------------------------------------------------------------------
 // Load an .obj file
 //-----------------------------------------------------------------------------
-Object* ObjModelLoader::loadModel(const std::string filename, Material* material, GLuint shaderProgram)
+ModelContainer* ObjModelLoader::loadModel(const std::string filename, Material* material, GLuint shaderProgram)
 {
 	std::ifstream file(filename);
 
@@ -173,6 +170,8 @@ Object* ObjModelLoader::loadModel(const std::string filename, Material* material
 		throw std::runtime_error("could not create shader: file can't be opened");
 		return nullptr;
 	}
+
+	ModelContainer* model = new ModelContainer(material, shaderProgram);
 
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
@@ -191,53 +190,17 @@ Object* ObjModelLoader::loadModel(const std::string filename, Material* material
 	while (getline(file, line))
 	{
 		if (isVertex(line))
-			addVertex(vertices, line);
+			addVertex(model, line);
 		else if (isUv(line))
-			addUv(uvs, line);
+			addUv(model, line);
 		else if (isNormal(line))
-			addNormal(normals, line);
+			addNormal(model, line);
 		else if (isFace(line))
-			addFace(verticesIndices, uvsIndices, normalsIndices, vertexPerFaces, line);
+			addFace(model, line);
 		else if (isTexturePath(line))
-			addTexturePath(texturePaths, line);
+			addTexturePath(model, line);
 
 	}
-
-	std::vector<vertexStruct> verticesStructs;
-
-	//create vertex object for each vertex in each face
-	int currentIndex = 0;
-	for (int i = 0; i < vertexPerFaces.size(); i++)
-	{
-		int vertexPerPolygon = vertexPerFaces[i];
-		assert(vertexPerPolygon == 3); //For now we only support triangulated meshes
-
-		for (int j = 0; j < vertexPerPolygon; j++)
-		{
-			vertexStruct vert;
-			vert.vertex = vertices[verticesIndices[currentIndex + j] - 1];
-
-			if (!normals.empty())
-			{
-				vert.normal = glm::normalize(normals[normalsIndices[currentIndex + j] - 1]);
-				vert.tangent = glm::normalize(glm::vec3(-vert.normal.y, vert.normal.x, vert.normal.z));
-				vert.bitangent = glm::normalize(glm::cross(vert.tangent, vert.normal));
-			}
-			if (!uvs.empty())
-			{
-				vert.uv = uvs[uvsIndices[currentIndex + j] - 1];
-			}
-			verticesStructs.push_back(vert);
-
-		}
-
-		currentIndex += vertexPerPolygon;
-	}
-
-	return new ObjMesh(material,
-					shaderProgram,
-					verticesStructs,
-					verticesIndices,
-					texturePaths
-					);
+	model->finish();
+	return model;
 }

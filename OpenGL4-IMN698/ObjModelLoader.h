@@ -9,7 +9,7 @@
 class ObjModelLoader
 {
 public:
-	static Object* loadModel(const std::string, Material* material, GLuint shaderProgram);
+	static ModelContainer* loadModel(const std::string, Material* material, GLuint shaderProgram);
 };
 
 #endif //__OBJ_MODEL_LOADER_H__

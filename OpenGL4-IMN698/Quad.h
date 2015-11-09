@@ -7,7 +7,7 @@ class Quad : public Object
 {
 public : 
 	Quad(glm::vec3 position, Material* material, GLuint shaderProgram); 
-	virtual void draw() const override; 
+	virtual void draw() override; 
 
 protected:
 	virtual void defineVBO() override; 

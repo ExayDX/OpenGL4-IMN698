@@ -136,6 +136,7 @@
     <ClCompile Include="ConsoleListener.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ModelContainer.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Quad.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="ConsoleListener.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="ModelContainer.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Quad.h" />

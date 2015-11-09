@@ -1,12 +1,13 @@
-#include "DefaultTestLevel.h"
 
+#include "DefaultTestLevel.h"
 #include "Sphere.h"
 #include "Light.h"
+#include "ModelLoader.h"
 
+#include <GL/glew.h>
 #include "GLM/glm/glm.hpp"
 #include "GLM/glm/gtc/matrix_transform.hpp"
 #include "GLM/glm/gtc/type_ptr.hpp"
-#include "ModelLoader.h"
 
 #include <string>
 
@@ -174,15 +175,15 @@ void DefaultTestLevel::levelSetup()
 	sphere1->setVisible(true);
 	m_objects.push_back(sphere1);
 
-	Object* sphere2 = new Sphere(glm::vec3(0, 0, 0), m_materials["orange"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
-	sphere2->setVisible(true);
-	m_objects.push_back(sphere2);
+	//Object* sphere2 = new Sphere(glm::vec3(0, 0, 0), m_materials["orange"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
+	//sphere2->setVisible(true);
+	//m_objects.push_back(sphere2);
 
 	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
 	sphere3->setVisible(true);
 	m_objects.push_back(sphere3);
 
-	Object* model1 = ModelLoader::loadModel("./HeadModel/head_tri.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId());
+	ModelContainer* model1 = ModelLoader::loadModel("./HeadModel/head_tri_non_smooth.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId());
 	Animation* anim = new Animation(3600);
 	for (int i = 0; i < 3600; ++i)
 	{
@@ -193,6 +194,7 @@ void DefaultTestLevel::levelSetup()
 	}
 	model1->setAnimation(anim);
 	model1->setVisible(true);
+	model1->smoothNormals();
 
 	m_objects.push_back(model1);
 }

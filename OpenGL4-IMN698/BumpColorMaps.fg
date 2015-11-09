@@ -30,8 +30,8 @@ uniform sampler2D texture1;
 in VS_OUT {
     vec2 TexCoords;
     vec3 TBNViewPosition;
-	  vec3 FragPosition;
-	  vec3 LightsPositions[NB_LIGHTS];
+	vec3 FragPosition;
+	vec3 LightsPositions[NB_LIGHTS];
 } fg_in;
 
 out vec4 fragColor;

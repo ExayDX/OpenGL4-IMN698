@@ -24,7 +24,7 @@ public:
 	// Ctors/Dtors
 	virtual ~Object(); 
 
-	virtual void draw() const;
+	virtual void draw();
 
 	Matrix4x4 getModelMatrix(int frame) const;
 

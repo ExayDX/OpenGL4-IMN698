@@ -39,7 +39,7 @@ void Quad::defineEBO()
 	
 }
 
-void Quad::draw() const
+void Quad::draw()
 {
 	glBindVertexArray(m_VAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, m_numIndices); 

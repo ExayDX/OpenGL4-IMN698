@@ -6,16 +6,16 @@
 #include "Material.h"
 #include "ShaderProgram.h"
 #include "Animable.h"
+#include "ModelContainer.h"
 
 #include <gl/glew.h>
+
 
 struct vertexStruct
 {
 	glm::vec3 vertex;
 	glm::vec3 normal;
 	glm::vec2 uv;
-
-	glm::vec3 surfaceNormal;
 	glm::vec3 tangent;
 	glm::vec3 bitangent;
 };
