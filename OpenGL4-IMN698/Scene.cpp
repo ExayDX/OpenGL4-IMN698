@@ -66,3 +66,12 @@ void Scene::sceneTearDown()
 		delete m_renderQuad; m_renderQuad = nullptr; 
 	}
 }
+
+void Scene::drawAllLights(bool allLightsAreDrawn)
+{
+	m_allLightsAreDrawn = allLightsAreDrawn;
+	for each (auto light in m_lights)
+	{
+		light->setVisible(allLightsAreDrawn);
+	}
+}
