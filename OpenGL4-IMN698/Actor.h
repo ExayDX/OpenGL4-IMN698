@@ -1,9 +1,12 @@
 #ifndef _ACTOR_H_
 #define _ACTOR_H_
 
+#include <gl/glew.h>
+#include "Types.h"
 #include "glm/glm/glm.hpp"
 #include "Material.h"
 #include "Types.h"
+
 
 class Actor
 {

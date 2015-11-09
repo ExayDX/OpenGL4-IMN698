@@ -1,6 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include <gl/glew.h>
 #include "GLFW/glfw3.h"
 #include "GLM/glm/glm.hpp"
 

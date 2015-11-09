@@ -30,6 +30,9 @@ void SSSSTestLevel::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for each (Object* obj in m_objects)
 	{
+		if (!obj->isVisible())
+			continue;
+
 		GLuint shaderProgramID = obj->getShaderProgramId();
 		glUseProgram(shaderProgramID);
 

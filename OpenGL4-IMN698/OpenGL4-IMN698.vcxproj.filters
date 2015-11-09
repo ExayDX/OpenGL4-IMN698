@@ -42,6 +42,7 @@
       <Filter>RenderResources</Filter>
     </ClCompile>
     <ClCompile Include="BoundingBox.cpp">
+<<<<<<< HEAD
       <Filter>Actors/Objects\Bounding Box</Filter>
     </ClCompile>
     <ClCompile Include="Viewer.cpp">
@@ -52,6 +53,12 @@
     </ClCompile>
     <ClCompile Include="ViewerState.cpp">
       <Filter>Viewer</Filter>
+=======
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewerState.cpp">
+      <Filter>Source Files</Filter>
+>>>>>>> d0d10588eac17b1724bb62b5564009d6f7669641
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +107,7 @@
     <ClInclude Include="FrameBuffer.h">
       <Filter>RenderResources</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Types.h" />
     <ClInclude Include="BoundingBox.h">
       <Filter>Actors/Objects\Bounding Box</Filter>
@@ -112,6 +120,16 @@
     </ClInclude>
     <ClInclude Include="ViewerState.h">
       <Filter>Viewer</Filter>
+=======
+    <ClInclude Include="BoundingBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewerState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Header Files</Filter>
+>>>>>>> d0d10588eac17b1724bb62b5564009d6f7669641
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

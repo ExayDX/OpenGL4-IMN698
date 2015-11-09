@@ -67,6 +67,7 @@ private:
 
 	// Interaction variables
 	bool m_keys[1024]; // All the keys that can be pressed
+
 	bool m_hasCurrentOperation;
 	bool m_mouseIsClicked;
 	bool m_firstClick;

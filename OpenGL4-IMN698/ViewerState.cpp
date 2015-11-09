@@ -23,7 +23,6 @@ void ViewerState::startMouseOperation()
 
 }
 
-
 void ViewerState::handleMouseClick(GLFWwindow* window, int button, int action)
 {
 	double mouseX, mouseY;
@@ -55,6 +54,7 @@ void ViewerState::handleMouseClick(GLFWwindow* window, int button, int action)
 		glm::vec4 ray_eye = glm::inverse(Viewer::getInstance()->getProjectionMatrix()) * ray_clip;
 		ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
 		glm::vec4 ray_wor4 = (glm::inverse(Viewer::getInstance()->getViewMatrix()) * ray_eye);
+
 		glm::vec3 ray_wor(ray_wor4.x, ray_wor4.y, ray_wor4.z);
 		// don't forget to normalise the vector at some point
 		ray_wor = glm::normalize(ray_wor);
@@ -131,6 +131,7 @@ void ViewerState::handleMouseMovement(double xPos, double yPos)
 			{
 				//we move on the camera plane 
 				Matrix4x4 viewMat = Viewer::getInstance()->getCamera()->GetViewMatrix();
+
 				glm::vec4 v(xoffset / 100, yoffset / 100, 0, 0);
 				m_currentlySelectedObject->translate(Vec3(v*viewMat));
 			}
@@ -150,7 +151,6 @@ void ViewerState::handleKeyboardInput(GLFWwindow* window, int key, int scancode,
 	// Escape application
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
-
 
 	//-------------------------------------------------------------------------
 	// Viewing modes

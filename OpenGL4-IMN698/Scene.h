@@ -1,6 +1,7 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include <gl/glew.h>
 #include <vector>
 #include <map>
 #include "glm/glm/glm.hpp"

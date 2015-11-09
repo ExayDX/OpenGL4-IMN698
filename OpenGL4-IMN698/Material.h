@@ -1,6 +1,7 @@
 #ifndef _MATERIAL_H_
 #define _MATERIAL_H_
 
+#include <gl/glew.h>
 #include "glm/glm/glm.hpp"
 
 struct Material

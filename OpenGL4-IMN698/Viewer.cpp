@@ -1,15 +1,6 @@
-//#define GLEW_STATIC
-
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <stdio.h>
-#include <string.h>
-#include <iostream>
-#include <fstream>
-#include "GLM\glm\glm.hpp"
-#include "GLM\glm\gtc\type_ptr.hpp"
-
 #include "Viewer.h"
+#include "ViewerState.h"
+
 #include "Camera.h"
 #include "Scene.h"
 #include "DefaultTestLevel.h"
@@ -19,6 +10,10 @@
 #include "Quad.h"
 #include "ViewerState.h"
 
+#include <stdio.h>
+#include <string.h>
+#include <iostream>
+#include <fstream>
 
 Viewer* Viewer::m_instance = nullptr; 
 
@@ -247,6 +242,7 @@ void Viewer::loop()
 		{
 			m_currentScene->sceneTearDown();
 			++sceneIterator;
+
 			if (sceneIterator != m_scenes.end())
 			{
 				m_currentScene = *sceneIterator;
@@ -257,7 +253,7 @@ void Viewer::loop()
 				m_viewingIsOver = true; 
 			}
 		}
-		
+
 		// Get time information
 		GLfloat currentFrameTime = glfwGetTime();
 		m_deltaTime = currentFrameTime - m_lastFrameTime;
@@ -280,5 +276,3 @@ void Viewer::loop()
 		glfwSwapBuffers(m_window);
 	}
 }
-
-

@@ -1,3 +1,4 @@
+
 #include "Actor.h"
 #include "glm/glm/gtc/matrix_transform.hpp"
 
@@ -65,4 +66,3 @@ void Actor::setVisible(bool val)
 {
 	m_isVisible = val;
 }
-

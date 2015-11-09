@@ -1,8 +1,8 @@
-#include <gl/glew.h>
-#include <GLFW/glfw3.h>
+#include "Sphere.h"
+
 #include "GLM/glm/gtc/constants.hpp"
 
-#include "Sphere.h"
+
 
 Sphere::Sphere(glm::vec3 position, Material* material, double radius, GLuint nLats, GLuint nLongs, GLuint shaderProgram)
 	: Object(position, material, shaderProgram)

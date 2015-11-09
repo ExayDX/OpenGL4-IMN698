@@ -1,9 +1,11 @@
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "Camera.h"
 #include "Scene.h"
 #include "Sphere.h"
 #include "Light.h"
+#include "ModelLoader.h"
 
 #include "GLM/glm/glm.hpp"
 #include "GLM/glm/gtc/matrix_transform.hpp"
@@ -25,7 +27,7 @@ void Scene::Initialize()
 {
 	createShaderPrograms();
 	createMaterials();
-	buffersSetup(); 
+	buffersSetup();
 	levelSetup();
 	lightSetup();
 }

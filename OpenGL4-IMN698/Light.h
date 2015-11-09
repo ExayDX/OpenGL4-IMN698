@@ -1,12 +1,15 @@
 #ifndef _LIGHT_H_
 #define _LIGHT_H_
 
+#include <gl/glew.h>
+
+#include "Object.h"
 #include "glm/glm/glm.hpp"
 //#include "Actor.h"
 #include "Object.h"  // HACK : This is a bad hack, making the light completely weird, see explanations bellow. 
 
 // Forward declaration
-//class Object; 
+class Object; 
 
 /*
 * m_Material corresponds to the force of the light source for each light's component,
@@ -29,9 +32,10 @@ public:
 	// TODO: Manage syncing between physical representation and own actor (should be the same actor but...)
 	//Light(Object* anObject);
 	Light(glm::vec3 aPosition, Material* material, AttenuationProperties attenuationProp, GLuint aShaderProgram); // HACK : Still super bad structure... blahblahblah. 
+
 	~Light(){};
 
-	const AttenuationProperties& getAttenuationProperties(){ return m_attenuationProperties; };
+	const AttenuationProperties& getAttenuationProperties() const { return m_attenuationProperties; };
 
 	// HACK : 
 	virtual void defineVBO();

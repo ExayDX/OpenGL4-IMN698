@@ -1,5 +1,6 @@
+
 #include "Light.h"
-#include "Object.h"
+#include "Sphere.h"
 
 #include "GLM/glm/gtc/constants.hpp"
 
@@ -22,7 +23,7 @@ Light::Light(glm::vec3 aPosition, Material* aMaterial, AttenuationProperties att
 	setupObject(); 
 }
 
-// HACK : Copied the sphere structure... wtf?
+// HACK : Copied the sphere structure...?
 void Light::defineVBO()
 {
 	std::vector<GLfloat> vertices;

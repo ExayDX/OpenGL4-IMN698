@@ -9,5 +9,4 @@ typedef glm::mat4x4 Matrix3x3;
 typedef glm::vec3 Vec3;
 typedef glm::vec2 Vec2;
 
-
 #endif//__TYPES_H__ 

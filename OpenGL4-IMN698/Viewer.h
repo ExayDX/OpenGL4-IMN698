@@ -1,16 +1,23 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
+#include "Types.h"
+#include "Scene.h"
+
+
+#include <gl/glew.h>
+
 #include <GLFW/glfw3.h>
+
 #include "GLM/glm/glm.hpp"
 #include "GLM/glm/gtc/matrix_transform.hpp"
-
 #include <vector>
+
 
 // Forward declarations
 class Camera;
 class Scene; 
-class ViewerState; 
+class ViewerState;
 
 class Viewer
 {
@@ -25,7 +32,7 @@ public :
 
 	static Viewer* getInstance();
 	void Destroy();
-
+	
 	void loop();
 
 	// Getters
@@ -55,6 +62,7 @@ private :
 	// -- Display variables
 	GLFWwindow* m_window;
 	Camera* m_camera; 
+
 	GLfloat m_width;
 	GLfloat m_height;
 	GLboolean m_viewingIsOver;

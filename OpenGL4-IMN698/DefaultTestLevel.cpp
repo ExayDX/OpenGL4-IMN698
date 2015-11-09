@@ -88,31 +88,31 @@ void DefaultTestLevel::draw()
 		obj->draw();
 	}
 	
-	//for each (Light* light in m_lights)
-	//{
-	//	if (light->isVisible() || m_allLightsAreDrawn)
-	//	{
-	//		GLuint shaderProgramID = light->getShaderProgramId();
-	//		glUseProgram(shaderProgramID);
-	//
-	//		glm::mat4 modelMatrix = light->getModelMatrix();
-	//		glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(m_viewMatrix * modelMatrix)));
-	//
-	//		GLuint modelLoc = glGetUniformLocation(shaderProgramID, "model");
-	//		GLuint viewLoc = glGetUniformLocation(shaderProgramID, "view");
-	//		GLuint projectionLoc = glGetUniformLocation(shaderProgramID, "projection");
-	//		GLuint normalMatrixLoc = glGetUniformLocation(shaderProgramID, "normalMatrix");
-	//		GLuint nbLightLoc = glGetUniformLocation(shaderProgramID, "nbLights");
-	//
-	//		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-	//		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(m_viewMatrix));
-	//		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(m_projectionMatrix));
-	//		glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
-	//		glUniform1f(nbLightLoc, m_lights.size());
-	//
-	//		light->draw();
-	//	}
-	//}
+	for each (Light* light in m_lights)
+	{
+		if (light->isVisible() || m_allLightsAreDrawn)
+		{
+			GLuint shaderProgramID = light->getShaderProgramId();
+			glUseProgram(shaderProgramID);
+	
+			glm::mat4 modelMatrix = light->getModelMatrix();
+			glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(m_viewMatrix * modelMatrix)));
+	
+			GLuint modelLoc = glGetUniformLocation(shaderProgramID, "model");
+			GLuint viewLoc = glGetUniformLocation(shaderProgramID, "view");
+			GLuint projectionLoc = glGetUniformLocation(shaderProgramID, "projection");
+			GLuint normalMatrixLoc = glGetUniformLocation(shaderProgramID, "normalMatrix");
+			GLuint nbLightLoc = glGetUniformLocation(shaderProgramID, "nbLights");
+	
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(m_viewMatrix));
+			glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(m_projectionMatrix));
+			glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+			glUniform1f(nbLightLoc, m_lights.size());
+	
+			light->draw();
+		}
+	}
 }
 
 void DefaultTestLevel::createShaderPrograms()
@@ -180,6 +180,7 @@ void DefaultTestLevel::levelSetup()
 	m_objects.push_back(sphere3);
 
 	Object* model1 = ModelLoader::loadModel("./HeadModel/head_tri.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId());
+	model1->setVisible(true);
 	assert(model1, "model Not correctly loaded");
 	model1->setVisible(true);
 	m_objects.push_back(model1);

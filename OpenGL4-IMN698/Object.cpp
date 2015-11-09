@@ -1,5 +1,5 @@
+
 #include "Object.h"
-#include "GL/glew.h"
 #include "glm/glm/gtc/matrix_transform.hpp"
 
 #include "ShaderProgram.h"
@@ -24,8 +24,8 @@ Object::~Object()
 void Object::draw() const
 {
 	glBindVertexArray(m_VAO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO); 
-	glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, 0); 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+	glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 
@@ -33,7 +33,7 @@ void Object::setupObject()
 {
 	defineVBO();
 	defineEBO();
-	defineVAO(); 
+	defineVAO();
 
 	computeBoundingBox();
 }
@@ -43,11 +43,11 @@ void Object::computeBoundingBox()
 	BoundingBox bbox;
 
 	double	minX = std::numeric_limits<double>::max(),
-		minY = std::numeric_limits<double>::max(),
-		minZ = std::numeric_limits<double>::max();
+			minY = std::numeric_limits<double>::max(),
+			minZ = std::numeric_limits<double>::max();
 	double	maxX = std::numeric_limits<double>::lowest(),
-		maxY = std::numeric_limits<double>::lowest(),
-		maxZ = std::numeric_limits<double>::lowest();
+			maxY = std::numeric_limits<double>::lowest(),
+			maxZ = std::numeric_limits<double>::lowest();
 
 	//go through all vertices and compute bounding box
 	for (int i = 0; i < m_vertices.size(); ++i)
