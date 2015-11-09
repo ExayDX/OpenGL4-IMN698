@@ -7,7 +7,7 @@
 #include <iostream>
 
 
-Object* ModelLoader::loadModel(const std::string filename, Material* material, GLuint shaderProgram)
+ModelContainer* ModelLoader::loadModel(const std::string filename, Material* material, GLuint shaderProgram)
 {
 	//check extension and call appropriate fonction
 	size_t pos = filename.rfind('.');
@@ -17,7 +17,7 @@ Object* ModelLoader::loadModel(const std::string filename, Material* material, G
 	else
 		assert(false);
 
-	Object* object = nullptr;
+	ModelContainer* object = nullptr;
 
 	if (ext == "OBJ" || ext == "obj")
 	{

@@ -238,13 +238,11 @@ void SSSSTestLevel::levelSetup()
 	sphere3->addPostProcess(m_shaderPrograms["SSS"]->getId()); 
 	m_objects.push_back(sphere3);
 
-	//Object* model1 = ModelLoader::loadModel("./HeadModel/head_tri.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId());
-	//assert(model1, "model Not correctly loaded"); 
-	//model1->setVisible(true);
-	//m_objects.push_back(model1);
-	
-	m_renderQuad = new Quad(glm::vec3(0.0f), nullptr, 0); 
+	ModelContainer* model1 = ModelLoader::loadModel("./HeadModel/head_tri_non_smooth.obj", m_materials["default"], m_shaderPrograms["BlinnPhong"]->getId());
+	model1->smoothNormals();
+	m_objects.push_back(model1);
 
+	m_renderQuad = new Quad(glm::vec3(0.0f), nullptr, 0); 
 }
 
 void SSSSTestLevel::lightSetup()

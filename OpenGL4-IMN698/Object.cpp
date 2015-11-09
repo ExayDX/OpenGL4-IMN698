@@ -21,7 +21,7 @@ Object::~Object()
 	glDeleteBuffers(1, &m_EBO);
 }
 
-void Object::draw() const
+void Object::draw()
 {
 	glBindVertexArray(m_VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);

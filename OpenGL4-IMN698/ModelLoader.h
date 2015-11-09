@@ -6,13 +6,13 @@
 #include <gl/glew.h>
 
 #include "Object.h"
-
+#include "ModelContainer.h"
 #include <string>
 
 class ModelLoader
 {
 public:
-	static Object* loadModel(const std::string, Material* material , GLuint shaderProgram);
+	static ModelContainer* loadModel(const std::string, Material* material , GLuint shaderProgram);
 };
 
 #endif //__MODEL_LOADER_H__

@@ -87,7 +87,8 @@ private :
 
 	glm::vec2 m_lastMousePosition;
 
-	int m_lastFrame;
+	Clock::time_point m_lastTime;
+	int m_currentFrame;
 };
 
 #endif

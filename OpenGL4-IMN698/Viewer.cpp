@@ -205,7 +205,7 @@ Viewer::Viewer()
 	m_listener = new ConsoleListener(this);
 
 	//start animation once scene is ready
-	m_lastFrame = Clock::now().time_since_epoch().count();
+	m_currentFrame = 0;
 }
 
 Viewer::~Viewer()
@@ -238,6 +238,7 @@ void Viewer::loop()
 
 	m_currentScene = *sceneIterator;
 	m_currentScene->Initialize();
+	m_lastTime = Clock::now();
 
 	while (!glfwWindowShouldClose(m_window) && !m_viewingIsOver)
 	{
@@ -285,13 +286,16 @@ void Viewer::loop()
 		glm::mat4 view = m_camera->GetViewMatrix();
 		m_currentScene->setViewMatrix(view);
 
-		long time = Clock::now().time_since_epoch().count();
+		Clock::time_point now = Clock::now();
+		std::chrono::duration<double, std::ratio<1, 1000>> numberOfFrameSinceLast = now - m_lastTime;
+		double numFrame = (numberOfFrameSinceLast.count() / (1000 / 24));
+		if (numFrame > 1)
+		{
+			m_currentFrame += numFrame;
+			m_lastTime = now;
+		}
 
-		//TODO loopback mode (modulo)
-		long currentFrame = (time - m_lastFrame) / (10000000 / FRAME_PER_SECOND);
-
-		m_currentScene->draw(currentFrame);
-
+		m_currentScene->draw(m_currentFrame);
 		// Swap the buffers
 		glfwSwapBuffers(m_window);
 	}
