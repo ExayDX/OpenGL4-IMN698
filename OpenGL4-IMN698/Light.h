@@ -1,12 +1,13 @@
 #ifndef _LIGHT_H_
 #define _LIGHT_H_
 
-#include <gl/glew.h>
-
 #include "Object.h"
+#include "Actor.h"
+#include "ShaderProgram.h"
+#include "Material.h"
+
+#include <gl/glew.h>
 #include "glm/glm/glm.hpp"
-//#include "Actor.h"
-#include "Object.h"  // HACK : This is a bad hack, making the light completely weird, see explanations bellow. 
 
 // Forward declaration
 class Object; 
@@ -19,7 +20,7 @@ class Object;
 * spread in the graphics community we decided to do like everybody else...
 * Shininess doesn't mean anything for now. 
 */
-class Light : public Object // HACK : A light should only herit from actor. It doesn't have to have a physical representation and this makes it bad.
+class Light : public Object
 {
 public:
 	struct AttenuationProperties
@@ -29,15 +30,11 @@ public:
 		float m_quadratic;
 	};
 
-	// TODO: Manage syncing between physical representation and own actor (should be the same actor but...)
-	//Light(Object* anObject);
-	Light(glm::vec3 aPosition, Material* material, AttenuationProperties attenuationProp, GLuint aShaderProgram); // HACK : Still super bad structure... blahblahblah. 
-
+	Light(glm::vec3 aPosition, Material* material, AttenuationProperties attenuationProp, GLuint shaderProgram); 
 	~Light(){};
 
 	const AttenuationProperties& getAttenuationProperties() const { return m_attenuationProperties; };
 
-	// HACK : 
 	virtual void defineVBO();
 	virtual void defineVAO();
 	virtual void defineEBO();
@@ -45,7 +42,6 @@ public:
 private : 
 	AttenuationProperties m_attenuationProperties;
 
-	// HACK : this is forcing the light to have a sphere physical representation. It's a hack of hack. It could have a least herit of sphere!! THis is extremely bad structure. 
 	double m_radius;
 	GLuint m_nLats;
 	GLuint m_nLongs;

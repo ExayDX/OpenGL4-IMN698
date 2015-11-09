@@ -24,22 +24,26 @@ struct Ray
 
 class BoundingBox 
 {
+
+public:
+	typedef glm::vec3 Point;
+
 public:
 
 	BoundingBox();
-	BoundingBox(const glm::vec3& a_p);
-	BoundingBox(const glm::vec3& a_p1, const glm::vec3& a_p2);
+	BoundingBox(const Point& a_p);
+	BoundingBox(const Point& a_p1, const Point& a_p2);
 
 	bool overlaps(const BoundingBox& a_bb) const;
-	bool contains(const glm::vec3& a_p) const;
+	bool contains(const Point& a_p) const;
 
 	bool intersect(const Ray& a_r, double& a_t0, double& a_t1) const;
 
-	friend BoundingBox combine(const BoundingBox& a_bb, const glm::vec3& a_p);
+	friend BoundingBox combine(const BoundingBox& a_bb, const Point& a_p);
 	friend BoundingBox combine(const BoundingBox& a_bb1, const BoundingBox& a_bb2);
 
-	glm::vec3 m_pMin;
-	glm::vec3 m_pMax;
+	Point m_pMin;
+	Point m_pMax;
 };
 
 #endif //__BoundingBox_H__

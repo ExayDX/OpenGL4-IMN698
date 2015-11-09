@@ -2,6 +2,7 @@
 #define SCENE_H
 
 #include "Types.h"
+#include "Camera.h"
 
 #include <gl/glew.h>
 #include "glm/glm/glm.hpp"
@@ -9,6 +10,7 @@
 #include <vector>
 #include <queue>
 #include <map>
+
 #include <mutex>
 
 // Forward Declaration
@@ -42,7 +44,8 @@ public :
 
 	virtual void Initialize(); 
 	virtual void sceneTearDown();
-	virtual void draw() = 0;
+
+	virtual void draw(int currentFrame) = 0;
 
 	virtual void setViewMatrix(const glm::mat4& aViewMatrix){ m_viewMatrix = aViewMatrix; }
 	virtual void setProjectionMatrix(const glm::mat4& aProjectionMatrix){ m_projectionMatrix = aProjectionMatrix; }

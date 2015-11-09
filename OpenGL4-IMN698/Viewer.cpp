@@ -1,7 +1,6 @@
 
 #include "Viewer.h"
 #include "ViewerState.h"
-
 #include "Camera.h"
 #include "Scene.h"
 #include "DefaultTestLevel.h"
@@ -9,8 +8,6 @@
 #include "FrameBuffer.h"
 #include "ShaderProgram.h"
 #include "Quad.h"
-
-#include "glf/glf.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -86,19 +83,19 @@ void Viewer::scroll_callback_impl(GLFWwindow* window, double xoffset, double yof
 
 // Viewer class
 // According to how the viewerstate is currently made, shouldn't this be in viewerstate?
-void Viewer::moveCamera()
+void Viewer::moveCameraBetweenFrame(double deltaTime)
 {
 	if (m_state->getInteractionMode() != LOCKED)
 	{
 		// Camera controls
 		if (m_state->getKeys()[GLFW_KEY_W])
-			m_camera->move(Camera::CameraDirection::eForward, m_deltaTime);
+			m_camera->move(Camera::CameraDirection::eForward, deltaTime);
 		if (m_state->getKeys()[GLFW_KEY_S])
-			m_camera->move(Camera::CameraDirection::eBackward, m_deltaTime);
+			m_camera->move(Camera::CameraDirection::eBackward, deltaTime);
 		if (m_state->getKeys()[GLFW_KEY_A])
-			m_camera->move(Camera::CameraDirection::eLeft, m_deltaTime);
+			m_camera->move(Camera::CameraDirection::eLeft, deltaTime);
 		if (m_state->getKeys()[GLFW_KEY_D])
-			m_camera->move(Camera::CameraDirection::eRight, m_deltaTime);
+			m_camera->move(Camera::CameraDirection::eRight, deltaTime);
 		if (m_state->getKeys()[GLFW_KEY_Z])
 			m_camera->zoom(0.001);
 		if (m_state->getKeys()[GLFW_KEY_X])
@@ -177,6 +174,7 @@ Viewer::Viewer()
 	: m_camera(nullptr)
 	, m_viewingIsOver(false)
 	, m_currentScene(nullptr)
+	, m_lastMousePosition(0, 0)
 {
 	// GLFW initialization
 	if (!glfwInit())
@@ -205,6 +203,9 @@ Viewer::Viewer()
 	m_camera = new Camera(&glm::vec3(0.0f, 1.0f, 0.0f), &glm::vec3(0.0f, 0.0f, 10.0f), &glm::vec3(0, 0, 0));
 	m_scenes.push_back(new DefaultTestLevel()); 
 	m_listener = new ConsoleListener(this);
+
+	//start animation once scene is ready
+	m_lastFrame = Clock::now().time_since_epoch().count();
 }
 
 Viewer::~Viewer()
@@ -257,13 +258,16 @@ void Viewer::loop()
 			}
 		}
 
+		glm::mat4 projection = glm::perspective(m_camera->getZoomLevel(), m_width / m_height, 0.1f, 100.0f);
+		m_currentScene->setProjectionMatrix(projection);
+
 		GLfloat currentFrameTime = glfwGetTime();
-		m_deltaTime = currentFrameTime - m_lastFrameTime;
+		double deltaTime = currentFrameTime - m_lastFrameTime;
 		m_lastFrameTime = currentFrameTime;
 
 		// Check and call events
 		glfwPollEvents();
-		moveCamera();
+		moveCameraBetweenFrame(deltaTime);
 
 		// Update Matrix
 		m_viewMatrix = m_camera->GetViewMatrix();
@@ -272,7 +276,21 @@ void Viewer::loop()
 		// Level drawing
 		m_currentScene->setViewMatrix(m_viewMatrix);
 		m_currentScene->setProjectionMatrix(m_projectionMatrix);
-		m_currentScene->draw();
+
+		// Clear the colorbuffer
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Coordinate system matrices 
+		glm::mat4 view = m_camera->GetViewMatrix();
+		m_currentScene->setViewMatrix(view);
+
+		long time = Clock::now().time_since_epoch().count();
+
+		//TODO loopback mode (modulo)
+		long currentFrame = (time - m_lastFrame) / (10000000 / FRAME_PER_SECOND);
+
+		m_currentScene->draw(currentFrame);
 
 		// Swap the buffers
 		glfwSwapBuffers(m_window);
@@ -282,4 +300,9 @@ void Viewer::loop()
 void Viewer::loadModel(const std::string& path, Vec3 position, std::string shaderProgram)
 {
 	m_currentScene->loadModel(path, position, shaderProgram);
+}
+
+void Viewer::moveCamera(double xoffset, double yoffset)
+{
+	m_camera->rotate(xoffset, yoffset);
 }

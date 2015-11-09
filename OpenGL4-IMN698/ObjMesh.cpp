@@ -1,8 +1,9 @@
 #include "ObjMesh.h"
-
-#include "SOIL/SOIL.h"
 #include "BoundingBox.h"
 
+#include "glm/glm/gtc/matrix_transform.hpp"
+
+#include "SOIL/SOIL.h"
 #include <string>
 
 ObjMesh::ObjMesh(Material* material,
@@ -170,5 +171,5 @@ void ObjMesh::computeBoundingBox()
 			maxZ = m_vertices[i].vertex.z;
 	}
 
-	*m_bbox = BoundingBox(glm::vec3(minX, minY, minZ), glm::vec3(maxX, maxY, maxZ));
+	m_bbox = BoundingBox(BoundingBox::Point(minX, minY, minZ), BoundingBox::Point(maxX, maxY, maxZ));
 }

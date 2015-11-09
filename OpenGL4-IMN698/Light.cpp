@@ -2,15 +2,8 @@
 #include "Light.h"
 #include "Sphere.h"
 
+#include <gl/glew.h>
 #include "GLM/glm/gtc/constants.hpp"
-
-
-//Light::Light(Object* aRepresentation)
-//	: Actor(aRepresentation->getPosition(), aRepresentation->getColor())
-//	, m_physicalRepresentation(aRepresentation)
-//{
-//
-//}
 
 Light::Light(glm::vec3 aPosition, Material* aMaterial, AttenuationProperties attenuationProp, GLuint aShaderProgram)
 	: Object(aPosition, aMaterial, aShaderProgram) // HACK.
@@ -23,7 +16,34 @@ Light::Light(glm::vec3 aPosition, Material* aMaterial, AttenuationProperties att
 	setupObject(); 
 }
 
-// HACK : Copied the sphere structure...?
+
+void Light::defineEBO()
+{
+	std::vector<GLuint> indices;
+	for (int latNumber = 0; latNumber < m_nLats; latNumber++)
+	{
+		for (int longNumber = 0; longNumber < m_nLongs; longNumber++)
+		{
+			int first = (latNumber * (m_nLongs + 1)) + longNumber;
+			int second = first + m_nLongs + 1;
+			indices.push_back(first);
+			indices.push_back(second);
+			indices.push_back(first + 1);
+
+			indices.push_back(second);
+			indices.push_back(second + 1);
+			indices.push_back(first + 1);
+		}
+	}
+
+	glGenBuffers(1, &m_EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
+
+	m_numIndices = indices.size();
+
+}
+
 void Light::defineVBO()
 {
 	std::vector<GLfloat> vertices;
@@ -66,33 +86,6 @@ void Light::defineVBO()
 	glGenBuffers(1, &m_VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), &vertices[0], GL_STATIC_DRAW);
-}
-
-void Light::defineEBO()
-{
-	std::vector<GLuint> indices;
-	for (int latNumber = 0; latNumber < m_nLats; latNumber++)
-	{
-		for (int longNumber = 0; longNumber < m_nLongs; longNumber++)
-		{
-			int first = (latNumber * (m_nLongs + 1)) + longNumber;
-			int second = first + m_nLongs + 1;
-			indices.push_back(first);
-			indices.push_back(second);
-			indices.push_back(first + 1);
-
-			indices.push_back(second);
-			indices.push_back(second + 1);
-			indices.push_back(first + 1);
-		}
-	}
-
-	glGenBuffers(1, &m_EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
-
-	m_numIndices = indices.size();
-
 }
 
 void Light::defineVAO()

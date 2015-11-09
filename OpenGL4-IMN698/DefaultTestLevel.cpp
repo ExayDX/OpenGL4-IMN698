@@ -17,7 +17,7 @@ DefaultTestLevel::DefaultTestLevel()
 }
 
 // LOOP
-void DefaultTestLevel::draw()
+void DefaultTestLevel::draw(int currentFrame)
 {
 	loadPendingModels();
 	std::lock_guard<std::mutex> lock(m_objectVectorMutex);
@@ -30,7 +30,7 @@ void DefaultTestLevel::draw()
 		glUseProgram(shaderProgramID);
 
 		// Compute/Get information to pass to uniforms
-		glm::mat4 modelMatrix = obj->getModelMatrix();
+		glm::mat4 modelMatrix = obj->getModelMatrix(currentFrame);
 		glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(m_viewMatrix * modelMatrix)));
 		const Material* objectMaterial = obj->getMaterial();
 		
@@ -98,7 +98,7 @@ void DefaultTestLevel::draw()
 			GLuint shaderProgramID = light->getShaderProgramId();
 			glUseProgram(shaderProgramID);
 	
-			glm::mat4 modelMatrix = light->getModelMatrix();
+			glm::mat4 modelMatrix = light->getModelMatrix(currentFrame);
 			glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(m_viewMatrix * modelMatrix)));
 	
 			GLuint modelLoc = glGetUniformLocation(shaderProgramID, "model");
@@ -183,9 +183,17 @@ void DefaultTestLevel::levelSetup()
 	m_objects.push_back(sphere3);
 
 	Object* model1 = ModelLoader::loadModel("./HeadModel/head_tri.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId());
+	Animation* anim = new Animation(3600);
+	for (int i = 0; i < 3600; ++i)
+	{
+		Matrix4x4 m1;
+		m1 = glm::rotate(m1, i * float(2*3.1415)/3600, Vec3(0, 1, 0));
+		Frame f(m1);
+		anim->addFrame(i, f);
+	}
+	model1->setAnimation(anim);
 	model1->setVisible(true);
-	assert(model1, "model Not correctly loaded");
-	model1->setVisible(true);
+
 	m_objects.push_back(model1);
 }
 

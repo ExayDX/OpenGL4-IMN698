@@ -9,7 +9,7 @@ class SSSSTestLevel : public Scene
 {
 public:
 	SSSSTestLevel();
-	virtual void draw() override;
+	virtual void draw(int currentFrame) override;
 	virtual void setFOVY(GLfloat fovy){ m_fovy = fovy; }
 
 protected:

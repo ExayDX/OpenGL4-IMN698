@@ -2,15 +2,12 @@
 #ifndef __VIEWER_STATE_H__
 #define __VIEWER_STATE_H__
 
-#include <gl/glew.h>
-#include <GLFW/glfw3.h>
-#include "GLM\glm\glm.hpp"
-
 #include "Viewer.h"
 #include "Object.h"
 
-#include <stack>
-
+#include <gl/glew.h>
+#include <GLFW/glfw3.h>
+#include "GLM/glm/glm.hpp"
 
 class Viewer;
 
@@ -25,7 +22,7 @@ enum ViewingMode
 {
 	NORMAL,
 	WIREFRAME,
-	LIGHT //We can view lights and move them
+	LIGHT //We can view light and move them
 };
 
 enum TransformationMode
@@ -63,7 +60,6 @@ private:
 
 	// Operations
 	ViewerOperation* m_currentOperation;
-	std::stack<ViewerOperation*> operationStack;
 
 	// Interaction variables
 	bool m_keys[1024]; // All the keys that can be pressed

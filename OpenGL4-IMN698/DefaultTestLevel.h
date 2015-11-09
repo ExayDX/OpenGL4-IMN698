@@ -7,7 +7,7 @@ class DefaultTestLevel : public Scene
 {
 public : 
 	DefaultTestLevel();
-	virtual void draw() override;
+	virtual void draw(int currentFrame) override;
 
 private : 
 	virtual void levelSetup() override;

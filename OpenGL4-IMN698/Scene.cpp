@@ -1,3 +1,4 @@
+
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -15,7 +16,6 @@ Scene::Scene()
 	: m_levelIsDone(false)
 	, m_renderQuad(nullptr)
 {
-
 }
 
 Scene::~Scene()
@@ -63,8 +63,7 @@ void Scene::sceneTearDown()
 
 	if (m_renderQuad)
 	{
-		delete m_renderQuad; m_renderQuad = nullptr; 
-
+		delete m_renderQuad; m_renderQuad = nullptr;
 		for each (Object* obj in m_objects)
 		{
 			delete m_renderQuad; m_renderQuad = nullptr;
@@ -87,10 +86,8 @@ void Scene::loadModel(const std::string& path, Vec3 position, std::string shader
 	m_objectsToBeCreated.push(obj);
 }
 
-
 void Scene::loadPendingModels()
 {
-	//TODO
 	while (!m_objectsToBeCreated.empty())
 	{
 		ObjectPending obj = m_objectsToBeCreated.front();
@@ -114,3 +111,4 @@ std::vector<std::string> Scene::getShaderList() const
 	}
 	return shaders;
 }
+

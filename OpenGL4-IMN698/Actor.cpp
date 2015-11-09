@@ -8,9 +8,7 @@ Actor::Actor(glm::vec3 centerPosition, Material* material)
 	, m_rotation()
 	, m_rotationStart()
 	, m_isVisible(false)
-{
-
-}
+{ }
 
 void Actor::updateTransformationData()
 {
