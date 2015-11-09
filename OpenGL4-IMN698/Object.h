@@ -1,8 +1,10 @@
 #ifndef  OBJECT_H
 #define	 OBJECT_H 
 #include "GL/glew.h"
-#include "Actor.h"
 #include <GLM/glm/glm.hpp>
+
+#include "Actor.h"
+#include "BoundingBox.h"
 
 #include <vector>
 
@@ -25,7 +27,14 @@ public:
 	void assignMaterial(Material* material) { m_material = material; } 
 	void addPostProcess(GLuint aShaderProgram) { m_postProcesses.push_back(aShaderProgram); }
 
+	void updateShader(GLuint& aNewShaderProgram) { m_shaderProgram = aNewShaderProgram; };
+
+	virtual void computeBoundingBox(); 
+	virtual bool intersect(Ray r, double& t0, double& t1); 
+
 protected : 
+	typedef glm::vec3 Vertice; 
+
 	// Constructor for implementing classes
 	Object(glm::vec3 position, Material* material, GLuint shaderProgram); 
 	
@@ -45,6 +54,9 @@ protected :
 	GLuint m_EBO; 
 
 	GLuint m_numIndices;
+	std::vector<Vertice> m_vertices;
+	
+	BoundingBox* m_bbox; 
 };
 
 #endif // ! OBJECT_H

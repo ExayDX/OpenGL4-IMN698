@@ -27,9 +27,21 @@ public :
 	virtual void setViewMatrix(const glm::mat4& aViewMatrix){ m_viewMatrix = aViewMatrix; }
 	virtual void setProjectionMatrix(const glm::mat4& aProjectionMatrix){ m_projectionMatrix = aProjectionMatrix; }
 	virtual bool getLevelIsDone(){ return m_levelIsDone; }
+	virtual std::vector<Object*> getObjects(){ return m_objects; }
+	virtual std::vector<Light*> getLights(){ return m_lights; }
+
+	// Debug function
+	virtual void drawAllLights(bool allLightsAreDrawn){ m_allLightsAreDrawn = allLightsAreDrawn; }
+
+	// std::vector<Object*> getObjectsAndLights() const;
+	// glm::mat4 getProjectionMatrix() { return m_projectionMatrix; }
+	// glm::mat4 getViewMatrix() { return m_viewMatrix; }
+	// 
+	// void setDrawLight(bool val);
 
 protected : 
-
+	Quad* m_renderQuad; 
+	
 	std::vector<Object*> m_objects;
 	std::vector<Light*> m_lights; 
 	std::map<std::string, ShaderProgram*> m_shaderPrograms;
@@ -39,9 +51,7 @@ protected :
 	glm::mat4 m_projectionMatrix; 
 
 	bool m_levelIsDone;
-	//Camera* m_camera;
-
-	Quad* m_renderQuad; 
+	bool m_allLightsAreDrawn; 
 
 	// Buffers
 	std::map<std::string, FrameBuffer*> m_frameBuffers;

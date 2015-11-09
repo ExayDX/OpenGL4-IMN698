@@ -1,9 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Viewer.cpp" />
     <ClCompile Include="Actor.cpp">
       <Filter>Actors/Objects</Filter>
     </ClCompile>
@@ -43,10 +41,20 @@
     <ClCompile Include="FrameBuffer.cpp">
       <Filter>RenderResources</Filter>
     </ClCompile>
+    <ClCompile Include="BoundingBox.cpp">
+      <Filter>Actors/Objects\Bounding Box</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewer.cpp">
+      <Filter>Viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewerState.cpp">
+      <Filter>Viewer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Viewer.h" />
     <ClInclude Include="Actor.h">
       <Filter>Actors/Objects</Filter>
     </ClInclude>
@@ -91,6 +99,19 @@
     </ClInclude>
     <ClInclude Include="FrameBuffer.h">
       <Filter>RenderResources</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h" />
+    <ClInclude Include="BoundingBox.h">
+      <Filter>Actors/Objects\Bounding Box</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewer.h">
+      <Filter>Viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewerState.h">
+      <Filter>Viewer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +188,12 @@
     </Filter>
     <Filter Include="RenderResources\ShaderManagement">
       <UniqueIdentifier>{0ffce19a-cce5-456e-80a7-5455e8e62781}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Actors/Objects\Bounding Box">
+      <UniqueIdentifier>{1400cdea-b3aa-491e-94e3-dad55816c4ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Viewer">
+      <UniqueIdentifier>{eb185e72-9c28-4860-bdd1-16e506ee8c56}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

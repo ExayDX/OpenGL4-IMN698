@@ -3,20 +3,37 @@
 
 #include "glm/glm/glm.hpp"
 #include "Material.h"
+#include "Types.h"
 
 class Actor
 {
 public :
-	virtual glm::mat4 getModelMatrix() { return m_modelMatrix; }
-	virtual const Material* getMaterial() { return m_material; }
-	virtual glm::vec3 getPosition() { return m_centerPosition; }
+	virtual Matrix4x4 getModelMatrix() const; 
+	virtual Matrix4x4 getModelMatrixStart() const; 
+	virtual Vec3 getPosition() const;
+	virtual const Material* getMaterial() const; 
+
+	virtual void setRotation(const Matrix4x4& m);
+	virtual void rotate(const Matrix4x4& m);
+	virtual void translate(const Vec3& translation);
+
+	virtual bool isVisible() const;
+	virtual void setVisible(bool val);
+
+	virtual void updateTransformationData();
 
 protected : 
-	Actor(glm::vec3 centerPosition, Material* material);
+	Actor(Vec3 centerPosition, Material* material);
 
+	Matrix4x4 m_modelMatrix;
 	Material* m_material;
-	glm::vec3 m_centerPosition;
-	glm::mat4 m_modelMatrix;
+
+	bool m_isVisible; 
+
+	// Transformations used to compute model matrix
+	Matrix4x4 m_rotation;
+	Matrix4x4 m_rotationStart;
+	Vec3 m_position;
 };
 
 #endif // _ACTOR_H

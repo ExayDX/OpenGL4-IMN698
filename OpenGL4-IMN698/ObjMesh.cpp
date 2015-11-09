@@ -1,8 +1,7 @@
-
-
 #include "ObjMesh.h"
 
 #include "SOIL/SOIL.h"
+#include "BoundingBox.h"
 
 #include <string>
 
@@ -11,8 +10,8 @@ ObjMesh::ObjMesh(Material* material,
 	std::vector<vertexStruct> vertices,
 	std::vector<double> verticesIndices,
 	std::vector<std::string> texturePaths)
-:
-	Object(glm::vec3 (0,0,0), material, shaderProgram),
+	:
+	Object(glm::vec3(0, 0, 0), material, shaderProgram),
 	m_vertices(vertices),
 	m_verticesIndices(verticesIndices)
 {
@@ -21,7 +20,7 @@ ObjMesh::ObjMesh(Material* material,
 	for (int i = 0; i < texturePaths.size(); ++i)
 	{
 		GLuint texture;
-		
+
 		glGenTextures(1, &texture);
 		glBindTexture(GL_TEXTURE_2D, texture); // All upcoming GL_TEXTURE_2D operations now have effect on our texture object
 		// Set our texture parameters
@@ -51,7 +50,7 @@ void ObjMesh::defineVBO()
 		vertices.push_back(m_vertices[i].vertex.x);
 		vertices.push_back(m_vertices[i].vertex.y);
 		vertices.push_back(m_vertices[i].vertex.z);
-		
+
 		vertices.push_back(m_vertices[i].normal.x);
 		vertices.push_back(m_vertices[i].normal.y);
 		vertices.push_back(m_vertices[i].normal.z);
@@ -83,7 +82,7 @@ void ObjMesh::defineEBO()
 	for (int i = 0; i < m_verticesIndices.size(); ++i)
 	{
 		//indices in obj start at 1
-		indices.push_back(m_verticesIndices[i] -1);
+		indices.push_back(m_verticesIndices[i] - 1);
 	}
 
 	glGenBuffers(1, &m_EBO);
@@ -124,17 +123,52 @@ void ObjMesh::defineVAO()
 
 void ObjMesh::draw() const
 {
-	//uniforms for texture are: texture0, texture1, texture2, ...
-	for (int i = 0; i < m_textures.size(); ++i)
+	if (isVisible())
 	{
-		std::string uniformName = "texture" + std::to_string(i);
-		glActiveTexture(GL_TEXTURE0 + i*0x0001);
-		glBindTexture(GL_TEXTURE_2D, m_textures[i]);
-		glUniform1i(glGetUniformLocation(m_shaderProgram, uniformName.c_str()), i);
-		
+		//uniforms for texture are: texture0, texture1, texture2, ...
+		for (int i = 0; i < m_textures.size(); ++i)
+		{
+			std::string uniformName = "texture" + std::to_string(i);
+			glActiveTexture(GL_TEXTURE0 + i * 0x0001);
+			glBindTexture(GL_TEXTURE_2D, m_textures[i]);
+			glUniform1i(glGetUniformLocation(m_shaderProgram, uniformName.c_str()), i);
+
+		}
+
+		glBindVertexArray(m_VAO);
+		glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
+		glBindVertexArray(0);
+	}
+}
+
+void ObjMesh::computeBoundingBox()
+{
+	BoundingBox bbox;
+
+	double	minX = std::numeric_limits<double>::max(),
+		minY = std::numeric_limits<double>::max(),
+		minZ = std::numeric_limits<double>::max();
+	double	maxX = std::numeric_limits<double>::lowest(),
+		maxY = std::numeric_limits<double>::lowest(),
+		maxZ = std::numeric_limits<double>::lowest();
+
+	//go through all vertices and compute bounding box
+	for (int i = 0; i < m_vertices.size(); ++i)
+	{
+		if (m_vertices[i].vertex.x < minX)
+			minX = m_vertices[i].vertex.x;
+		if (m_vertices[i].vertex.y < minY)
+			minY = m_vertices[i].vertex.y;
+		if (m_vertices[i].vertex.z < minZ)
+			minZ = m_vertices[i].vertex.z;
+
+		if (m_vertices[i].vertex.x > maxX)
+			maxX = m_vertices[i].vertex.x;
+		if (m_vertices[i].vertex.y > maxY)
+			maxY = m_vertices[i].vertex.y;
+		if (m_vertices[i].vertex.z > maxZ)
+			maxZ = m_vertices[i].vertex.z;
 	}
 
-	glBindVertexArray(m_VAO);
-	glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
-	glBindVertexArray(0);
+	*m_bbox = BoundingBox(glm::vec3(minX, minY, minZ), glm::vec3(maxX, maxY, maxZ));
 }

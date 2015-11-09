@@ -1,4 +1,4 @@
-
+#include <gl/glew.h>
 
 #include "Object.h"
 #include "Material.h"
@@ -24,6 +24,8 @@ public:
 		std::vector<vertexStruct> vertices,
 		std::vector<double> verticesIndices,
 		std::vector<std::string> texturePaths);
+
+	virtual void computeBoundingBox();
 
 	~ObjMesh(){};
 

@@ -214,17 +214,21 @@ void SSSSTestLevel::createMaterials()
 void SSSSTestLevel::levelSetup()
 {
 	Object* sphere1 = new Sphere(glm::vec3(-7, 0, 0), m_materials["default"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
+	sphere1->setVisible(true);
 	m_objects.push_back(sphere1);
 	
 	Object* sphere2 = new Sphere(glm::vec3(0, 0, 0), m_materials["orange"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
+	sphere2->setVisible(true);
 	m_objects.push_back(sphere2);
 	
 	Object* sphere3 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
+	sphere3->setVisible(true);
 	sphere3->addPostProcess(m_shaderPrograms["SSS"]->getId()); 
 	m_objects.push_back(sphere3);
 
 	//Object* model1 = ModelLoader::loadModel("./HeadModel/head_tri.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId());
 	//assert(model1, "model Not correctly loaded"); 
+	//model1->setVisible(true);
 	//m_objects.push_back(model1);
 	
 	m_renderQuad = new Quad(glm::vec3(0.0f), nullptr, 0); 
@@ -238,10 +242,10 @@ void SSSSTestLevel::lightSetup()
 	attenuationProp.m_linear = 0.02f;
 	attenuationProp.m_quadratic = 0.0005f;
 
-	Light* light1 = new Light(glm::vec3(0, 10, 0), m_materials["defaultLight"], attenuationProp);
+	Light* light1 = new Light(glm::vec3(0, 10, 0), m_materials["defaultLight"], attenuationProp, m_shaderPrograms["BlinnPhong"]->getId());
 	m_lights.push_back(light1);
 
-	Light* light2 = new Light(glm::vec3(-30, 40, 0), m_materials["defaultLight"], attenuationProp);
+	Light* light2 = new Light(glm::vec3(-30, 40, 0), m_materials["defaultLight"], attenuationProp, m_shaderPrograms["BlinnPhong"]->getId());
 	m_lights.push_back(light2);
 }
 
