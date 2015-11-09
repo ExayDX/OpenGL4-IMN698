@@ -112,9 +112,6 @@ void ViewerState::handleMouseMovement(double xPos, double yPos)
 				double rotationX = yoffsetSinceOperationStart / 360;
 				double rotationY = xoffsetSinceOperationStart / 360;
 
-
-				std::cout << rotationX << "  " << rotationY << std::endl;
-
 				glm::mat4x4 m1;
 				glm::mat4x4 m2;
 

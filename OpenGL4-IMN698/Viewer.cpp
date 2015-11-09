@@ -1,3 +1,4 @@
+
 #include "Viewer.h"
 #include "ViewerState.h"
 
@@ -8,7 +9,8 @@
 #include "FrameBuffer.h"
 #include "ShaderProgram.h"
 #include "Quad.h"
-#include "ViewerState.h"
+
+#include "glf/glf.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -202,6 +204,7 @@ Viewer::Viewer()
 
 	m_camera = new Camera(&glm::vec3(0.0f, 1.0f, 0.0f), &glm::vec3(0.0f, 0.0f, 10.0f), &glm::vec3(0, 0, 0));
 	m_scenes.push_back(new DefaultTestLevel()); 
+	m_listener = new ConsoleListener(this);
 }
 
 Viewer::~Viewer()
@@ -254,7 +257,6 @@ void Viewer::loop()
 			}
 		}
 
-		// Get time information
 		GLfloat currentFrameTime = glfwGetTime();
 		m_deltaTime = currentFrameTime - m_lastFrameTime;
 		m_lastFrameTime = currentFrameTime;
@@ -275,4 +277,9 @@ void Viewer::loop()
 		// Swap the buffers
 		glfwSwapBuffers(m_window);
 	}
+}
+
+void Viewer::loadModel(const std::string& path, Vec3 position, std::string shaderProgram)
+{
+	m_currentScene->loadModel(path, position, shaderProgram);
 }

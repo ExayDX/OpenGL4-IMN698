@@ -132,6 +132,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DefaultTestLevel.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
+    <ClCompile Include="ConsoleListener.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DefaultTestLevel.h" />
     <ClInclude Include="FrameBuffer.h" />
+    <ClInclude Include="ConsoleListener.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="ModelLoader.h" />

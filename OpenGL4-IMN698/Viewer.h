@@ -2,17 +2,16 @@
 #define VIEWER_H
 
 #include "Types.h"
+#include "Camera.h"
+#include "ConsoleListener.h"
 #include "Scene.h"
 
-
 #include <gl/glew.h>
-
 #include <GLFW/glfw3.h>
-
 #include "GLM/glm/glm.hpp"
 #include "GLM/glm/gtc/matrix_transform.hpp"
-#include <vector>
 
+#include <vector>
 
 // Forward declarations
 class Camera;
@@ -40,6 +39,11 @@ public :
 	glm::mat4 getProjectionMatrix(){ return m_projectionMatrix; }
 	Camera* getCamera(){ return m_camera; }
 	Scene*  getCurrentScene() { return m_currentScene; }
+
+	void setDrawLight(bool val) { m_currentScene->drawAllLights(val); }
+
+	//interface between consoleListener and Scene
+	void loadModel(const std::string& path, Vec3 position, std::string shaderProgram);
 
 private : 
 	// Ctors/Dtors
@@ -76,6 +80,8 @@ private :
 	// -- Time and general computation variables
 	GLfloat m_deltaTime;
 	GLfloat m_lastFrameTime;
+
+	ConsoleListener* m_listener;
 };
 
 #endif
