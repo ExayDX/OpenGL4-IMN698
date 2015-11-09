@@ -31,14 +31,7 @@ public :
 	virtual std::vector<Object*> getObjects(){ return m_objects; }
 	virtual std::vector<Light*> getLights(){ return m_lights; }
 
-	// Debug function
-	virtual void drawAllLights(bool allLightsAreDrawn){ m_allLightsAreDrawn = allLightsAreDrawn; }
-
-	// std::vector<Object*> getObjectsAndLights() const;
-	// glm::mat4 getProjectionMatrix() { return m_projectionMatrix; }
-	// glm::mat4 getViewMatrix() { return m_viewMatrix; }
-	// 
-	// void setDrawLight(bool val);
+	virtual void drawAllLights(bool allLightsAreDrawn);
 
 protected : 
 	Quad* m_renderQuad; 
