@@ -85,6 +85,18 @@
     <None Include="SSS.fg">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="normal.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="normal.fg">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="textureObj.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="textureObj.fg">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">

@@ -8,6 +8,7 @@
 #include "FrameBuffer.h"
 #include "ShaderProgram.h"
 #include "Quad.h"
+#include "ModelContainer.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -306,6 +307,20 @@ void Viewer::loop()
 void Viewer::loadModel(const std::string& path, Vec3 position, std::string shaderProgram)
 {
 	m_currentScene->loadModel(path, position, shaderProgram);
+}
+
+void Viewer::removeSelectedObject()
+{
+	Object* objToBeRemoved = m_state->getLastSelectedObject();
+	m_currentScene->removeObject(objToBeRemoved);
+}
+
+void Viewer::removeBackground(const Vec3& color)
+{
+	ModelContainer* lastSelectedObject = dynamic_cast<ModelContainer*>(m_state->getLastSelectedObject());
+	
+	if (lastSelectedObject)
+		m_currentScene->addBackgroundToBeRemoved(lastSelectedObject, color);
 }
 
 void Viewer::moveCamera(double xoffset, double yoffset)

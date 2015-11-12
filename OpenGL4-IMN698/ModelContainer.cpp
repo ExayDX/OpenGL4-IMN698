@@ -12,6 +12,41 @@ ModelContainer::ModelContainer(Material* material, GLuint shaderProgram) :
 
 }
 
+void ModelContainer::computeBoundingBox()
+{
+	BoundingBox bbox;
+
+
+	double	minX = std::numeric_limits<double>::max(),
+			minY = std::numeric_limits<double>::max(),
+			minZ = std::numeric_limits<double>::max();
+	double	maxX = std::numeric_limits<double>::lowest(),
+			maxY = std::numeric_limits<double>::lowest(),
+			maxZ = std::numeric_limits<double>::lowest();
+
+	assert(m_vertices.size() > 0);
+
+	//go through all vertices and compute bounding box
+	for (int i = 0; i < m_vertices.size(); ++i)
+	{
+		if (m_vertices[i].x < minX)
+			minX = m_vertices[i].x;
+		if (m_vertices[i].y < minY)
+			minY = m_vertices[i].y;
+		if (m_vertices[i].z < minZ)
+			minZ = m_vertices[i].z;
+
+		if (m_vertices[i].x > maxX)
+			maxX = m_vertices[i].x;
+		if (m_vertices[i].y > maxY)
+			maxY = m_vertices[i].y;
+		if (m_vertices[i].z > maxZ)
+			maxZ = m_vertices[i].z;
+	}
+
+	m_bbox = BoundingBox(Point(minX, minY, minZ), Point(maxX, maxY, maxZ));
+}
+
 void ModelContainer::addVertex(Vertex vertex)
 {
 	m_vertices.push_back(vertex);
@@ -32,15 +67,29 @@ void ModelContainer::addVertexIndex(int index)
 {
 	m_verticesIndices.push_back(index);
 }
+void ModelContainer::removeVertexIndex()
+{
+	m_verticesIndices.pop_back();
+}
 
 void ModelContainer::addNormalIndex(int index)
 {
 	m_normalsIndices.push_back(index);
 }
 
+void ModelContainer::removeNormalIndex()
+{
+	m_normalsIndices.pop_back();
+}
+
 void ModelContainer::addUvIndex(int index)
 {
 	m_uvsIndices.push_back(index);
+}
+
+void ModelContainer::removeUvIndex()
+{
+	m_uvsIndices.pop_back();
 }
 
 void ModelContainer::addVertexPerFace(int num)
@@ -50,6 +99,12 @@ void ModelContainer::addVertexPerFace(int num)
 
 void ModelContainer::addTexturePath(std::string path)
 {
+	//first texture is always the diffuse texture, 
+	//we need to load it in order to remove background faces if needed
+	if (m_texturePaths.empty())
+	{
+		m_image = SOIL_load_image(path.c_str(), &m_width, &m_height, 0, SOIL_LOAD_RGB);
+	}
 	m_texturePaths.push_back(path);
 }
 
@@ -71,6 +126,7 @@ void ModelContainer::smoothNormals()
 		for (int i = 0; i < m_faces[f].size(); ++i)
 		{
 			int vertexIndex = m_faces[f][i];
+
 			std::vector<int> adjacentFacesIndexes = m_vertexFaces[vertexIndex];
 
 			std::vector<Normal> adjacentFacesNormals;
@@ -159,7 +215,7 @@ void ModelContainer::smoothNormals()
 		currentVert += m_faces[f].size();
 	}
 
-	updateDrawArray(false, false, false);
+	updateDrawArray(false, false, false, 0);
 	setupObject();
 }
 
@@ -225,27 +281,73 @@ void ModelContainer::defineVAO()
 
 void ModelContainer::draw()
 {
-
-	//uniforms for texture are: texture0, texture1, texture2, ...
-	for (int i = 0; i < m_textures.size(); ++i)
+	if (isVisible())
 	{
-		std::string uniformName = "texture" + std::to_string(i);
-		glActiveTexture(GL_TEXTURE0 + i * 0x0001);
-		glBindTexture(GL_TEXTURE_2D, m_textures[i]);
-		glUniform1i(glGetUniformLocation(m_shaderProgram, uniformName.c_str()), i);
+		//uniforms for texture are: texture0, texture1, texture2, ...
+		for (int i = 0; i < m_textures.size(); ++i)
+		{
+			std::string uniformName = "texture" + std::to_string(i);
+			glActiveTexture(GL_TEXTURE0 + i * 0x0001);
+			glBindTexture(GL_TEXTURE_2D, m_textures[i]);
+			glUniform1i(glGetUniformLocation(m_shaderProgram, uniformName.c_str()), i);
 
+		}
+
+		glBindVertexArray(m_VAO);
+		glDrawArrays(GL_TRIANGLES, 0, m_drawArray.size());
+		glBindVertexArray(0);
 	}
+}
 
-	glBindVertexArray(m_VAO);
-	glDrawArrays(GL_TRIANGLES, 0, m_drawArray.size());
-	glBindVertexArray(0);
+void ModelContainer::removeBackground(std::vector<Vec3>* backgroundColors)
+{
+	updateDrawArray(false, false, false, backgroundColors);
+	setupObject();
+}
 
+bool ModelContainer::isBackgroundFace(
+	int currentIndex, 
+	int vertexPerPolygon, 
+	std::vector<Vec3>* backgroundColors)
+{
+	if (!backgroundColors)
+		return false;
+
+	//check if any of the vertices is a background
+	for (int i = 0; i < vertexPerPolygon; ++i)
+	{
+		unsigned int uvIndex = m_uvsIndices[currentIndex + i];
+
+		Vec3 color = getColorForUvIndex(uvIndex);
+		int r = color.r;
+		int g = color.g;
+		int b = color.b;
+
+		for (int j = 0; j < backgroundColors->size(); ++j)
+		{
+			int backgroundR = (*backgroundColors)[j].r - 10;
+			int backgroundG = (*backgroundColors)[j].g - 10;
+			int backgroundB = (*backgroundColors)[j].b - 10;
+
+			int backgroundR2 = (*backgroundColors)[j].r + 10;
+			int backgroundG2 = (*backgroundColors)[j].g + 10;
+			int backgroundB2 = (*backgroundColors)[j].b + 10;
+
+			//if at least one color correspond, face is part of the background
+			if (r > backgroundR && r < backgroundR2
+				&& g > backgroundG && g < backgroundG2
+				&& b > backgroundB && b < backgroundB2)
+				return true;
+		}
+	}
+	return false;
 }
 
 void ModelContainer::updateDrawArray(
 	bool computeNormals, 
 	bool computeTangents, 
-	bool computeBitangents)
+	bool computeBitangents,
+	std::vector<Vec3>* backgroundColors)
 {
 	int currentIndex = 0;
 
@@ -268,70 +370,76 @@ void ModelContainer::updateDrawArray(
 		m_faces.push_back(std::vector<int>());
 		m_facesUvs.push_back(std::vector<int>());
 
-		for (int j = 0; j < vertexPerPolygon; j++)
+		//don't add to the model faces that are part of the background
+		if (!isBackgroundFace(currentIndex, vertexPerPolygon, backgroundColors))
 		{
-			//Data for normal interpollation
-			m_vertexFaces[m_verticesIndices[currentIndex + j] - 1].push_back(i);
-			m_faces[i].push_back(m_verticesIndices[currentIndex + j] - 1);
-			m_facesUvs[i].push_back(m_uvsIndices[currentIndex + j] - 1);
 
-			ModelContainer::VertexData vert;
-			vert.m_vertex = m_vertices[m_verticesIndices[currentIndex + j] - 1];
-
-			if (!m_normals.empty())
+			for (int j = 0; j < vertexPerPolygon; j++)
 			{
-				vert.m_normal = glm::normalize(m_normals[m_normalsIndices[currentIndex + j] - 1]);
-			}
-			if (!m_uvs.empty())
-			{
-				vert.m_uv = m_uvs[m_uvsIndices[currentIndex + j] - 1];
-			}
-			if (m_tangents.size() > currentIndex + j)
-			{
-				vert.m_tangent = m_tangents[currentIndex + j];
-			}
-			if (m_bitangents.size() > currentIndex + j)
-			{
-				vert.m_bitangent = m_bitangents[currentIndex + j];
-			}
+				//Data for normal interpollation
+				m_vertexFaces[m_verticesIndices[currentIndex + j] - 1].push_back(i);
+				m_faces[i].push_back(m_verticesIndices[currentIndex + j] - 1);
+				m_facesUvs[i].push_back(m_uvsIndices[currentIndex + j] - 1);
 
-			//Calculation for tangents and bitangents
-			glm::vec3 pos1(m_vertices[m_verticesIndices[currentIndex + j] - 1]);
-			glm::vec3 pos2(m_vertices[m_verticesIndices[currentIndex + (j + 1) % 3] - 1]);
-			glm::vec3 pos3(m_vertices[m_verticesIndices[currentIndex + (j + 2) % 3] - 1]);
-			glm::vec2 uv1(m_uvs[m_uvsIndices[currentIndex + j] - 1]);
-			glm::vec2 uv2(m_uvs[m_uvsIndices[currentIndex + (j + 1) % 3] - 1]);
-			glm::vec2 uv3(m_uvs[m_uvsIndices[currentIndex + (j + 2) % 3] - 1]);
-			glm::vec3 edge1 = pos2 - pos1;
-			glm::vec3 edge2 = pos3 - pos1;
-			glm::vec2 deltaUV1 = uv2 - uv1;
-			glm::vec2 deltaUV2 = uv3 - uv1;
-			GLfloat f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+				ModelContainer::VertexData vert;
+				vert.m_vertex = m_vertices[m_verticesIndices[currentIndex + j] - 1];
 
-			if (computeTangents)
-			{
-				Tangent tangent;
-				tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-				tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-				tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-				tangent = glm::normalize(tangent);
+				if (!m_normals.empty())
+				{
+					vert.m_normal = glm::normalize(m_normals[m_normalsIndices[currentIndex + j] - 1]);
+				}
+				if (!m_uvs.empty())
+				{
+					vert.m_uv = m_uvs[m_uvsIndices[currentIndex + j] - 1];
 
-				vert.m_tangent = tangent;
-				m_tangents.push_back(tangent);
+				}
+				if (m_tangents.size() > currentIndex + j)
+				{
+					vert.m_tangent = m_tangents[currentIndex + j];
+				}
+				if (m_bitangents.size() > currentIndex + j)
+				{
+					vert.m_bitangent = m_bitangents[currentIndex + j];
+				}
+
+				//Calculation for tangents and bitangents
+				glm::vec3 pos1(m_vertices[m_verticesIndices[currentIndex + j] - 1]);
+				glm::vec3 pos2(m_vertices[m_verticesIndices[currentIndex + (j + 1) % 3] - 1]);
+				glm::vec3 pos3(m_vertices[m_verticesIndices[currentIndex + (j + 2) % 3] - 1]);
+				glm::vec2 uv1(m_uvs[m_uvsIndices[currentIndex + j] - 1]);
+				glm::vec2 uv2(m_uvs[m_uvsIndices[currentIndex + (j + 1) % 3] - 1]);
+				glm::vec2 uv3(m_uvs[m_uvsIndices[currentIndex + (j + 2) % 3] - 1]);
+				glm::vec3 edge1 = pos2 - pos1;
+				glm::vec3 edge2 = pos3 - pos1;
+				glm::vec2 deltaUV1 = uv2 - uv1;
+				glm::vec2 deltaUV2 = uv3 - uv1;
+				GLfloat f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+				if (computeTangents)
+				{
+					Tangent tangent;
+					tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+					tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+					tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+					tangent = glm::normalize(tangent);
+
+					vert.m_tangent = tangent;
+					m_tangents.push_back(tangent);
+				}
+				if (computeBitangents)
+				{
+					Bitangent bitangent;
+					bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+					bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+					bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+					bitangent = glm::normalize(bitangent);
+
+					vert.m_bitangent = bitangent;
+					m_bitangents.push_back(bitangent);
+				}
+
+				m_drawArray.push_back(vert);
 			}
-			if (computeBitangents)
-			{
-				Bitangent bitangent;
-				bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
-				bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
-				bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
-				bitangent = glm::normalize(bitangent);
-
-				vert.m_bitangent = bitangent;
-				m_bitangents.push_back(bitangent);
-			}
-
-			m_drawArray.push_back(vert);
 		}
 
 		currentIndex += vertexPerPolygon;
@@ -341,7 +449,7 @@ void ModelContainer::updateDrawArray(
 void ModelContainer::finish()
 {
 	//Build draw array
-	updateDrawArray(true, true, true);
+	updateDrawArray(true, true, true, 0);
 
 	setupObject();
 
@@ -367,4 +475,19 @@ void ModelContainer::finish()
 
 		m_textures.push_back(texture);
 	}
+}
+
+//Texture0 is always the diffuse texture so its the one we compare to
+Vec3 ModelContainer::getColorForUvIndex(int uvIndex)
+{
+	Vec2 uv = m_uvs[uvIndex - 1];
+
+	Vec2 pixelPos(int(uv.x * m_width), int((1 - uv.y) * m_height));
+
+	int index = (pixelPos.x * 3) + (pixelPos.y * (m_width * 3));
+	unsigned char r = m_image[index];
+	unsigned char g = m_image[index+1];
+	unsigned char b = m_image[index+2];
+
+	return Vec3((int)r, (int)g, (int)b);
 }
