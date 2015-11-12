@@ -51,8 +51,14 @@ public:
 	void addUv(Uv uv);
 
 	void addVertexIndex(int index);
+	void removeVertexIndex();
+
 	void addNormalIndex(int index);
+	void removeNormalIndex();
+
 	void addUvIndex(int index);
+	void removeUvIndex();
+
 	void addVertexPerFace(int num);
 
 	void addTexturePath(std::string path);
@@ -62,14 +68,24 @@ public:
 
 	void computeNormals();
 	void smoothNormals();
+	void removeBackground(std::vector<Vec3>* backgroundColors);
 
 	void finish();
 	void updateDrawArray(
 		bool computeNormals,
 		bool computeTangents,
-		bool computeBitangents);
+		bool computeBitangents,
+		std::vector<Vec3>* backgroundColors);
+
+	Vec3 getColorForUvIndex(int uvIndex);
 
 private:
+	bool isBackgroundFace(int currentIndex, int vertexPerPolygon, std::vector<Vec3>* backgroundColors);
+	virtual void computeBoundingBox();
+private:
+	int m_width;
+	int m_height;
+	unsigned char* m_image; //diffuse texture
 
 	//data
 	std::vector<Vertex> m_vertices;

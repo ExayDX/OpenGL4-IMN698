@@ -60,9 +60,9 @@ void ViewerState::handleMouseClick(GLFWwindow* window, int button, int action)
 		glm::vec3 ray(x,y,z);
 		glm::vec4 ray_clip(ray.x, ray.y, -1.0, 1.0);
 
-		glm::vec4 ray_eye = glm::inverse(Viewer::getInstance()->getCurrentScene()->getProjectionMatrix()) * ray_clip;
+		glm::vec4 ray_eye = glm::inverse(Viewer::getInstance()->getProjectionMatrix()) * ray_clip;
 		ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
-		glm::vec4 ray_wor4 = (glm::inverse(Viewer::getInstance()->getCurrentScene()->getViewMatrix()) * ray_eye);
+		glm::vec4 ray_wor4 = (glm::inverse(Viewer::getInstance()->getViewMatrix()) * ray_eye);
 
 		glm::vec3 ray_wor(ray_wor4.x, ray_wor4.y, ray_wor4.z);
 		// don't forget to normalise the vector at some point
@@ -90,6 +90,7 @@ void ViewerState::handleMouseClick(GLFWwindow* window, int button, int action)
 			{
 				minT = t0;
 				m_currentlySelectedObject = objects[i];
+				m_lastSelectedObject = m_currentlySelectedObject;
 			}
 		}
 		if (minT == std::numeric_limits<double>::max())
@@ -225,4 +226,9 @@ void ViewerState::handleKeyboardInput(GLFWwindow* window, int key, int scancode,
 InteractionMode ViewerState::getInteractionMode()
 {
 	return m_interactionMode;
+}
+
+Object* ViewerState::getLastSelectedObject()
+{
+	return m_lastSelectedObject;
 }

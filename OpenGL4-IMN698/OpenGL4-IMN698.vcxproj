@@ -184,7 +184,11 @@
     <None Include="BumpColorMaps.fg" />
     <None Include="BumpColorMaps.vs" />
     <None Include="Debug.fg" />
+    <None Include="normal.fg" />
+    <None Include="normal.vs" />
     <None Include="SSS.fg" />
+    <None Include="textureObj.fg" />
+    <None Include="textureObj.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

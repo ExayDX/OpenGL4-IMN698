@@ -123,12 +123,14 @@ void DefaultTestLevel::createShaderPrograms()
 	ShaderProgram* SSSProgram = new ShaderProgram("basicPPVS.vs", "SSS.fg");
 	ShaderProgram* BumpColorMapsProgram = new ShaderProgram("BumpColorMaps.vs", "BumpColorMaps.fg");
 	ShaderProgram* DebugP = new ShaderProgram("Debug.vs", "Debug.fg");
+	ShaderProgram* texturedObj = new ShaderProgram("textureObj.vs", "textureObj.fg");
 
 	// Insert ShaderProgram in the list
 	m_shaderPrograms["BlinnPhong"] = BlinnPhongShaderProgram;
 	m_shaderPrograms["SSS"] = SSSProgram;
 	m_shaderPrograms["BumpColorMaps"] = BumpColorMapsProgram;
 	m_shaderPrograms["Debug"] = DebugP;
+	m_shaderPrograms["texturedObj"] = texturedObj;
 }
 
 void DefaultTestLevel::createMaterials()
@@ -174,8 +176,7 @@ void DefaultTestLevel::levelSetup()
 	Object* sphere2 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
 	m_objects.push_back(sphere2);
 
-	ModelContainer* model1 = ModelLoader::loadModel("./HeadModel/head_tri_non_smooth.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId());
-
+	ModelContainer* model1 = ModelLoader::loadModel("./HeadModel/head_tri_non_smooth.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId(), 0);
 	//Head rotation animation
 	Animation* anim = new Animation();
 	for (int i = 0; i < 3600; ++i)
@@ -190,6 +191,14 @@ void DefaultTestLevel::levelSetup()
 	model1->smoothNormals();
 
 	m_objects.push_back(model1);
+
+	std::vector<Vec3> backgroundColors;
+	backgroundColors.push_back(Vec3(46, 46, 49));
+
+	ModelContainer* model2 = ModelLoader::loadModel("./banane/banane2.obj", m_materials["default"], m_shaderPrograms["texturedObj"]->getId(), &backgroundColors);
+	model2->smoothNormals();
+	m_objects.push_back(model2);
+
 }
 
 void DefaultTestLevel::lightSetup()

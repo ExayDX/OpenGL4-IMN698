@@ -22,9 +22,6 @@ SSSSTestLevel::SSSSTestLevel()
 // LOOP
 void SSSSTestLevel::draw(int currentFrame)
 {
-	loadPendingModels();
-	std::lock_guard<std::mutex> lock(m_objectVectorMutex);
-
 	FrameBuffer* mainFBO = m_frameBuffers["mainFBO"];
 	mainFBO->bind();
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -233,7 +230,7 @@ void SSSSTestLevel::levelSetup()
 	sphere3->addPostProcess(m_shaderPrograms["SSS"]->getId()); 
 	m_objects.push_back(sphere3);
 
-	ModelContainer* model1 = ModelLoader::loadModel("./HeadModel/head_tri_non_smooth.obj", m_materials["default"], m_shaderPrograms["BlinnPhong"]->getId());
+	ModelContainer* model1 = ModelLoader::loadModel("./HeadModel/head_tri_non_smooth.obj", m_materials["default"], m_shaderPrograms["BlinnPhong"]->getId(), nullptr);
 	model1->smoothNormals();
 	m_objects.push_back(model1);
 

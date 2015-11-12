@@ -97,9 +97,39 @@ bool isFace(const std::string& line)
 	return line[0] == 'f' && line[1] == ' ';
 }
 
+bool isBackground(int uvIndex, std::vector<Vec3>* backgroundColors, ModelContainer* model)
+{
+	assert(backgroundColors);
+
+	Vec3 color = model->getColorForUvIndex(uvIndex);
+	int r = color.r;
+	int g = color.g;
+	int b = color.b;
+
+	for (int i = 0; i < backgroundColors->size(); ++i)
+	{
+		int backgroundR = (*backgroundColors)[i].r - 10;
+		int backgroundG = (*backgroundColors)[i].g - 10;
+		int backgroundB = (*backgroundColors)[i].b - 10;
+
+		int backgroundR2 = (*backgroundColors)[i].r + 10;
+		int backgroundG2 = (*backgroundColors)[i].g + 10;
+		int backgroundB2 = (*backgroundColors)[i].b + 10;
+
+		//if at least one color correspond, face is part of the background
+		if (r > backgroundR && r < backgroundR2
+			&& g > backgroundG && g < backgroundG2
+			&& b > backgroundB && b < backgroundB2)
+			return true;
+	}
+
+	return false;
+}
+
 void addFace(
 	ModelContainer* model,
-	const std::string& line)
+	const std::string& line,
+	std::vector<Vec3>* backgroundColors)
 {
 	int vertexPerFace=0;
 
@@ -107,6 +137,10 @@ void addFace(
 	std::string data = line.substr(firstBlank + 1);
 
 	bool finished = false;
+	bool isPartOfBackground = false;
+	int numUvAdded = 0;
+	int numNormalAdded = 0;
+	int numVertexAdded = 0;
 	while (!finished)
 	{
 		vertexPerFace += 1;
@@ -132,17 +166,54 @@ void addFace(
 			uvIndex = currentData;
 		}
 		
-		model->addVertexIndex(atof(vertexIndex.c_str()));
-		if (!uvIndex.empty())
-			model->addUvIndex(atof(uvIndex.c_str()));
-		if (!normalIndex.empty())
-			model->addNormalIndex(atof(normalIndex.c_str()));
+		//make sure current face is not part of the background to be removed
+		if (backgroundColors)
+		{
+			isPartOfBackground = isBackground(atof(uvIndex.c_str()), backgroundColors, model);
+			if (isPartOfBackground)
+				break;
+		}
 
+		model->addVertexIndex(atof(vertexIndex.c_str()));
+		numVertexAdded++;
+		
+		if (!uvIndex.empty())
+		{
+			model->addUvIndex(atof(uvIndex.c_str()));
+			numUvAdded++;
+		}
+		
+		if (!normalIndex.empty())
+		{
+			model->addNormalIndex(atof(normalIndex.c_str()));
+			numNormalAdded++;
+		}
+		
 		data = data.substr(nextDataPos + 1);
 		finished = nextDataPos == std::string::npos;
 	}
 
-	model->addVertexPerFace(vertexPerFace);
+	//if face needs to be removed because one of its vertex is a background
+	if (isPartOfBackground)
+	{
+		for (int i = 0; i < numVertexAdded; ++i)
+		{
+			model->removeVertexIndex();
+		}
+		for (int i = 0; i < numNormalAdded; ++i)
+		{
+			model->removeNormalIndex();
+		}
+		for (int i = 0; i < numUvAdded; ++i)
+		{
+			model->removeUvIndex();
+		}
+	}
+	else
+	{
+		model->addVertexPerFace(vertexPerFace);
+	}
+
 }
 
 bool isTexturePath(const std::string& line)
@@ -161,7 +232,7 @@ void addTexturePath(
 //-----------------------------------------------------------------------------
 // Load an .obj file
 //-----------------------------------------------------------------------------
-ModelContainer* ObjModelLoader::loadModel(const std::string filename, Material* material, GLuint shaderProgram)
+ModelContainer* ObjModelLoader::loadModel(const std::string filename, Material* material, GLuint shaderProgram, std::vector<Vec3>* backgroundColors)
 {
 	std::ifstream file(filename);
 
@@ -196,7 +267,7 @@ ModelContainer* ObjModelLoader::loadModel(const std::string filename, Material* 
 		else if (isNormal(line))
 			addNormal(model, line);
 		else if (isFace(line))
-			addFace(model, line);
+			addFace(model, line, backgroundColors);
 		else if (isTexturePath(line))
 			addTexturePath(model, line);
 

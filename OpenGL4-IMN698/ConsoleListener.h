@@ -19,6 +19,7 @@ public:
 private:
 	void analyseInput(const std::string& s);
 	static bool pathIsValid(const std::string& path);
+	static bool isValidColor(std::string& colorStr, Vec3& color);
 	static bool shaderProgramIsValid(const std::string& shaderProgram);
 	static Vec3 positionStrToVec3(std::string& positionStr);
 

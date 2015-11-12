@@ -23,10 +23,13 @@ Object::~Object()
 
 void Object::draw()
 {
-	glBindVertexArray(m_VAO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-	glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+	if (isVisible())
+	{
+		glBindVertexArray(m_VAO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+		glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
 }
 
 void Object::setupObject()
@@ -49,6 +52,8 @@ void Object::computeBoundingBox()
 	double	maxX = std::numeric_limits<double>::lowest(),
 			maxY = std::numeric_limits<double>::lowest(), 
 			maxZ = std::numeric_limits<double>::lowest();
+
+	assert(m_vertices.size() > 0);
 
 	//go through all vertices and compute bounding box
 	for (int i = 0; i < m_vertices.size(); ++i)

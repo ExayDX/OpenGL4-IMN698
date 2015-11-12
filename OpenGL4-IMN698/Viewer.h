@@ -45,6 +45,8 @@ public :
 
 	//interface between consoleListener and Scene
 	void loadModel(const std::string& path, Vec3 position, std::string shaderProgram);
+	void removeSelectedObject();
+	void removeBackground(const Vec3& color);
 
 private : 
 	// Ctors/Dtors
