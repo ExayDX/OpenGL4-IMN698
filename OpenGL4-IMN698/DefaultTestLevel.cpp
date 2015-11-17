@@ -176,7 +176,7 @@ void DefaultTestLevel::levelSetup()
 	Object* sphere2 = new Sphere(glm::vec3(7, 0, 0), m_materials["blue"], 2, 40, 40, m_shaderPrograms["BlinnPhong"]->getId());
 	m_objects.push_back(sphere2);
 
-	ModelContainer* model1 = ModelLoader::loadModel("./HeadModel/head_tri_non_smooth.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId(), 0);
+	ModelContainer* model1 = ModelLoader::loadModel("./HeadModel/head_tri_non_smooth.obj", m_materials["default"], m_shaderPrograms["BumpColorMaps"]->getId(), std::vector<Vec3>());
 	//Head rotation animation
 	Animation* anim = new Animation();
 	for (int i = 0; i < 3600; ++i)
@@ -195,8 +195,12 @@ void DefaultTestLevel::levelSetup()
 	std::vector<Vec3> backgroundColors;
 	backgroundColors.push_back(Vec3(46, 46, 49));
 
-	ModelContainer* model2 = ModelLoader::loadModel("./banane/banane2.obj", m_materials["default"], m_shaderPrograms["texturedObj"]->getId(), &backgroundColors);
-	model2->smoothNormals();
+	ModelContainer* model2 = ModelLoader::loadModel("./banane/banane3.obj", m_materials["default"], m_shaderPrograms["texturedObj"]->getId(), backgroundColors);
+	
+	model2->removeIsolatedPatch(20);
+	//model2->removeBackground(backgroundColors);
+	//model2->smoothNormals();
+
 	m_objects.push_back(model2);
 
 }
