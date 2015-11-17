@@ -92,7 +92,7 @@ void Scene::loadPendingModels()
 	while (!m_objectsToBeCreated.empty())
 	{
 		ObjectPending obj = m_objectsToBeCreated.front();
-		Object* model1 = ModelLoader::loadModel(obj.m_path, m_materials["default"], m_shaderPrograms[obj.m_shaderProgram]->getId(), nullptr);
+		Object* model1 = ModelLoader::loadModel(obj.m_path, m_materials["default"], m_shaderPrograms[obj.m_shaderProgram]->getId(), std::vector<Vec3>());
 		model1->setVisible(true);
 		model1->translate(obj.m_position);
 		std::lock_guard<std::mutex> lock(m_objectVectorMutex);
@@ -108,8 +108,8 @@ void Scene::removePendingBackgrounds()
 	{
 		ModelContainer* model = m_backgroundToBeRemoved.front().first;
 		Vec3 color = m_backgroundToBeRemoved.front().second;
-		std::vector<Vec3>* colors = new std::vector<Vec3>();
-		colors->push_back(color);
+		std::vector<Vec3> colors;
+		colors.push_back(color);
 		model->removeBackground(colors);
 		m_backgroundToBeRemoved.pop();
 	}

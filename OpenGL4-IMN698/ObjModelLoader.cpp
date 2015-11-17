@@ -128,8 +128,7 @@ bool isBackground(int uvIndex, std::vector<Vec3>* backgroundColors, ModelContain
 
 void addFace(
 	ModelContainer* model,
-	const std::string& line,
-	std::vector<Vec3>* backgroundColors)
+	const std::string& line)
 {
 	int vertexPerFace=0;
 
@@ -137,10 +136,6 @@ void addFace(
 	std::string data = line.substr(firstBlank + 1);
 
 	bool finished = false;
-	bool isPartOfBackground = false;
-	int numUvAdded = 0;
-	int numNormalAdded = 0;
-	int numVertexAdded = 0;
 	while (!finished)
 	{
 		vertexPerFace += 1;
@@ -165,54 +160,24 @@ void addFace(
 		{
 			uvIndex = currentData;
 		}
-		
-		//make sure current face is not part of the background to be removed
-		if (backgroundColors)
-		{
-			isPartOfBackground = isBackground(atof(uvIndex.c_str()), backgroundColors, model);
-			if (isPartOfBackground)
-				break;
-		}
 
 		model->addVertexIndex(atof(vertexIndex.c_str()));
-		numVertexAdded++;
 		
 		if (!uvIndex.empty())
 		{
 			model->addUvIndex(atof(uvIndex.c_str()));
-			numUvAdded++;
 		}
 		
 		if (!normalIndex.empty())
 		{
 			model->addNormalIndex(atof(normalIndex.c_str()));
-			numNormalAdded++;
 		}
 		
 		data = data.substr(nextDataPos + 1);
 		finished = nextDataPos == std::string::npos;
 	}
 
-	//if face needs to be removed because one of its vertex is a background
-	if (isPartOfBackground)
-	{
-		for (int i = 0; i < numVertexAdded; ++i)
-		{
-			model->removeVertexIndex();
-		}
-		for (int i = 0; i < numNormalAdded; ++i)
-		{
-			model->removeNormalIndex();
-		}
-		for (int i = 0; i < numUvAdded; ++i)
-		{
-			model->removeUvIndex();
-		}
-	}
-	else
-	{
-		model->addVertexPerFace(vertexPerFace);
-	}
+	model->addVertexPerFace(vertexPerFace);
 
 }
 
@@ -232,7 +197,7 @@ void addTexturePath(
 //-----------------------------------------------------------------------------
 // Load an .obj file
 //-----------------------------------------------------------------------------
-ModelContainer* ObjModelLoader::loadModel(const std::string filename, Material* material, GLuint shaderProgram, std::vector<Vec3>* backgroundColors)
+ModelContainer* ObjModelLoader::loadModel(const std::string filename, Material* material, GLuint shaderProgram, const std::vector<Vec3>& backgroundColors)
 {
 	std::ifstream file(filename);
 
@@ -242,7 +207,7 @@ ModelContainer* ObjModelLoader::loadModel(const std::string filename, Material* 
 		return nullptr;
 	}
 
-	ModelContainer* model = new ModelContainer(material, shaderProgram);
+	ModelContainer* model = new ModelContainer(material, shaderProgram, backgroundColors);
 
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
@@ -267,7 +232,7 @@ ModelContainer* ObjModelLoader::loadModel(const std::string filename, Material* 
 		else if (isNormal(line))
 			addNormal(model, line);
 		else if (isFace(line))
-			addFace(model, line, backgroundColors);
+			addFace(model, line);
 		else if (isTexturePath(line))
 			addTexturePath(model, line);
 

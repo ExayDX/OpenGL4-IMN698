@@ -13,7 +13,7 @@ public:
 		const std::string, 
 		Material* material, 
 		GLuint shaderProgram, 
-		std::vector<Vec3>* backgroundColor);
+		const std::vector<Vec3>& backgroundColor);
 };
 
 #endif //__OBJ_MODEL_LOADER_H__

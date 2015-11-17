@@ -3,13 +3,17 @@
 #include "ModelContainer.h"
 
 #include "SOIL/SOIL.h"
+
 #include <string>
 #include <map>
+#include <set>
 
-ModelContainer::ModelContainer(Material* material, GLuint shaderProgram) :
+ModelContainer::ModelContainer(Material* material, GLuint shaderProgram, std::vector<Vec3> backgroundColor) :
 	Object(glm::vec3(0, 0, 0), material, shaderProgram)
+	, m_backgroundColor(backgroundColor)
+	, m_isolatedPatchCoeff()
+	, m_backgroundDistance(DEFAULT_BACKGROUND_DISTANCE)
 {
-
 }
 
 void ModelContainer::computeBoundingBox()
@@ -215,7 +219,7 @@ void ModelContainer::smoothNormals()
 		currentVert += m_faces[f].size();
 	}
 
-	updateDrawArray(false, false, false, 0);
+	updateDrawArray(false, false, false);
 	setupObject();
 }
 
@@ -299,23 +303,100 @@ void ModelContainer::draw()
 	}
 }
 
-void ModelContainer::removeBackground(std::vector<Vec3>* backgroundColors)
+void ModelContainer::updateBackgroundRemovalDistance(unsigned int newBackgroundDistance)
 {
-	updateDrawArray(false, false, false, backgroundColors);
-	setupObject();
+	m_backgroundDistance = newBackgroundDistance;
+	finish();
+}
+
+void ModelContainer::removeIsolatedPatch(int isolatedCoefficient)
+{
+	m_isolatedPatchCoeff = isolatedCoefficient;
+	finish();
+}
+
+void ModelContainer::removeBackground(const std::vector<Vec3>& backgroundColors)
+{
+	for (int i = 0; i < backgroundColors.size(); ++i)
+	{
+		Vec3 color = backgroundColors[i];
+		m_backgroundColor.push_back(color);
+	}
+	
+	finish();
+}
+
+void ModelContainer::computeBackgroundPlane()
+{
+	//check all vertices with the background colors
+	int currentIndex = 0;
+	Normal avgNormal;
+	double dCoeff = 0;
+	int nbCoeff = 0;
+
+	for (int i = 0; i < m_vertexPerFaces.size(); i++)
+	{
+		int vertexPerPolygon = m_vertexPerFaces[i];
+
+		if (vertexPerPolygon != 3)
+		{
+			assert(false);
+		}
+
+		for (int j = 0; j < vertexPerPolygon; j++)
+		{
+			if (isBackgroundFace(currentIndex, vertexPerPolygon))
+			{
+				//compute an average normal. This normal is going to be the background plane normal
+				//We suppose that faces detected as background that are not background are negligeable
+				if (!m_normals.empty())
+				{
+					Normal normal = m_normals[m_normalsIndices[currentIndex + j] - 1];
+					avgNormal.x += normal.x;
+					avgNormal.y += normal.y;
+					avgNormal.z += normal.z;
+					avgNormal = glm::normalize(avgNormal);
+
+					//compute average plane equation
+					Vec3 vertex = m_vertices[m_verticesIndices[currentIndex + j] - 1];
+
+					dCoeff += (vertex.x * normal.x + vertex.y * normal.y + vertex.z * normal.z);
+					nbCoeff++;
+				}
+			}
+		}
+
+		currentIndex += vertexPerPolygon;
+	}
+
+	m_backgroundPlane.a = avgNormal.x;
+	m_backgroundPlane.b = avgNormal.y;
+	m_backgroundPlane.c = avgNormal.z;
+	m_backgroundPlane.d = dCoeff / nbCoeff;
+
 }
 
 bool ModelContainer::isBackgroundFace(
 	int currentIndex, 
-	int vertexPerPolygon, 
-	std::vector<Vec3>* backgroundColors)
+	int vertexPerPolygon)
 {
-	if (!backgroundColors)
+	if (m_backgroundColor.empty())
 		return false;
 
 	//check if any of the vertices is a background
 	for (int i = 0; i < vertexPerPolygon; ++i)
 	{
+		//check if vertex is on the background plane by calculating distance
+		Vec3 vertex = m_vertices[m_verticesIndices[currentIndex + i] - 1];
+		Normal normal = m_normals[m_normalsIndices[currentIndex + i] - 1];
+
+		double dist = abs(vertex.x * m_backgroundPlane.a + vertex.y * m_backgroundPlane.b + vertex.z * m_backgroundPlane.c - m_backgroundPlane.d) /
+			std::sqrt(m_backgroundPlane.a*m_backgroundPlane.a + m_backgroundPlane.b*m_backgroundPlane.b + m_backgroundPlane.c*m_backgroundPlane.c);
+
+		if (dist < m_backgroundDistance)
+			return true;
+
+		//check if its part of the background color
 		unsigned int uvIndex = m_uvsIndices[currentIndex + i];
 
 		Vec3 color = getColorForUvIndex(uvIndex);
@@ -323,15 +404,15 @@ bool ModelContainer::isBackgroundFace(
 		int g = color.g;
 		int b = color.b;
 
-		for (int j = 0; j < backgroundColors->size(); ++j)
+		for (int j = 0; j < m_backgroundColor.size(); ++j)
 		{
-			int backgroundR = (*backgroundColors)[j].r - 10;
-			int backgroundG = (*backgroundColors)[j].g - 10;
-			int backgroundB = (*backgroundColors)[j].b - 10;
+			int backgroundR = m_backgroundColor[j].r - 10;
+			int backgroundG = m_backgroundColor[j].g - 10;
+			int backgroundB = m_backgroundColor[j].b - 10;
 
-			int backgroundR2 = (*backgroundColors)[j].r + 10;
-			int backgroundG2 = (*backgroundColors)[j].g + 10;
-			int backgroundB2 = (*backgroundColors)[j].b + 10;
+			int backgroundR2 = m_backgroundColor[j].r + 10;
+			int backgroundG2 = m_backgroundColor[j].g + 10;
+			int backgroundB2 = m_backgroundColor[j].b + 10;
 
 			//if at least one color correspond, face is part of the background
 			if (r > backgroundR && r < backgroundR2
@@ -343,11 +424,57 @@ bool ModelContainer::isBackgroundFace(
 	return false;
 }
 
+bool ModelContainer::isIsolatedPatch(
+	int currentIndex)
+{
+	std::set<int> adjacentFaceIndices;
+
+	//check neighbors
+	std::vector<int> adjacentFacesIndexesToExplore = m_vertexFaces[m_verticesIndices[currentIndex] - 1];
+
+	std::set<int> toExplore;
+	for each (int t in adjacentFacesIndexesToExplore)
+	{
+		toExplore.insert(t);
+	}
+
+	while (!toExplore.empty())
+	{
+		//vertex is not isolated if at least m_isolatedPatchCoeff close neighbors
+		if (adjacentFaceIndices.size() > m_isolatedPatchCoeff)
+			return false;
+
+		//from a face index, get all its vertices
+		int currentAdjacentFaceIndex = *(toExplore.begin());
+		toExplore.erase(toExplore.begin());
+
+		//insert face not explorer yet
+		if (adjacentFaceIndices.find(currentAdjacentFaceIndex) == adjacentFaceIndices.end())
+			adjacentFaceIndices.insert(currentAdjacentFaceIndex);
+
+		//from all those vertices, get adjacent faces and push them to be explored
+		std::vector<int> verticesIndexes = m_faces[currentAdjacentFaceIndex];
+		for each (int vertexIndex in verticesIndexes)
+		{
+			std::vector<int> adjacentFaces = m_vertexFaces[vertexIndex];
+
+			for each (int adjacentFaceIndex in adjacentFaces)
+			{
+				if (toExplore.find(adjacentFaceIndex) == toExplore.end() && 
+					adjacentFaceIndices.find(adjacentFaceIndex) == adjacentFaceIndices.end())
+					toExplore.insert(adjacentFaceIndex);
+			}
+		}
+
+	}
+
+	return true;
+}
+
 void ModelContainer::updateDrawArray(
 	bool computeNormals, 
 	bool computeTangents, 
-	bool computeBitangents,
-	std::vector<Vec3>* backgroundColors)
+	bool computeBitangents)
 {
 	int currentIndex = 0;
 
@@ -359,6 +486,27 @@ void ModelContainer::updateDrawArray(
 		v.clear();
 	}
 
+	if (!m_backgroundColor.empty())
+		computeBackgroundPlane();
+
+	for (int i = 0; i < m_vertexPerFaces.size(); i++)
+	{
+		int vertexPerPolygon = m_vertexPerFaces[i];
+		m_faces.push_back(std::vector<int>());
+		m_facesUvs.push_back(std::vector<int>());
+
+		for (int j = 0; j < vertexPerPolygon; j++)
+		{
+			//Data for normal interpollation
+			m_vertexFaces[m_verticesIndices[currentIndex + j] - 1].push_back(i);
+			m_faces[i].push_back(m_verticesIndices[currentIndex + j] - 1);
+			m_facesUvs[i].push_back(m_uvsIndices[currentIndex + j] - 1);
+		}
+		currentIndex += vertexPerPolygon;
+	}
+
+	currentIndex = 0;
+
 	for (int i = 0; i < m_vertexPerFaces.size(); i++)
 	{
 		int vertexPerPolygon = m_vertexPerFaces[i];
@@ -367,19 +515,13 @@ void ModelContainer::updateDrawArray(
 		{
 			assert(false);
 		}
-		m_faces.push_back(std::vector<int>());
-		m_facesUvs.push_back(std::vector<int>());
 
 		//don't add to the model faces that are part of the background
-		if (!isBackgroundFace(currentIndex, vertexPerPolygon, backgroundColors))
+		if (!isBackgroundFace(currentIndex, vertexPerPolygon) && !isIsolatedPatch(currentIndex))
 		{
 
 			for (int j = 0; j < vertexPerPolygon; j++)
 			{
-				//Data for normal interpollation
-				m_vertexFaces[m_verticesIndices[currentIndex + j] - 1].push_back(i);
-				m_faces[i].push_back(m_verticesIndices[currentIndex + j] - 1);
-				m_facesUvs[i].push_back(m_uvsIndices[currentIndex + j] - 1);
 
 				ModelContainer::VertexData vert;
 				vert.m_vertex = m_vertices[m_verticesIndices[currentIndex + j] - 1];
@@ -449,10 +591,11 @@ void ModelContainer::updateDrawArray(
 void ModelContainer::finish()
 {
 	//Build draw array
-	updateDrawArray(true, true, true, 0);
+	updateDrawArray(true, true, true);
 
 	setupObject();
 
+	m_textures.clear();
 	for (int i = 0; i < m_texturePaths.size(); ++i)
 	{
 		GLuint texture;

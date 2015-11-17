@@ -230,7 +230,7 @@ void SSSSTestLevel::levelSetup()
 	sphere3->addPostProcess(m_shaderPrograms["SSS"]->getId()); 
 	m_objects.push_back(sphere3);
 
-	ModelContainer* model1 = ModelLoader::loadModel("./HeadModel/head_tri_non_smooth.obj", m_materials["default"], m_shaderPrograms["BlinnPhong"]->getId(), nullptr);
+	ModelContainer* model1 = ModelLoader::loadModel("./HeadModel/head_tri_non_smooth.obj", m_materials["default"], m_shaderPrograms["BlinnPhong"]->getId(), std::vector<Vec3>());
 	model1->smoothNormals();
 	m_objects.push_back(model1);
 

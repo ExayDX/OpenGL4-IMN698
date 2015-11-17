@@ -11,7 +11,7 @@ ModelContainer* ModelLoader::loadModel(
 	const std::string filename, 
 	Material* material, 
 	GLuint shaderProgram, 
-	std::vector<Vec3>* backgroundColors)
+	const std::vector<Vec3>& backgroundColors)
 {
 	//check extension and call appropriate fonction
 	size_t pos = filename.rfind('.');
