@@ -154,8 +154,10 @@
     <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DefaultTestLevel.h" />
+    <ClInclude Include="Flag.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="ConsoleListener.h" />
+    <ClInclude Include="LightingEffects.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="ModelContainer.h" />
@@ -175,7 +177,7 @@
     <None Include="AdditiveBlending.fg" />
     <None Include="BlinnPhong.fg" />
     <None Include="BlinnPhong.vs" />
-    <None Include="BloomHDR.fg" />
+    <None Include="ApplyPostProcesses.fg" />
     <None Include="Debug.vs" />
     <None Include="GammaCorrect.fg" />
     <None Include="GaussianBlur.fg" />

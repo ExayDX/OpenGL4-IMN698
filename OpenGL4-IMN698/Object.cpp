@@ -10,6 +10,7 @@ Object::Object(glm::vec3 position, Material* material, GLuint shaderProgram)
 	, m_shaderProgram(shaderProgram)
 	, m_numIndices(0)
 	, m_animation(0)
+	, m_postProcesses(LightingEffects::eNone)
 {
 	m_bbox = BoundingBox(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
 }

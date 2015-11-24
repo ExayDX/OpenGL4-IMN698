@@ -1,94 +1,191 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Animable.cpp" />
-    <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="DefaultTestLevel.cpp" />
-    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="ConsoleListener.cpp" />
-    <ClCompile Include="Light.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="ModelLoader.cpp" />
-    <ClCompile Include="Object.cpp" />
-    <ClCompile Include="Quad.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="ShaderProgram.cpp" />
-    <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="SSSSTestLevel.cpp" />
-    <ClCompile Include="Viewer.cpp" />
-    <ClCompile Include="ViewerState.cpp" />
-    <ClCompile Include="ObjModelLoader.cpp" />
-    <ClCompile Include="ModelContainer.cpp" />
+    <ClCompile Include="Actor.cpp">
+      <Filter>Actors and objects</Filter>
+    </ClCompile>
+    <ClCompile Include="BoundingBox.cpp">
+      <Filter>Actors and objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Actors and objects</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjModelLoader.cpp">
+      <Filter>Actors and objects\Model Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelContainer.cpp">
+      <Filter>Actors and objects\Model Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelLoader.cpp">
+      <Filter>Actors and objects\Model Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="Quad.cpp">
+      <Filter>Actors and objects\Predefined Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>Actors and objects\Predefined Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="DefaultTestLevel.cpp">
+      <Filter>Scene and levels</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scene and levels</Filter>
+    </ClCompile>
+    <ClCompile Include="SSSSTestLevel.cpp">
+      <Filter>Scene and levels</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>Rendering\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Rendering\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewer.cpp">
+      <Filter>Viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewerState.cpp">
+      <Filter>Viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Actors and objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Actor.h" />
     <ClInclude Include="Animable.h" />
-    <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="DefaultTestLevel.h" />
-    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="ConsoleListener.h" />
-    <ClInclude Include="Material.h" />
-    <ClInclude Include="Light.h" />
-    <ClInclude Include="ModelLoader.h" />
-    <ClInclude Include="Object.h" />
-    <ClInclude Include="Quad.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="ShaderProgram.h" />
-    <ClInclude Include="Sphere.h" />
-    <ClInclude Include="SSSSTestLevel.h" />
     <ClInclude Include="Types.h" />
-    <ClInclude Include="Viewer.h" />
-    <ClInclude Include="ViewerState.h" />
-    <ClInclude Include="ObjModelLoader.h" />
-    <ClInclude Include="ModelContainer.h" />
+    <ClInclude Include="Actor.h">
+      <Filter>Actors and objects</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingBox.h">
+      <Filter>Actors and objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Actors and objects</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjModelLoader.h">
+      <Filter>Actors and objects\Model Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelContainer.h">
+      <Filter>Actors and objects\Model Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>Actors and objects\Model Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="Quad.h">
+      <Filter>Actors and objects\Predefined Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Actors and objects\Predefined Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultTestLevel.h">
+      <Filter>Scene and levels</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene and levels</Filter>
+    </ClInclude>
+    <ClInclude Include="SSSSTestLevel.h">
+      <Filter>Scene and levels</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>Rendering\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Rendering\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewer.h">
+      <Filter>Viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewerState.h">
+      <Filter>Viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Actors and objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Rendering\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="LightingEffects.h">
+      <Filter>Rendering\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Flag.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="AdditiveBlending.fg">
-      <Filter>Shaders</Filter>
+      <Filter>Rendering\Shaders\Post Processes</Filter>
     </None>
     <None Include="basicPPVS.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="BlinnPhong.fg">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="BlinnPhong.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="BloomHDR.fg">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="BumpColorMaps.fg">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="BumpColorMaps.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Debug.fg">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Debug.vs">
-      <Filter>Shaders</Filter>
+      <Filter>Rendering\Shaders\Post Processes</Filter>
     </None>
     <None Include="GammaCorrect.fg">
-      <Filter>Shaders</Filter>
+      <Filter>Rendering\Shaders\Post Processes</Filter>
     </None>
     <None Include="GaussianBlur.fg">
-      <Filter>Shaders</Filter>
+      <Filter>Rendering\Shaders\Post Processes</Filter>
     </None>
     <None Include="hdr.fg">
-      <Filter>Shaders</Filter>
+      <Filter>Rendering\Shaders\Post Processes</Filter>
     </None>
     <None Include="SSS.fg">
-      <Filter>Shaders</Filter>
+      <Filter>Rendering\Shaders\Post Processes</Filter>
+    </None>
+    <None Include="BlinnPhong.fg">
+      <Filter>Rendering\Shaders\Rendering</Filter>
+    </None>
+    <None Include="BlinnPhong.vs">
+      <Filter>Rendering\Shaders\Rendering</Filter>
+    </None>
+    <None Include="BumpColorMaps.fg">
+      <Filter>Rendering\Shaders\Rendering</Filter>
+    </None>
+    <None Include="BumpColorMaps.vs">
+      <Filter>Rendering\Shaders\Rendering</Filter>
+    </None>
+    <None Include="Debug.fg">
+      <Filter>Rendering\Shaders</Filter>
+    </None>
+    <None Include="Debug.vs">
+      <Filter>Rendering\Shaders</Filter>
+    </None>
+    <None Include="ApplyPostProcesses.fg">
+      <Filter>Rendering\Shaders\Post Processes</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Shaders">
+    <Filter Include="Actors and objects">
+      <UniqueIdentifier>{0f311862-2099-4449-b6dd-7a7e6d5fdaf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Actors and objects\Model Loader">
+      <UniqueIdentifier>{87b159d2-5f98-41e4-b939-ada38e81b9a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Actors and objects\Predefined Objects">
+      <UniqueIdentifier>{8884376a-00de-4f7f-9588-bd5488c5570f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene and levels">
+      <UniqueIdentifier>{dd9a0541-4c8e-449e-ab58-ab3f532a990d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering">
       <UniqueIdentifier>{6b225ca5-34d7-4ed1-8a52-f8e899b35909}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Resources">
+      <UniqueIdentifier>{75e4d1e1-3b1b-427b-b044-635e3d6610d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shaders">
+      <UniqueIdentifier>{cad749db-9e6f-41d0-b9c8-2b3296ec2cff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shaders\Post Processes">
+      <UniqueIdentifier>{4ef5401b-76fe-4e52-9054-8ff2edbc89e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shaders\Rendering">
+      <UniqueIdentifier>{3be18951-0a80-4cd3-8139-f22491648ee8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Viewer">
+      <UniqueIdentifier>{c7bdb247-e480-497d-aecf-6f42bddd0488}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
