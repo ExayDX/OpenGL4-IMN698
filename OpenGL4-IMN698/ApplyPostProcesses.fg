@@ -35,7 +35,7 @@ void main()
 		result = vec3(1.0) - exp(-result * exposure);
    	
 
-	result = vec3(texture(flags, TexCoords).r);
+	//result = vec3(texture(flags, TexCoords).r);
 	//result = vec3(texture(bloomBlur, TexCoords).rgb);
 
 

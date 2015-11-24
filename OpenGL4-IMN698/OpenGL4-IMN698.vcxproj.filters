@@ -155,6 +155,10 @@
     <None Include="ApplyPostProcesses.fg">
       <Filter>Rendering\Shaders\Post Processes</Filter>
     </None>
+    <None Include="normal.fg" />
+    <None Include="normal.vs" />
+    <None Include="textureObj.fg" />
+    <None Include="textureObj.vs" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Actors and objects">

@@ -12,7 +12,11 @@
 class ModelLoader
 {
 public:
-	static ModelContainer* loadModel(const std::string, Material* material , GLuint shaderProgram);
+	static ModelContainer* loadModel(
+		const std::string, 
+		Material* material, 
+		GLuint shaderProgram, 
+		const std::vector<Vec3>& backgroundColor);
 };
 
 #endif //__MODEL_LOADER_H__

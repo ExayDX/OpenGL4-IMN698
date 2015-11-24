@@ -7,7 +7,11 @@
 #include <iostream>
 
 
-ModelContainer* ModelLoader::loadModel(const std::string filename, Material* material, GLuint shaderProgram)
+ModelContainer* ModelLoader::loadModel(
+	const std::string filename, 
+	Material* material, 
+	GLuint shaderProgram, 
+	const std::vector<Vec3>& backgroundColors)
 {
 	//check extension and call appropriate fonction
 	size_t pos = filename.rfind('.');
@@ -21,7 +25,7 @@ ModelContainer* ModelLoader::loadModel(const std::string filename, Material* mat
 
 	if (ext == "OBJ" || ext == "obj")
 	{
-		object = ObjModelLoader::loadModel(filename, material, shaderProgram);
+		object = ObjModelLoader::loadModel(filename, material, shaderProgram, backgroundColors);
 	}
 	else
 	{

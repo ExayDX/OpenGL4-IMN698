@@ -13,6 +13,8 @@ class Object;
 // container of a 3d model
 class ModelContainer: public Object
 {
+	const unsigned int DEFAULT_BACKGROUND_DISTANCE = 2; //TODO find an heuristic to determine this variable
+
 public:
 	typedef glm::vec3			Vertex;
 	typedef glm::vec3			Normal;
@@ -34,6 +36,11 @@ public:
 		std::vector<FaceIndex> m_faces;
 	};
 
+	struct Plane
+	{
+		double a, b, c, d;
+	};
+
 
 public:
 	//Object member functions
@@ -44,15 +51,21 @@ public:
 	virtual void draw();
 
 public:
-	ModelContainer(Material* material, GLuint shaderProgram);
+	ModelContainer(Material* material, GLuint shaderProgram, std::vector<Vec3> backgroundColor);
 
 	void addVertex(Vertex vertex);
 	void addNormal(Normal normal);
 	void addUv(Uv uv);
 
 	void addVertexIndex(int index);
+	void removeVertexIndex();
+
 	void addNormalIndex(int index);
+	void removeNormalIndex();
+
 	void addUvIndex(int index);
+	void removeUvIndex();
+
 	void addVertexPerFace(int num);
 
 	void addTexturePath(std::string path);
@@ -62,14 +75,30 @@ public:
 
 	void computeNormals();
 	void smoothNormals();
+	void removeBackground(const std::vector<Vec3>& backgroundColors);
+	void removeIsolatedPatch(int isolatedCoefficient);
+	void updateBackgroundRemovalDistance(unsigned int newBackgroundDistance);
+
+	void computeBackgroundPlane();
 
 	void finish();
+	void preProcess();
+
 	void updateDrawArray(
 		bool computeNormals,
 		bool computeTangents,
 		bool computeBitangents);
 
+	Vec3 getColorForUvIndex(int uvIndex);
+
 private:
+	bool isBackgroundFace(int currentIndex, int vertexPerPolygon);
+	bool isIsolatedPatch(int currentIndex);
+	virtual void computeBoundingBox();
+private:
+	int m_width;
+	int m_height;
+	unsigned char* m_image; //diffuse texture
 
 	//data
 	std::vector<Vertex> m_vertices;
@@ -96,6 +125,11 @@ private:
 	std::vector<Face> m_vertexFaces;
 
 	std::vector<VertexData> m_drawArray;
+
+	Plane m_backgroundPlane;
+	std::vector<Vec3> m_backgroundColor;
+	unsigned int m_isolatedPatchCoeff;
+	unsigned int m_backgroundDistance;
 };
 
 #endif //__MODEL_CONTAINER_H__

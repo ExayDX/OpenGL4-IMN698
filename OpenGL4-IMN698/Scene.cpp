@@ -15,6 +15,7 @@
 Scene::Scene()
 	: m_levelIsDone(false)
 	, m_renderQuad(nullptr)
+	, m_objectsToBeCreated()
 {
 }
 
@@ -91,7 +92,7 @@ void Scene::loadPendingModels()
 	while (!m_objectsToBeCreated.empty())
 	{
 		ObjectPending obj = m_objectsToBeCreated.front();
-		Object* model1 = ModelLoader::loadModel(obj.m_path, m_materials["default"], m_shaderPrograms[obj.m_shaderProgram]->getId());
+		Object* model1 = ModelLoader::loadModel(obj.m_path, m_materials["default"], m_shaderPrograms[obj.m_shaderProgram]->getId(), std::vector<Vec3>());
 		model1->setVisible(true);
 		model1->translate(obj.m_position);
 		std::lock_guard<std::mutex> lock(m_objectVectorMutex);
@@ -99,6 +100,24 @@ void Scene::loadPendingModels()
 		m_objectsToBeCreated.pop();
 	}
 
+}
+
+void Scene::removePendingBackgrounds()
+{
+	while (!m_backgroundToBeRemoved.empty())
+	{
+		ModelContainer* model = m_backgroundToBeRemoved.front().first;
+		Vec3 color = m_backgroundToBeRemoved.front().second;
+		std::vector<Vec3> colors;
+		colors.push_back(color);
+		model->removeBackground(colors);
+		m_backgroundToBeRemoved.pop();
+	}
+}
+
+void Scene::addBackgroundToBeRemoved(ModelContainer* obj, Vec3 color)
+{
+	m_backgroundToBeRemoved.push(std::pair<ModelContainer*, Vec3>(obj, color));
 }
 
 std::vector<std::string> Scene::getShaderList() const
@@ -115,10 +134,20 @@ std::vector<std::string> Scene::getShaderList() const
 void Scene::preDraw()
 {
 	loadPendingModels();
+	removePendingBackgrounds();
 	m_objectVectorMutex.lock();
 }
 
 void Scene::postDraw()
 {
 	m_objectVectorMutex.unlock();
+}
+
+void Scene::removeObject(Object* obj)
+{
+	for (int i = 0; i < m_objects.size(); ++i)
+	{
+		if (m_objects[i] == obj)
+			m_objects[i]->setVisible(false);
+	}
 }

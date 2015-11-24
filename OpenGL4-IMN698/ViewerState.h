@@ -48,6 +48,8 @@ public:
 	InteractionMode getInteractionMode();
 	bool* getKeys(){ return m_keys; }
 
+	Object* getLastSelectedObject();
+
 private:
 	void startMouseOperation();
 	void updateOperationData();
@@ -70,6 +72,7 @@ private:
 	glm::vec2 m_lastMousePosition;
 	glm::vec2 m_mousePosStartOp;
 	Object* m_currentlySelectedObject;
+	Object* m_lastSelectedObject;
 };
 
 #endif //__VIEWER_STATE_H__
