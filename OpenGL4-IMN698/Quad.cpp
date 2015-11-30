@@ -8,12 +8,17 @@ Quad::Quad(glm::vec3 position, Material* material, GLuint shaderProgram)
 
 void Quad::defineVBO()
 {
+	m_vertices.push_back(Vertice(-1.0f, 1.0f, 0.0f));
+	m_vertices.push_back(Vertice(-1.0f, -1.0f, 0.0f));
+	m_vertices.push_back(Vertice(1.0f, 1.0f, 0.0f));
+	m_vertices.push_back(Vertice(1.0f, -1.0f, 0.0f));
+
 	GLfloat vertices[] = {
-		// Vertex position	  //Texture Coordinates 
-		-1.0f,  1.0f,  0.0f,     0.0f, 1.0f,
-		-1.0f, -1.0f,  0.0f,	 0.0f, 0.0f, 
-		 1.0f,  1.0f,  0.0f,     1.0f, 1.0f,
-		 1.0f, -1.0f,  0.0f,     1.0f, 0.0f, 
+		// Vertex position									//Texture Coordinates 
+		m_vertices[0].x, m_vertices[0].y, m_vertices[0].z,  0.0f, 1.0f,
+		m_vertices[1].x, m_vertices[1].y, m_vertices[1].z, 0.0f, 0.0f,
+		m_vertices[2].x, m_vertices[2].y, m_vertices[2].z, 1.0f, 1.0f,
+		m_vertices[3].x, m_vertices[3].y, m_vertices[3].z, 1.0f, 0.0f,
 	};
 
 	glGenBuffers(1, &m_VBO);

@@ -8,11 +8,12 @@
 #include "BoundingBox.h"
 #include "ShaderProgram.h"
 #include "Animable.h"
+#include "LightingEffects.h"
 
 #include <vector>
 
 // Forward declaration
-class ShaderProgram;
+class ShaderProgram;	
 
 //Base class for a drawable object
 class Object : public Actor
@@ -30,10 +31,11 @@ public:
 
 	// Getters 
 	GLuint getShaderProgramId() { return m_shaderProgram; }
+	LightingEffects getPostProcesses() { return m_postProcesses; }
 
 	// Setters
 	void assignMaterial(Material* material) { m_material = material; } 
-	void addPostProcess(GLuint aShaderProgram) { m_postProcesses.push_back(aShaderProgram); }
+	void setPostProcesses(LightingEffects aFlag) { m_postProcesses = aFlag; } // Takes a flag containing all postprocess to be executed
 	void setAnimation(Animation* animation);
 
 	void updateShader(GLuint& aNewShaderProgram) { m_shaderProgram = aNewShaderProgram; };
@@ -58,7 +60,7 @@ protected :
 	// Object's look characteristics
 
 	GLuint m_shaderProgram; 
-	std::vector<GLuint> m_postProcesses; // This is used for postProcess effects that only applies to certain objects. 
+	LightingEffects m_postProcesses; // Flag of postProcess effects 
 
 	// Object's shape definition variables
 	GLuint m_VBO;

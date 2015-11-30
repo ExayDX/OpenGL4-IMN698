@@ -23,14 +23,15 @@ struct Light
 uniform Material objectMaterial; 
 uniform Light lightsProperties[NB_LIGHTS];
 uniform vec3 brightnessThreshold;  
+uniform float postProcessFlag;
 
 in vec3 Normal;
 in vec3 FragPosition;
 in vec3 LightsPositions[NB_LIGHTS];
 
-
 layout (location = 0) out vec4 FragColor;
 layout (location = 1) out vec4 BrightColor;
+layout (location = 2) out vec4 Flags; 
 
 vec3 computeLightContribution(int i, vec3 norm)
 {
@@ -61,6 +62,10 @@ vec3 computeLightContribution(int i, vec3 norm)
 
 void main()
 {
+
+	// Generate texture of flags to use when applying post processes
+	Flags = vec4(vec3(postProcessFlag), 1.0f); 
+
 	vec3 norm = normalize(Normal);
 
 	vec3 result;
@@ -71,7 +76,9 @@ void main()
 
 	float brightness = dot(result, brightnessThreshold);
     if(brightness > 1.0)
-        BrightColor = vec4(result, 1.0);
+	{
+		BrightColor = vec4(result, 1.0);
+	}
 
     FragColor = vec4(result, 1.0f); 
 }

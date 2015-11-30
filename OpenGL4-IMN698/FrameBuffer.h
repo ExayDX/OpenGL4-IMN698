@@ -16,6 +16,19 @@ public:
 		eStencil
 	};
 
+	struct ColorBufferFormats
+	{
+		GLuint internalFormat;
+		GLenum format;
+		GLenum type; 
+
+		ColorBufferFormats(GLuint aInternalFormat, GLenum aFormat, GLenum aType)
+			: internalFormat(aInternalFormat)
+			, format(aFormat)
+			, type(aType)
+		{}
+	};
+
 	// Typedefs
 	typedef std::map<GLenum, GLuint> ParameterMap;
 	typedef std::vector<GLuint> RenderBufferVec;
@@ -28,7 +41,7 @@ public:
 	// Public mehtods
 	void bind(); 
 	void unBind(); 
-	void addBuffer(BufferType bufferType, GLuint attachmentPos, ParameterMap* parameteri = nullptr);
+	void addBuffer(BufferType bufferType, GLuint attachmentPos, ColorBufferFormats* colorBufferFormats = nullptr, ParameterMap* parameteri = nullptr);
 	GLuint getId(){ return m_id; }
 	const GLuint getRenderBuffer(BufferType bufferType, GLuint id); 
 	static void setDimensions(GLuint width, GLuint height);

@@ -165,7 +165,6 @@ void Viewer::setupViewport()
 	// Set GL options
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
-	glEnable(GL_STENCIL_TEST);
 }
 
 /*
@@ -199,9 +198,8 @@ Viewer::Viewer()
 	glfwSwapInterval(1);
 
 	m_state = new ViewerState();
-
 	m_camera = new Camera(&glm::vec3(0.0f, 1.0f, 0.0f), &glm::vec3(0.0f, 0.0f, 10.0f), &glm::vec3(0, 0, 0));
-	m_scenes.push_back(new DefaultTestLevel()); 
+	m_scenes.push_back(new SSSSTestLevel()); 
 	m_listener = new ConsoleListener();
 
 	//start animation once scene is ready
@@ -225,6 +223,7 @@ Viewer::~Viewer()
 	}
 	
 	delete m_state; m_state = nullptr; 
+	delete m_listener; m_listener = nullptr; 
 
 	glfwTerminate();
 	exit(EXIT_SUCCESS);
@@ -238,7 +237,6 @@ void Viewer::loop()
 
 	m_currentScene = *sceneIterator;
 	m_currentScene->Initialize();
-	m_lastTime = Clock::now();
 
 	while (!glfwWindowShouldClose(m_window) && !m_viewingIsOver)
 	{
@@ -262,6 +260,7 @@ void Viewer::loop()
 		glm::mat4 projection = glm::perspective(m_camera->getZoomLevel(), m_width / m_height, 0.1f, 100.0f);
 		m_currentScene->setProjectionMatrix(projection);
 
+		// Timing Calculations
 		GLfloat currentFrameTime = glfwGetTime();
 		double deltaTime = currentFrameTime - m_lastFrameTime;
 		m_lastFrameTime = currentFrameTime;
@@ -285,15 +284,6 @@ void Viewer::loop()
 		// Coordinate system matrices 
 		glm::mat4 view = m_camera->GetViewMatrix();
 		m_currentScene->setViewMatrix(view);
-
-		Clock::time_point now = Clock::now();
-		std::chrono::duration<double, std::ratio<1, 1000>> numberOfFrameSinceLast = now - m_lastTime;
-		double numFrame = (numberOfFrameSinceLast.count() / (1000 / 24));
-		if (numFrame > 1)
-		{
-			m_currentFrame += numFrame;
-			m_lastTime = now;
-		}
 
 		m_currentScene->preDraw();
 		m_currentScene->draw(m_currentFrame);

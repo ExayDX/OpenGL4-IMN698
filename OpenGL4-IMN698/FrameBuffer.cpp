@@ -7,6 +7,8 @@ GLuint FrameBuffer::m_height = 0;
 FrameBuffer::FrameBuffer()
 {
 	glGenFramebuffers(1, &m_id);
+
+
 }
 
 FrameBuffer::~FrameBuffer()
@@ -28,15 +30,25 @@ void FrameBuffer::unBind()
 }
 
 
-void FrameBuffer::addBuffer(BufferType bufferType, GLuint attachmentPos, ParameterMap* parameteri /* = nullptr */)
+void FrameBuffer::addBuffer(BufferType bufferType, GLuint attachmentPos, ColorBufferFormats* colorBufferFormats /*= nullptr*/, ParameterMap* parameteri /* = nullptr */)
 {
 	GLuint data; 
 	if (bufferType == BufferType::eColor)
 	{
+		//assert(colorBufferFormats, "To create a colorBuffer, formats must be defined"); 
+		
 		// Create Texture (Color buffer)
 		glGenTextures(1, &data);
 		glBindTexture(GL_TEXTURE_2D, data);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_width, m_height, 0, GL_RGB, GL_FLOAT, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 
+					 0, 
+					 colorBufferFormats->internalFormat, 
+					 m_width, 		   
+					 m_height, 		   
+					 0, 			   
+					 colorBufferFormats->format, 
+					 colorBufferFormats->type, 
+					 nullptr);
 
 		// Set Texture parameters
 		if (parameteri)

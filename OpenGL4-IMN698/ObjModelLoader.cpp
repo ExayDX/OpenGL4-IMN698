@@ -203,7 +203,7 @@ ModelContainer* ObjModelLoader::loadModel(const std::string filename, Material* 
 
 	if (!file.is_open())
 	{
-		throw std::runtime_error("could not create shader: file can't be opened");
+		throw std::runtime_error("could not create model: file can't be opened");
 		return nullptr;
 	}
 

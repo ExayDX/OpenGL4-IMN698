@@ -1,31 +1,73 @@
 #version 330 core
 layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 PostProcessesFlag;
 in vec2 TexCoords;
 
 uniform sampler2D image;
+uniform sampler2D postProcessesFlags; 
+uniform uint bloomBlurPpFlag; 
+uniform uint maxEffectValue; 
 uniform bool horizontal;
 
 uniform float weight[5] = float[] (0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162);
 
 void main()
-{             
-     vec2 tex_offset = 1.0 / textureSize(image, 0); // gets size of single texel
-     vec3 result = texture2D(image, TexCoords).rgb * weight[0];
-     if(horizontal)
-     {
-         for(int i = 1; i < 5; ++i)
-         {
-            result += texture2D(image, TexCoords + vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
-            result += texture2D(image, TexCoords - vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
-         }
-     }
-     else
-     {
-         for(int i = 1; i < 5; ++i)
-         {
-             result += texture2D(image, TexCoords + vec2(0.0, tex_offset.y * i)).rgb * weight[i];
-             result += texture2D(image, TexCoords - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
-         }
-     }
-     FragColor = vec4(result, 1.0);
+{      	   
+	uint flag = uint(texture(postProcessesFlags, TexCoords).r * maxEffectValue);
+	float flagResult = texture(postProcessesFlags, TexCoords).r;
+
+	// Compute blur 
+    vec2 tex_offset = 1.0 / textureSize(image, 0); // gets size of single texel
+    vec3 bloomResult = texture(image, TexCoords).rgb * weight[0];
+
+	// Horizontal branch
+    if(horizontal)
+    {
+		vec2 next = TexCoords + vec2(tex_offset.x, 0.0);
+		vec2 prev =	TexCoords - vec2(tex_offset.x, 0.0);
+		
+		uint flagNext = uint(texture(postProcessesFlags, next).r * maxEffectValue); 
+		uint flagPrev = uint(texture(postProcessesFlags, prev).r * maxEffectValue);
+		if ( bool(flagNext & bloomBlurPpFlag) || bool(flagPrev &  bloomBlurPpFlag) )
+		{
+			flagResult = float(flagNext | flagPrev) / float(maxEffectValue);
+		}
+
+        for(int i = 1; i < 5; ++i)
+        {
+			vec2 next = TexCoords + vec2(tex_offset.x * i, 0.0);
+			vec2 prev =	TexCoords - vec2(tex_offset.x * i, 0.0);
+
+			bloomResult += texture(image, next).rgb * weight[i];
+			bloomResult += texture(image, prev).rgb * weight[i];
+        }
+    }
+
+	// Vertical branch
+    else
+    {
+		vec2 next = TexCoords + vec2(0.0, tex_offset.y);
+		vec2 prev =	TexCoords - vec2(0.0, tex_offset.y);
+
+		uint flagNext = uint(texture(postProcessesFlags, next).r * maxEffectValue); 
+		uint flagPrev = uint(texture(postProcessesFlags, prev).r * maxEffectValue);
+		if ( bool(flagNext & bloomBlurPpFlag) || bool(flagPrev &  bloomBlurPpFlag) )
+		{
+			flagResult = float(float(flagNext | flagPrev) / float(maxEffectValue));
+		}
+
+        for(int i = 1; i < 5; ++i)
+        {
+			next = TexCoords + vec2(0.0, tex_offset.y * i);
+			prev =	TexCoords - vec2(0.0, tex_offset.y * i);
+
+            bloomResult += texture(image, next).rgb * weight[i];
+            bloomResult += texture(image, prev).rgb * weight[i];
+        }
+    }
+
+    FragColor = vec4(bloomResult, 1.0); 
+
+	// Assign new flag
+	PostProcessesFlag = vec4(vec3(flagResult), 1.0);   
 }
