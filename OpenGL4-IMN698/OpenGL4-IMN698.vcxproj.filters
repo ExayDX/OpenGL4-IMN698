@@ -53,6 +53,9 @@
     <ClCompile Include="Light.cpp">
       <Filter>Actors and objects</Filter>
     </ClCompile>
+    <ClCompile Include="SeparableSSS.cpp">
+      <Filter>Rendering\Technique</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animable.h" />
@@ -114,6 +117,12 @@
       <Filter>Rendering\Resources</Filter>
     </ClInclude>
     <ClInclude Include="Flag.h" />
+    <ClInclude Include="SeparableSSS.h">
+      <Filter>Rendering\Technique</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderMacro.h">
+      <Filter>Rendering\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="AdditiveBlending.fg">
@@ -155,6 +164,10 @@
     <None Include="ApplyPostProcesses.fg">
       <Filter>Rendering\Shaders\Post Processes</Filter>
     </None>
+    <None Include="normal.fg" />
+    <None Include="normal.vs" />
+    <None Include="textureObj.fg" />
+    <None Include="textureObj.vs" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Actors and objects">
@@ -186,6 +199,9 @@
     </Filter>
     <Filter Include="Viewer">
       <UniqueIdentifier>{c7bdb247-e480-497d-aecf-6f42bddd0488}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Technique">
+      <UniqueIdentifier>{5df8c8a6-3d3c-406a-a5cc-1ff8bf7c7bc3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

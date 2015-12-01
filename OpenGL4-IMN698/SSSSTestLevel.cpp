@@ -135,7 +135,7 @@ void SSSSTestLevel::draw(int currentFrame)
 		GLuint ppFlags[2] = { ppFBOs[0]->getRenderBuffer(FrameBuffer::BufferType::eColor, 1),
 							  ppFBOs[1]->getRenderBuffer(FrameBuffer::BufferType::eColor, 1) };
 
-		GLuint amount = 40;
+		GLuint amount = 300;
 		glUseProgram(BlurProg);
 
 		glUniform1i(glGetUniformLocation(BlurProg, "image"), 0);
@@ -264,7 +264,7 @@ void SSSSTestLevel::levelSetup()
 	sphere3->setPostProcesses(LightingEffects::eHDR);
 	m_objects.push_back(sphere3);
 
-	//ModelContainer* model1 = ModelLoader::loadModel("./HeadModel/head_tri_non_smooth.obj", m_materials["default"], m_shaderPrograms["BlinnPhong"]->getId());
+	//ModelContainer* model1 = ModelLoader::loadModel("./HeadModel/head_tri_non_smooth.obj", m_materials["default"], m_shaderPrograms["BlinnPhong"]->getId(), std::vector<Vec3>());
 	//model1->smoothNormals();
 	//m_objects.push_back(model1);
 

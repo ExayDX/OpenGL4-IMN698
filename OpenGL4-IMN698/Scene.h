@@ -3,6 +3,7 @@
 
 #include "Types.h"
 #include "Camera.h"
+#include "ModelContainer.h"
 
 #include <gl/glew.h>
 #include "glm/glm/glm.hpp"
@@ -63,6 +64,10 @@ public :
 
 	void loadModel(const std::string& path, Vec3 position, std::string shaderProgram);
 	void loadPendingModels();
+	void addBackgroundToBeRemoved(ModelContainer* obj, Vec3 color);
+	void removePendingBackgrounds();
+
+	void removeObject(Object* obj);
 
 protected:
 	// Methods
@@ -75,8 +80,8 @@ protected:
 protected:
 
 	std::vector<Object*> m_objects;
-	std::queue<ObjectPending> m_objectsToBeCreated;
 	std::vector<Light*> m_lights;
+
 	std::map<std::string, ShaderProgram*> m_shaderPrograms;
 	std::map<std::string, Material*> m_materials;
 
@@ -90,6 +95,9 @@ protected:
 	std::map<std::string, FrameBuffer*> m_frameBuffers;
 
 	std::mutex m_objectVectorMutex;
+
+	std::queue<ObjectPending> m_objectsToBeCreated;
+	std::queue<std::pair<ModelContainer*, Vec3> > m_backgroundToBeRemoved;
 };
 
 #endif
