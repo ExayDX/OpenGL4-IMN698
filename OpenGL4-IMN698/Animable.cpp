@@ -4,14 +4,12 @@
 
 
 Animation::Animation() :
-	m_frameNumber(),
 	m_loopback(false),
 	m_frames()
 {
 }
 
-Animation::Animation(std::list<Frame> frames) :
-	m_frameNumber(frames.size()),
+Animation::Animation(std::map<int, Frame> frames) :
 	m_loopback(false),
 	m_frames(frames)
 {
@@ -21,30 +19,19 @@ Animation::Animation(std::list<Frame> frames) :
 //insert frame at index
 void Animation::addFrame(int frameNumber, Frame frame)
 {
-	const unsigned nodeToInsertBefore = frameNumber;
-	std::list<Frame>::iterator it = m_frames.begin();
-
-	for (unsigned node = 0; node < nodeToInsertBefore; ++node)
-		++it;
-
-	m_frames.insert(it, frame);
-	m_frameNumber++;
+	m_frames[frameNumber] = frame;
 }
 
 Frame Animation::getFrame(int index) const
 {
 	if (m_loopback)
-		index = index % (m_frameNumber - 1);
+		index = index % (m_frames.size() - 1);
 
-	if (index > m_frameNumber-1)
-		return Frame();
+	auto it = m_frames.find(index);
+	if (it != m_frames.end())
+		return it->second;
 
-	std::list<Frame>::const_iterator it = m_frames.begin();
-
-	for (unsigned node = 0; node < index; ++node)
-		++it;
-
-	return *it;
+	return Frame();
 }
 
 void Animation::setLoopBack(bool val)
