@@ -199,7 +199,7 @@ Viewer::Viewer()
 
 	m_state = new ViewerState();
 	m_camera = new Camera(&glm::vec3(0.0f, 1.0f, 0.0f), &glm::vec3(0.0f, 0.0f, 10.0f), &glm::vec3(0, 0, 0));
-	m_scenes.push_back(new SSSSTestLevel()); 
+	m_scenes.push_back(new DefaultTestLevel()); 
 	m_listener = new ConsoleListener();
 
 	//start animation once scene is ready
@@ -237,6 +237,8 @@ void Viewer::loop()
 
 	m_currentScene = *sceneIterator;
 	m_currentScene->Initialize();
+
+	m_lastTime = Clock::now();
 
 	while (!glfwWindowShouldClose(m_window) && !m_viewingIsOver)
 	{
@@ -284,6 +286,15 @@ void Viewer::loop()
 		// Coordinate system matrices 
 		glm::mat4 view = m_camera->GetViewMatrix();
 		m_currentScene->setViewMatrix(view);
+
+		Clock::time_point now = Clock::now();
+		std::chrono::duration<double, std::ratio<1, 1000>> numberOfFrameSinceLast = now - m_lastTime;
+		double numFrame = (numberOfFrameSinceLast.count() / (1000 / 24));
+		if (numFrame > 1)
+		{
+			m_currentFrame += numFrame;
+			m_lastTime = now;
+		}
 
 		m_currentScene->preDraw();
 		m_currentScene->draw(m_currentFrame);

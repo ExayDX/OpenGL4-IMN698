@@ -87,6 +87,7 @@ private :
 
 	ConsoleListener* m_listener;
 
+	Clock::time_point m_lastTime;
 	int m_currentFrame;
 };
 

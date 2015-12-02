@@ -4,7 +4,7 @@
 
 #include "Types.h"
 
-#include <list>
+#include <map>
 
 
 struct Frame
@@ -18,17 +18,16 @@ class Animation
 {
 public:
 	Animation();
-	Animation(std::list<Frame> frames);
+	Animation(std::map<int, Frame> frames);
 	
 	Frame getFrame(int index) const;
 	void addFrame(int index, Frame frame);
 	void setLoopBack(bool val);
 
 protected:
-	int m_frameNumber;
 	bool m_loopback;
 
-	std::list<Frame> m_frames;
+	std::map<int, Frame> m_frames;
 };
 
 #endif //__ANIMABLE_H__
