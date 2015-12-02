@@ -135,7 +135,7 @@ void SSSSTestLevel::draw(int currentFrame)
 		GLuint ppFlags[2] = { ppFBOs[0]->getRenderBuffer(FrameBuffer::BufferType::eColor, 1),
 							  ppFBOs[1]->getRenderBuffer(FrameBuffer::BufferType::eColor, 1) };
 
-		GLuint amount = 40;
+		GLuint amount = 300;
 		glUseProgram(BlurProg);
 
 		glUniform1i(glGetUniformLocation(BlurProg, "image"), 0);
