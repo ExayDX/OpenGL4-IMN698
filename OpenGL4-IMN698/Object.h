@@ -35,15 +35,16 @@ public:
 
 	// Setters
 	void assignMaterial(Material* material) { m_material = material; } 
-	void setPostProcesses(LightingEffects aFlag) { m_postProcesses = aFlag; } // Takes a flag containing all postprocess to be executed
+	void setPostProcesses(LightingEffects aFlag) { m_postProcesses = aFlag; } // TODO : m_postProcesses | flag;// Takes a flag containing all postprocess to be executed
+	void addPostProcess(LightingEffects aFlag){ m_postProcesses | aFlag; }
+	void rmvPostProcess(LightingEffects aFlag){ m_postProcesses = aFlag & ~m_postProcesses; }
 	void setAnimation(Animation* animation);
-
+	
 	void updateShader(GLuint& aNewShaderProgram) { m_shaderProgram = aNewShaderProgram; };
+	void changeShader(ShaderProgram* sp);
 
 	virtual void computeBoundingBox(); 
 	virtual bool intersect(Ray r, double& t0, double& t1); 
-
-	void changeShader(ShaderProgram* sp);
 
 protected : 
 	typedef glm::vec3 Vertice; 
